@@ -34,12 +34,12 @@ export const Navbar: React.FC<NavbarProps> = ({
             <FspLogo size="sm" variant="tricolor" showText={true} />
           </div>
 
-          {/* Right: Navigation Tabs & Verified Badge */}
-          <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto no-scrollbar py-1">
-            <nav className="flex items-center gap-1 bg-[#0b0f1d] p-1 sm:p-1.5 rounded-xl sm:rounded-2xl border border-[#162038] shrink-0">
+          {/* Right: Navigation Tabs for Main User Experience */}
+          <div className="flex items-center gap-2 sm:gap-3 py-1">
+            <nav className="flex items-center gap-1 bg-[#0b0f1d] p-1 sm:p-1.5 rounded-xl sm:rounded-2xl border border-[#162038]">
               <button
                 onClick={() => onRoleChange('landing')}
-                className={`flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all whitespace-nowrap ${
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
                   currentRole === 'landing'
                     ? 'bg-[#2b35ff] text-white shadow-md shadow-[#2b35ff]/30'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-[#121930]'
@@ -51,7 +51,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               <button
                 onClick={() => onRoleChange('candidate')}
-                className={`flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all whitespace-nowrap ${
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
                   currentRole === 'candidate'
                     ? 'bg-[#2b35ff] text-white shadow-md shadow-[#2b35ff]/30'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-[#121930]'
@@ -68,7 +68,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               <button
                 onClick={() => onRoleChange('employer')}
-                className={`flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all whitespace-nowrap ${
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
                   currentRole === 'employer'
                     ? 'bg-[#2b35ff] text-white shadow-md shadow-[#2b35ff]/30'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-[#121930]'
@@ -85,7 +85,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               <button
                 onClick={() => onRoleChange('arena')}
-                className={`flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all whitespace-nowrap ${
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
                   currentRole === 'arena'
                     ? 'bg-[#2b35ff] text-[#00f0ff] shadow-md shadow-[#2b35ff]/30'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-[#121930]'
@@ -93,42 +93,6 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 <Code2 className="w-3.5 h-3.5" />
                 <span>Арена</span>
-              </button>
-
-              <button
-                onClick={() => onRoleChange('swagger')}
-                className={`flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all whitespace-nowrap ${
-                  currentRole === 'swagger'
-                    ? 'bg-[#2b35ff] text-white shadow-md shadow-[#2b35ff]/30'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-[#121930]'
-                }`}
-              >
-                <BookOpen className="w-3.5 h-3.5" />
-                <span>Swagger</span>
-              </button>
-
-              <button
-                onClick={() => onRoleChange('architecture')}
-                className={`hidden sm:flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all whitespace-nowrap ${
-                  currentRole === 'architecture'
-                    ? 'bg-[#2b35ff] text-white shadow-md shadow-[#2b35ff]/30'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-[#121930]'
-                }`}
-              >
-                <Code2 className="w-3.5 h-3.5" />
-                <span>Архитектура</span>
-              </button>
-
-              <button
-                onClick={() => onRoleChange('roadmap')}
-                className={`hidden sm:flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all whitespace-nowrap ${
-                  currentRole === 'roadmap'
-                    ? 'bg-[#2b35ff] text-white shadow-md shadow-[#2b35ff]/30'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-[#121930]'
-                }`}
-              >
-                <Presentation className="w-3.5 h-3.5" />
-                <span>Roadmap</span>
               </button>
             </nav>
 
