@@ -1,5 +1,5 @@
 import React from 'react';
-import { Award, ShieldCheck, Building2, Code2, BookOpen, Presentation, UserCheck, Lock, Github } from 'lucide-react';
+import { Award, ShieldCheck, Building2, Code2, BookOpen, Presentation, UserCheck, Lock, Github, Sparkles } from 'lucide-react';
 import { UserRole } from '../types';
 import { FspLogo } from './brand/FspLogo';
 
