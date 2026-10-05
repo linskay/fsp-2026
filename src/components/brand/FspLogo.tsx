@@ -86,32 +86,49 @@ export const FspLogo: React.FC<FspLogoProps> = ({
 
 export const FspFooterPartners: React.FC = () => {
   return (
-    <div className="border-t border-[#141b2e] bg-[#05070e] py-6 px-4">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-400 font-['JetBrains_Mono']">
+    <footer className="border-t border-[#141b2e] bg-[#04060d] py-7 px-4 mt-auto">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5 text-xs text-slate-400 font-['JetBrains_Mono']">
         
-        {/* Partner badges */}
+        {/* Left: Partner and Founder Badges */}
         <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 sm:gap-6 text-[11px]">
-          <span className="flex items-center gap-1.5 text-slate-300">
-            <span className="w-2 h-2 rounded-full bg-[#ff2b42]" />
+          <span className="flex items-center gap-1.5 text-slate-300 font-medium">
+            <span className="w-2 h-2 rounded-full bg-[#ff2b42] shadow-[0_0_6px_rgba(255,43,66,0.6)]" />
             Министерство спорта РФ
           </span>
-          <span className="flex items-center gap-1.5 text-slate-300">
-            <span className="w-2 h-2 rounded-full bg-[#2b35ff]" />
+          <span className="flex items-center gap-1.5 text-slate-300 font-medium">
+            <span className="w-2 h-2 rounded-full bg-[#2b35ff] shadow-[0_0_6px_rgba(43,53,255,0.6)]" />
             Минцифры России
           </span>
-          <span className="flex items-center gap-1.5 text-slate-300">
-            <span className="w-2 h-2 rounded-full bg-white" />
+          <span className="flex items-center gap-1.5 text-slate-300 font-medium">
+            <span className="w-2 h-2 rounded-full bg-white shadow-[0_0_6px_rgba(255,255,255,0.6)]" />
             Корпорация Синергия
           </span>
         </div>
 
-        {/* Right copyright & compliance */}
-        <div className="text-center md:text-right text-[11px] text-slate-500">
-          © 2026 Федерация спортивного программирования РФ • 152-ФЗ Защита данных
+        {/* Center/Right: 152-FZ Legal compliance with direct link to PDF */}
+        <div className="text-center text-[11px] text-slate-400 flex items-center flex-wrap justify-center gap-2">
+          <span>Соблюдение 152-ФЗ РФ</span>
+          <span>•</span>
+          <a
+            href="https://fsp-russia.ru/files/Положение%20обработку%20пдн%20(1).pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#00f0ff] hover:underline font-bold transition-colors inline-flex items-center gap-1"
+          >
+            Положение об обработке ПДн (.pdf)
+            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </a>
+        </div>
+
+        {/* Right: Copyright */}
+        <div className="text-center md:text-right text-[11px] text-slate-400 font-mono font-bold">
+          No PHP - No Problems, 2026
         </div>
 
       </div>
-    </div>
+    </footer>
   );
 };
 
