@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  # PostgreSQL 16 Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: fsp-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: fsp_career_db
+      POSTGRES_USER: fsp_admin
+      POSTGRES_PASSWORD: fsp_secure_password_2026
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fsp_admin -d fsp_career_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Java 21 / Spring Boot 3 Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: fsp-career-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/fsp_career_db
+      SPRING_DATASOURCE_USERNAME: fsp_admin
+      SPRING_DATASOURCE_PASSWORD: fsp_secure_password_2026
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-mock-github-client-id}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-mock-github-client-secret}
+      YANDEX_CLIENT_ID: ${YANDEX_CLIENT_ID:-mock-yandex-client-id}
+      YANDEX_CLIENT_SECRET: ${YANDEX_CLIENT_SECRET:-mock-yandex-client-secret}
+      HH_CLIENT_ID: ${HH_CLIENT_ID:-mock-hh-client-id}
+      HH_CLIENT_SECRET: ${HH_CLIENT_SECRET:-mock-hh-client-secret}
+      JUDGE0_API_URL: ${JUDGE0_API_URL:-https://judge0-ce.p.rapidapi.com}
+      JUDGE0_API_KEY: ${JUDGE0_API_KEY:-mock-judge0-key}
+      AI_PROVIDER: ${AI_PROVIDER:-yandexgpt}
+      AI_API_KEY: ${AI_API_KEY:-mock-ai-key}
+    ports:
+      - "8080:8080"
+
+  # Frontend (React + Vite)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: fsp-career-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:

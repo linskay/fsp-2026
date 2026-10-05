@@ -1,0 +1,14 @@
+package ru.fsp.careerarena.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import ru.fsp.careerarena.entity.Invitation;
+
+import java.util.List;
+import java.util.UUID;
+
+@Repository
+public interface InvitationRepository extends JpaRepository<Invitation, UUID> {
+    List<Invitation> findByCandidateIdOrderByCreatedAtDesc(UUID candidateId);
+    List<Invitation> findByEmployerIdOrderByCreatedAtDesc(UUID employerId);
+}
