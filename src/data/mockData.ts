@@ -1279,6 +1279,7 @@ export const INITIAL_CANDIDATES: CandidateProfile[] = [
     email: 'alex.belov.fsp@arena.pro',
     fullName: 'Александр Белов',
     city: 'Москва',
+    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
     title: 'Senior Backend Engineer / HighLoad & Algorithms Lead',
     specialization: 'backend',
     targetGrade: 'senior',
@@ -1326,6 +1327,61 @@ export const INITIAL_CANDIDATES: CandidateProfile[] = [
       { date: '2025-04', elo: 2650, event: 'Всероссийская Лига ФСП', change: 70 },
       { date: '2026-03', elo: 2740, event: 'Judge0 LeetCode Hard Benchmark', change: 90 }
     ],
+    leetcodeStats: {
+      username: 'alex_belov_fsp',
+      ranking: 14200,
+      totalSolved: 742,
+      totalQuestions: 3180,
+      easySolved: 215,
+      totalEasy: 830,
+      mediumSolved: 385,
+      totalMedium: 1710,
+      hardSolved: 142,
+      totalHard: 640,
+      acceptanceRate: 76.4,
+      contestRating: 2480,
+      contestGlobalRanking: 340,
+      contestTopPercentage: 0.8,
+      badge: 'Guardian',
+      syncedWithGithub: true,
+      syncedGithubRepo: 'alex-belov-fsp/leetcode-fsp-solutions',
+      lastSyncedAt: 'Сегодня, 14:20',
+      recentSubmissions: [
+        {
+          id: 'sub-lc-1',
+          title: 'Maximum Flow using Dinic Algorithm',
+          titleSlug: 'dinic-max-flow',
+          difficulty: 'Hard',
+          language: 'C++',
+          runtimeBeatsPercent: 99.2,
+          memoryBeatsPercent: 94.6,
+          status: 'Accepted',
+          timestamp: '2 часа назад'
+        },
+        {
+          id: 'sub-lc-2',
+          title: 'LRU Cache Design & Concurrent Access',
+          titleSlug: 'lru-cache',
+          difficulty: 'Medium',
+          language: 'Java 21',
+          runtimeBeatsPercent: 98.1,
+          memoryBeatsPercent: 96.0,
+          status: 'Accepted',
+          timestamp: 'Вчера'
+        },
+        {
+          id: 'sub-lc-3',
+          title: 'Trapping Rain Water II (3D Priority Queue)',
+          titleSlug: 'trapping-rain-water-ii',
+          difficulty: 'Hard',
+          language: 'Go',
+          runtimeBeatsPercent: 97.4,
+          memoryBeatsPercent: 91.8,
+          status: 'Accepted',
+          timestamp: '3 дня назад'
+        }
+      ]
+    },
     aiSummary: {
       summaryText: 'Сильный Backend-разработчик (Senior / Lead). Основной стек: Java 21, Spring Boot 3, Go, C++. По данным GitHub, активно развивает микросервисные архитектуры и алгоритмические библиотеки оптимизации потоков. Задачи уровня LeetCode Medium и Hard решает в среднем за 12 минут с чистотой кода 98/100. Имеет рейтинг ELO 2740 и официальный статус Мастера спорта РФ по спортивному программированию. Рекомендуется на ключевые Highload- и FinTech-проекты ядра.',
       keyStrengths: [
@@ -1365,6 +1421,7 @@ export const INITIAL_CANDIDATES: CandidateProfile[] = [
     email: 'daria.morozova@fsp-athlete.ru',
     fullName: 'Дарья Морозова',
     city: 'Санкт-Петербург',
+    avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&auto=format&fit=crop&q=80',
     title: 'Middle+ / Senior Python & Data Engineer',
     specialization: 'backend',
     targetGrade: 'senior',
@@ -1395,6 +1452,68 @@ export const INITIAL_CANDIDATES: CandidateProfile[] = [
     experienceYears: 4,
     about: 'КМС по спортивному программированию. Разрабатываю асинхронные бэкенды и пайплайны обработки данных. Люблю оптимизировать сложные алгоритмические узкие места.',
     githubUrl: 'https://github.com/daria-morozova',
+    leetcodeStats: {
+      username: 'daria_morozova',
+      ranking: 28400,
+      totalSolved: 584,
+      totalQuestions: 3180,
+      easySolved: 190,
+      totalEasy: 830,
+      mediumSolved: 284,
+      totalMedium: 1710,
+      hardSolved: 110,
+      totalHard: 640,
+      acceptanceRate: 74.2,
+      contestRating: 2190,
+      contestGlobalRanking: 1120,
+      contestTopPercentage: 2.1,
+      badge: 'Knight',
+      syncedWithGithub: true,
+      syncedGithubRepo: 'daria-morozova/leetcode-python-solutions',
+      lastSyncedAt: 'Вчера, 19:30',
+      recentSubmissions: [
+        {
+          id: 'sub-lc-d1',
+          title: 'Course Schedule II (Topological Sort)',
+          titleSlug: 'course-schedule-ii',
+          difficulty: 'Medium',
+          language: 'Python 3',
+          runtimeBeatsPercent: 96.5,
+          memoryBeatsPercent: 93.2,
+          status: 'Accepted',
+          timestamp: 'Вчера'
+        },
+        {
+          id: 'sub-lc-d2',
+          title: 'Longest Consecutive Sequence (Disjoint Set)',
+          titleSlug: 'longest-consecutive-sequence',
+          difficulty: 'Medium',
+          language: 'Python 3',
+          runtimeBeatsPercent: 98.0,
+          memoryBeatsPercent: 91.4,
+          status: 'Accepted',
+          timestamp: '3 дня назад'
+        }
+      ]
+    },
+    aiSummary: {
+      summaryText: 'Ведущий инженер данных и системный Python-разработчик (Senior). Кандидат в мастера спорта по СП (ELO 2490). Специализируется на высокопроизводительных асинхронных бэкендах (FastAPI, AsyncIO, ClickHouse) и алгоритмической оптимизации сложных графовых структур. Решила 584 задачи на LeetCode. Рекомендуется на архитектурные роли в области Big Data, Analytics и Highload пайплайнов.',
+      keyStrengths: [
+        'КМС по спортивному программированию (ELO 2490)',
+        'Глубокая экспертиза в AsyncIO, ClickHouse и Spark',
+        '584 решенные задачи на LeetCode (статус Knight)',
+        'Высокая математическая культура (МГУ ВМК)'
+      ],
+      recommendedProjects: [
+        'Real-time аналитические платформы',
+        'Highload ETL/ELT конвейеры потоковых данных',
+        'Графовые алгоритмы и рекомендательные системы'
+      ],
+      codeCleanlinessScore: 97,
+      averageSolveTimeMinutes: 14,
+      modelUsed: 'YandexGPT Pro',
+      generatedAt: '2026-03-10T12:00:00Z'
+    },
     solvedTasksCount: 312,
     totalTasksAttempted: 320,
     testScorePercent: 96.8,
@@ -1416,6 +1535,7 @@ export const INITIAL_CANDIDATES: CandidateProfile[] = [
     email: 'mikhail.sokolov@tech-fsp.org',
     fullName: 'Михаил Соколов',
     city: 'Новосибирск',
+    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop&q=80',
     title: 'Middle Fullstack / Frontend React & Go Developer',
     specialization: 'fullstack',
     targetGrade: 'middle',
@@ -1446,6 +1566,57 @@ export const INITIAL_CANDIDATES: CandidateProfile[] = [
     experienceYears: 3,
     about: '1-й спортивный разряд по спортивному программированию. Разрабатываю производительные веб-приложения с мгновенным откликом UI и чистым кодом.',
     githubUrl: 'https://github.com/misha-sokolov-dev',
+    leetcodeStats: {
+      username: 'misha_sokolov',
+      ranking: 54100,
+      totalSolved: 395,
+      totalQuestions: 3180,
+      easySolved: 165,
+      totalEasy: 830,
+      mediumSolved: 190,
+      totalMedium: 1710,
+      hardSolved: 40,
+      totalHard: 640,
+      acceptanceRate: 72.8,
+      contestRating: 1940,
+      contestGlobalRanking: 3200,
+      contestTopPercentage: 5.4,
+      badge: 'Knight',
+      syncedWithGithub: true,
+      syncedGithubRepo: 'misha-sokolov-dev/algo-leetcode',
+      lastSyncedAt: '3 дня назад',
+      recentSubmissions: [
+        {
+          id: 'sub-lc-m1',
+          title: 'Implement Trie (Prefix Tree)',
+          titleSlug: 'implement-trie-prefix-tree',
+          difficulty: 'Medium',
+          language: 'TypeScript',
+          runtimeBeatsPercent: 95.2,
+          memoryBeatsPercent: 92.1,
+          status: 'Accepted',
+          timestamp: '3 дня назад'
+        }
+      ]
+    },
+    aiSummary: {
+      summaryText: 'Продуктивный Middle+ Fullstack разработчик (React 19, TypeScript, Go). Обладатель 1-го спортивного разряда ФСП (ELO 2180). Отличается умением быстро создавать интуитивные, адаптивные интерфейсы с чистой компонентной архитектурой и связывать их с микросервисами на Go. Решил 395 задач на LeetCode. Идеален для продуктовых команд.',
+      keyStrengths: [
+        '1-й разряд ФСП по СП (ELO 2180)',
+        'Стек React 19, Next.js, Go, Zustand',
+        '395 задач на LeetCode с упором на структуры данных',
+        'TDD и строгие интерфейсные контракты'
+      ],
+      recommendedProjects: [
+        'Интерактивные B2B SaaS веб-платформы',
+        'Real-time дашборды и аналитические интерфейсы',
+        'Микрофронтенды и дизайн-системы'
+      ],
+      codeCleanlinessScore: 96,
+      averageSolveTimeMinutes: 16,
+      modelUsed: 'YandexGPT Pro',
+      generatedAt: '2026-03-08T10:00:00Z'
+    },
     solvedTasksCount: 195,
     totalTasksAttempted: 210,
     testScorePercent: 92.0,
@@ -1467,6 +1638,7 @@ export const INITIAL_CANDIDATES: CandidateProfile[] = [
     email: 'ekaterina.orlova@devops-fsp.ru',
     fullName: 'Екатерина Орлова',
     city: 'Казань',
+    avatarUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&auto=format&fit=crop&q=80',
     title: 'Senior DevOps & Platform Engineer / Infrastructure Lead',
     specialization: 'devops',
     targetGrade: 'senior',
@@ -1497,6 +1669,57 @@ export const INITIAL_CANDIDATES: CandidateProfile[] = [
     experienceYears: 7,
     about: 'КМС ФСП. Строю отказоустойчивые Cloud-Native платформы с автоматическим масштабированием и мониторингом.',
     githubUrl: 'https://github.com/ekaterina-orlova-ops',
+    leetcodeStats: {
+      username: 'kate_orlova_cloud',
+      ranking: 36200,
+      totalSolved: 482,
+      totalQuestions: 3180,
+      easySolved: 152,
+      totalEasy: 830,
+      mediumSolved: 230,
+      totalMedium: 1710,
+      hardSolved: 100,
+      totalHard: 640,
+      acceptanceRate: 75.1,
+      contestRating: 2210,
+      contestGlobalRanking: 980,
+      contestTopPercentage: 1.8,
+      badge: 'Knight',
+      syncedWithGithub: true,
+      syncedGithubRepo: 'ekaterina-orlova-ops/k8s-leetcode-sync',
+      lastSyncedAt: 'Позавчера, 22:15',
+      recentSubmissions: [
+        {
+          id: 'sub-lc-k1',
+          title: 'Design In-Memory File System',
+          titleSlug: 'design-in-memory-file-system',
+          difficulty: 'Hard',
+          language: 'Go',
+          runtimeBeatsPercent: 98.4,
+          memoryBeatsPercent: 95.3,
+          status: 'Accepted',
+          timestamp: 'Позавчера'
+        }
+      ]
+    },
+    aiSummary: {
+      summaryText: 'Опытный Platform & DevOps инженер (Senior / Lead). КМС по спортивному программированию (ELO 2560). Обладает редким сочетанием системного алгоритмического мышления и глубоких практических навыков оркестрации Kubernetes, Terraform и Linux. Решила 482 задачи на LeetCode (Hard: 100). Рекомендуется на позиции Tech Lead инфраструктуры и Platform Engineering.',
+      keyStrengths: [
+        'КМС по СП (ELO 2560, Топ-2% РФ)',
+        'Экспертиза в Kubernetes, Bare Metal, Terraform, Go',
+        '482 решенные задачи на LeetCode (Hard: 100)',
+        'Культура Zero-Downtime и высокая надежность (99.99%)'
+      ],
+      recommendedProjects: [
+        'Инфраструктурные платформы приватных облаков',
+        'Автоматизация CI/CD и безопасная поставка ПО',
+        'SRE и отказоустойчивость распределенных СУБД'
+      ],
+      codeCleanlinessScore: 98,
+      averageSolveTimeMinutes: 13,
+      modelUsed: 'YandexGPT Pro',
+      generatedAt: '2026-03-05T15:00:00Z'
+    },
     solvedTasksCount: 360,
     totalTasksAttempted: 375,
     testScorePercent: 98.1,
@@ -1518,6 +1741,7 @@ export const INITIAL_CANDIDATES: CandidateProfile[] = [
     email: 'artyom.grigoriev@fsp-junior.ru',
     fullName: 'Артём Григорьев',
     city: 'Екатеринбург',
+    avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&auto=format&fit=crop&q=80',
     title: 'Junior+ Backend Developer (Java / Go)',
     specialization: 'backend',
     targetGrade: 'junior',
@@ -1548,6 +1772,54 @@ export const INITIAL_CANDIDATES: CandidateProfile[] = [
     experienceYears: 1.5,
     about: 'Увлечен спортивным программированием и бэкенд разработкой на Java. Ищу команду с сильным менторством и интересными задачами.',
     githubUrl: 'https://github.com/artyom-grigoriev',
+    leetcodeStats: {
+      username: 'artyom_dev_ekb',
+      ranking: 92400,
+      totalSolved: 218,
+      totalQuestions: 3180,
+      easySolved: 124,
+      totalEasy: 830,
+      mediumSolved: 84,
+      totalMedium: 1710,
+      hardSolved: 10,
+      totalHard: 640,
+      acceptanceRate: 69.4,
+      contestRating: 1720,
+      syncedWithGithub: true,
+      syncedGithubRepo: 'artyom-grigoriev/leetcode-java',
+      lastSyncedAt: 'Вчера, 16:40',
+      recentSubmissions: [
+        {
+          id: 'sub-lc-a1',
+          title: 'Binary Tree Level Order Traversal',
+          titleSlug: 'binary-tree-level-order-traversal',
+          difficulty: 'Medium',
+          language: 'Java',
+          runtimeBeatsPercent: 93.1,
+          memoryBeatsPercent: 88.4,
+          status: 'Accepted',
+          timestamp: 'Вчера'
+        }
+      ]
+    },
+    aiSummary: {
+      summaryText: 'Перспективный Junior+ бэкенд разработчик на Java 21 и Spring Boot. Участник Высшей Лиги ФСП (ELO 1850). Демонстрирует отличную фундаментальную математическую подготовку, аккуратный стиль кода и высокую обучаемость. Решил 218 задач на LeetCode. Рекомендуется в команду с выстроенными процессами code review и менторством.',
+      keyStrengths: [
+        'Участник Высшей Лиги ФСП (ELO 1850)',
+        'Java 21, Spring Boot, PostgreSQL, JUnit 5',
+        '218 задач на LeetCode с глубоким разбором асимптотики',
+        'Высокая мотивация и быстрая обучаемость'
+      ],
+      recommendedProjects: [
+        'Разработка REST API микросервисов',
+        'Интеграционные шлюзы и автоматизация процессов',
+        'Юнит- и интеграционное тестирование'
+      ],
+      codeCleanlinessScore: 94,
+      averageSolveTimeMinutes: 19,
+      modelUsed: 'YandexGPT Pro',
+      generatedAt: '2026-03-01T14:00:00Z'
+    },
     solvedTasksCount: 142,
     totalTasksAttempted: 160,
     testScorePercent: 88.5,

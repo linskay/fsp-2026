@@ -30,6 +30,8 @@ import { CandidateAiSummaryModal } from './CandidateAiSummaryModal';
 import { FspPrivacyModal, FSP_PRIVACY_PDF_URL } from '../common/FspPrivacyModal';
 import { FspStarIcon, FspCircuitBackground } from '../brand/FspLogo';
 import { EloTierProgressBar } from './EloTierProgressBar';
+import { UserAvatar } from '../brand/UserAvatar';
+import { LeetCodeStatsCard } from './LeetCodeStatsCard';
 import { Github, Star, GitBranch, Share2, Bot, BrainCircuit, LineChart } from 'lucide-react';
 
 interface CandidateDashboardProps {
@@ -105,14 +107,12 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
           {/* Left Column (5 cols): Athlete Avatar, Rank, ELO & Verified Status */}
           <div className="lg:col-span-5 space-y-5">
             <div className="flex items-start gap-4">
-              <div className="relative shrink-0">
-                <div className="w-18 h-18 sm:w-20 sm:h-20 rounded-2xl bg-[#0c1224] border border-[#2b35ff]/40 p-2 shadow-xl flex items-center justify-center">
-                  <FspStarIcon className="w-12 h-12" variant="tricolor" />
-                </div>
-                <div className="absolute -bottom-1 -right-1 p-1 bg-[#060811] rounded-lg border border-[#2b35ff]/50">
-                  <Award className="w-4 h-4 text-amber-400" />
-                </div>
-              </div>
+              <UserAvatar
+                name={candidate.fullName}
+                src={candidate.avatarUrl}
+                size="xl"
+                rank={candidate.fspRank}
+              />
 
               <div className="space-y-1.5 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
@@ -371,6 +371,12 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
 
             {/* Connected OAuth Badges */}
             <div className="flex items-center gap-2 text-xs">
+              {candidate.leetcodeStats && (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#0a0e1c] text-slate-300 border border-amber-500/40">
+                  <span className="text-[10px] font-black text-amber-400">LC</span>
+                  <span>LeetCode ({candidate.leetcodeStats.totalSolved} решено, {candidate.leetcodeStats.badge || 'Top 1%'})</span>
+                </span>
+              )}
               {githubData && (
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#0a0e1c] text-slate-300 border border-[#2b35ff]/40">
                   <Github className="w-3.5 h-3.5 text-white" />
@@ -431,8 +437,8 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
             }`}
           >
             <Github className="w-4 h-4" />
-            <span>GitHub & hh.ru Портфолио</span>
-            {(githubData || hhData) && (
+            <span>LeetCode, GitHub & hh.ru</span>
+            {(githubData || hhData || candidate.leetcodeStats) && (
               <span className="w-2 h-2 rounded-full bg-emerald-400" />
             )}
           </button>
@@ -500,6 +506,12 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
               <span>Управление OAuth подключениями</span>
             </button>
           </div>
+
+          {/* LeetCode & LeetHub Algorithmic Synchronization Card */}
+          <LeetCodeStatsCard
+            stats={candidate.leetcodeStats}
+            candidateName={candidate.fullName}
+          />
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             

@@ -333,6 +333,7 @@ export default function App() {
         acceptedOffersCount={acceptedOffersCount}
         onOpenOAuthModal={() => setIsOAuthModalOpen(true)}
         isOAuthConnected={!!(githubData || hhData || yandexConnected)}
+        candidate={currentCandidate}
       />
 
       {/* Toast Notification Bar */}
@@ -396,6 +397,10 @@ export default function App() {
             onSendOffer={handleSendOffer}
             onAddVacancy={handleAddVacancy}
             onSendMessage={handleSendMessage}
+            onUpdateCandidate={(id, updated) => {
+              setCandidates(prev => prev.map(c => c.id === id ? { ...c, ...updated } : c));
+              showToast('ИИ-портрет кандидата успешно обновлен!', 'success');
+            }}
           />
         )}
 

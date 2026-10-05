@@ -21,13 +21,19 @@ import {
   SendHorizontal, 
   HelpCircle,
   ExternalLink,
-  SlidersHorizontal
+  SlidersHorizontal,
+  FolderGit2,
+  Bot,
+  RefreshCw
 } from 'lucide-react';
-import { CandidateProfile, EmployerProfile, Grade, Invitation, Specialization, Vacancy } from '../../types';
+import { CandidateProfile, EmployerProfile, Grade, Invitation, Specialization, Vacancy, CandidateAiSummary } from '../../types';
 import { SendOfferModal } from './SendOfferModal';
 import { CreateVacancyModal } from './CreateVacancyModal';
 import { HhVacancyImportModal } from './HhVacancyImportModal';
 import { FspStarIcon, FspCircuitBackground } from '../brand/FspLogo';
+import { UserAvatar } from '../brand/UserAvatar';
+import { LeetCodeStatsCard } from '../candidate/LeetCodeStatsCard';
+import { CandidateAiSummaryModal } from '../candidate/CandidateAiSummaryModal';
 
 interface EmployerDashboardProps {
   currentEmployer: EmployerProfile;
@@ -37,6 +43,7 @@ interface EmployerDashboardProps {
   onSendOffer: (offerData: any) => void;
   onAddVacancy: (vacancyData: any) => void;
   onSendMessage: (invitationId: string, text: string) => void;
+  onUpdateCandidate?: (candidateId: string, updated: Partial<CandidateProfile>) => void;
 }
 
 export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
@@ -46,7 +53,8 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
   invitations,
   onSendOffer,
   onAddVacancy,
-  onSendMessage
+  onSendMessage,
+  onUpdateCandidate
 }) => {
   const [activeTab, setActiveTab] = useState<'candidates' | 'vacancies' | 'ats' | 'chat'>('candidates');
   
@@ -63,6 +71,7 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
   const [isCreateVacancyModalOpen, setIsCreateVacancyModalOpen] = useState(false);
   const [isHhImportModalOpen, setIsHhImportModalOpen] = useState(false);
   const [explainModalCandidate, setExplainModalCandidate] = useState<CandidateProfile | null>(null);
+  const [aiModalCandidate, setAiModalCandidate] = useState<CandidateProfile | null>(null);
 
   // Chat state
   const [selectedChatInvId, setSelectedChatInvId] = useState<string | null>(
@@ -324,10 +333,16 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                   <div className="flex items-start gap-4">
                     
-                    {/* Rank Badge */}
-                    <div className="flex flex-col items-center">
-                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#2b35ff] to-[#00f0ff] p-0.5 shadow-md">
-                        <div className="w-full h-full bg-[#080c18] rounded-[14px] flex items-center justify-center font-black text-sm text-[#00f0ff]">
+                    {/* Candidate Avatar with fallback & Rank Index */}
+                    <div className="flex flex-col items-center shrink-0">
+                      <div className="relative">
+                        <UserAvatar
+                          name={c.fullName}
+                          src={c.avatarUrl}
+                          size="lg"
+                          rank={c.fspRank}
+                        />
+                        <div className="absolute -top-1.5 -left-1.5 w-6 h-6 rounded-full bg-[#080c18] border border-[#00f0ff]/50 flex items-center justify-center font-black text-[10px] text-[#00f0ff] shadow-md">
                           #{rankIndex + 1}
                         </div>
                       </div>
@@ -356,6 +371,42 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
                       <p className="text-xs text-slate-300 max-w-3xl pt-1 leading-relaxed">
                         {c.about}
                       </p>
+
+                      {/* LeetCode Algorithmic Statistics Strip */}
+                      {c.leetcodeStats && (
+                        <div className="flex flex-wrap items-center gap-2 pt-2">
+                          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs">
+                            <span className="w-5 h-5 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-black text-[10px]">
+                              LC
+                            </span>
+                            <span className="text-white font-bold font-mono">
+                              {c.leetcodeStats.totalSolved}
+                            </span>
+                            <span className="text-slate-400 text-[11px]">задач решено</span>
+                            <span className="text-slate-600">|</span>
+                            <span className="text-emerald-400 text-[11px] font-mono font-medium">Easy: {c.leetcodeStats.easySolved}</span>
+                            <span className="text-amber-400 text-[11px] font-mono font-medium">Med: {c.leetcodeStats.mediumSolved}</span>
+                            <span className="text-rose-400 text-[11px] font-mono font-medium">Hard: {c.leetcodeStats.hardSolved}</span>
+                            {c.leetcodeStats.badge && (
+                              <span className="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 text-[10px] font-bold">
+                                {c.leetcodeStats.badge}
+                              </span>
+                            )}
+                          </div>
+
+                          {c.leetcodeStats.syncedGithubRepo && (
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#0c1224] border border-[#2b35ff]/30 text-[11px] text-slate-300 font-mono">
+                              <FolderGit2 className="w-3.5 h-3.5 text-[#00f0ff]" />
+                              <span>{c.leetcodeStats.syncedGithubRepo}</span>
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" title="Автосинхронизация LeetHub активна" />
+                            </span>
+                          )}
+
+                          <span className="text-[10px] font-mono text-slate-500">
+                            Рейтинг: #{c.leetcodeStats.ranking.toLocaleString('ru-RU')}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -373,19 +424,54 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
 
                 {/* AI-Summary Synthesis Box if available */}
                 {c.aiSummary && (
-                  <div className="bg-[#080d1e] rounded-2xl p-3.5 border border-purple-500/30 text-xs space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-white flex items-center gap-1.5 text-[11px]">
-                        <Sparkles className="w-3.5 h-3.5 text-purple-400" />
-                        AI-Портрет кандидата ({c.aiSummary.modelUsed}):
-                      </span>
-                      <span className="text-[10px] text-slate-400">
-                        Чистота кода: <strong className="text-emerald-400">{c.aiSummary.codeCleanlinessScore}/100</strong> • Решение задач: ~{c.aiSummary.averageSolveTimeMinutes} мин
-                      </span>
+                  <div className="bg-[#080d1e] rounded-2xl p-4 border border-purple-500/30 text-xs space-y-2.5 relative overflow-hidden">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-purple-500/20">
+                      <div className="flex items-center gap-2">
+                        <div className="p-1.5 rounded-xl bg-purple-500/20 text-purple-400 border border-purple-500/30">
+                          <Bot className="w-4 h-4" />
+                        </div>
+                        <span className="font-bold text-white text-[12px] flex items-center gap-2">
+                          AI-Портрет кандидата ({c.aiSummary.modelUsed}):
+                          {c.aiSummary.recommendationLevel && (
+                            <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-500/30">
+                              {c.aiSummary.recommendationLevel}
+                            </span>
+                          )}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3 text-[11px] text-slate-400">
+                        <span>Чистота кода: <strong className="text-emerald-400 font-mono">{c.aiSummary.codeCleanlinessScore}/100</strong></span>
+                        <span>•</span>
+                        <span>Решение задач: <strong className="text-cyan-300 font-mono">~{c.aiSummary.averageSolveTimeMinutes} мин</strong></span>
+                        <button
+                          onClick={() => setAiModalCandidate(c)}
+                          className="px-2.5 py-1 rounded-lg bg-purple-500/20 hover:bg-purple-500/40 text-purple-300 hover:text-white border border-purple-500/40 text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1 shrink-0 ml-1"
+                          title="Открыть и настроить детальный ИИ-портрет соискателя"
+                        >
+                          <Sparkles className="w-3 h-3 text-yellow-400" />
+                          <span>ИИ-Досье</span>
+                        </button>
+                      </div>
                     </div>
-                    <p className="text-[11px] text-slate-300 italic font-mono leading-relaxed">
+
+                    <p className="text-[12px] text-slate-200 italic font-mono leading-relaxed">
                       "{c.aiSummary.summaryText}"
                     </p>
+
+                    {/* Key Strengths & Recommended Roles */}
+                    <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                      {c.aiSummary.keyStrengths?.map((str, sIdx) => (
+                        <span key={sIdx} className="px-2.5 py-0.5 rounded-lg bg-[#0e1730] text-[10px] text-[#00f0ff] border border-[#2b35ff]/30 flex items-center gap-1">
+                          <CheckCircle2 className="w-2.5 h-2.5 text-emerald-400 shrink-0" />
+                          <span>{str}</span>
+                        </span>
+                      ))}
+                      {c.aiSummary.recommendedRoles?.map((role, rIdx) => (
+                        <span key={rIdx} className="px-2.5 py-0.5 rounded-lg bg-purple-950/40 text-[10px] text-purple-300 border border-purple-500/20">
+                          🎯 {role}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 )}
 
@@ -559,16 +645,22 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
                 <Clock className="w-4 h-4 text-blue-400" />
               </div>
 
-              {employerInvitations.filter(i => i.status === 'sent').map(inv => (
-                <div key={inv.id} className="bg-slate-900/90 p-3.5 rounded-2xl border border-slate-800 text-xs space-y-2">
-                  <div className="font-bold text-white">{inv.candidateName}</div>
-                  <div className="text-[11px] text-slate-400">{inv.vacancyTitle}</div>
-                  <div className="font-mono text-emerald-400 font-bold">{inv.proposedSalary.toLocaleString('ru-RU')} ₽</div>
-                  <div className="text-[10px] text-slate-500 flex items-center gap-1">
-                    <Lock className="w-3 h-3 text-amber-400" /> Контакты заблокированы
+              {employerInvitations.filter(i => i.status === 'sent').map(inv => {
+                const cand = candidates.find(c => c.id === inv.candidateId);
+                return (
+                  <div key={inv.id} className="bg-slate-900/90 p-3.5 rounded-2xl border border-slate-800 text-xs space-y-2">
+                    <div className="flex items-center gap-2 font-bold text-white">
+                      <UserAvatar name={inv.candidateName} src={cand?.avatarUrl} size="xs" rank={cand?.fspRank} />
+                      <span>{inv.candidateName}</span>
+                    </div>
+                    <div className="text-[11px] text-slate-400">{inv.vacancyTitle}</div>
+                    <div className="font-mono text-emerald-400 font-bold">{inv.proposedSalary.toLocaleString('ru-RU')} ₽</div>
+                    <div className="text-[10px] text-slate-500 flex items-center gap-1">
+                      <Lock className="w-3 h-3 text-amber-400" /> Контакты заблокированы
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Column 2: Viewed */}
@@ -580,14 +672,20 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
                 <Clock className="w-4 h-4 text-yellow-400" />
               </div>
 
-              {employerInvitations.filter(i => i.status === 'viewed').map(inv => (
-                <div key={inv.id} className="bg-slate-900/90 p-3.5 rounded-2xl border border-slate-800 text-xs space-y-2">
-                  <div className="font-bold text-white">{inv.candidateName}</div>
-                  <div className="text-[11px] text-slate-400">{inv.vacancyTitle}</div>
-                  <div className="font-mono text-emerald-400 font-bold">{inv.proposedSalary.toLocaleString('ru-RU')} ₽</div>
-                  <div className="text-[10px] text-yellow-400">Ожидает ответа соискателя</div>
-                </div>
-              ))}
+              {employerInvitations.filter(i => i.status === 'viewed').map(inv => {
+                const cand = candidates.find(c => c.id === inv.candidateId);
+                return (
+                  <div key={inv.id} className="bg-slate-900/90 p-3.5 rounded-2xl border border-slate-800 text-xs space-y-2">
+                    <div className="flex items-center gap-2 font-bold text-white">
+                      <UserAvatar name={inv.candidateName} src={cand?.avatarUrl} size="xs" rank={cand?.fspRank} />
+                      <span>{inv.candidateName}</span>
+                    </div>
+                    <div className="text-[11px] text-slate-400">{inv.vacancyTitle}</div>
+                    <div className="font-mono text-emerald-400 font-bold">{inv.proposedSalary.toLocaleString('ru-RU')} ₽</div>
+                    <div className="text-[10px] text-yellow-400">Ожидает ответа соискателя</div>
+                  </div>
+                );
+              })}
             </div>
 
             {/* Column 3: Accepted (Revealed contacts!) */}
@@ -604,7 +702,15 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
                 return (
                   <div key={inv.id} className="bg-emerald-950/40 p-3.5 rounded-2xl border border-emerald-800/60 text-xs space-y-2.5">
                     <div className="font-bold text-white flex items-center justify-between">
-                      <span>{inv.candidateName}</span>
+                      <div className="flex items-center gap-2">
+                        <UserAvatar
+                          name={inv.candidateName}
+                          src={cand?.avatarUrl}
+                          size="xs"
+                          rank={cand?.fspRank}
+                        />
+                        <span>{inv.candidateName}</span>
+                      </div>
                       <span className="text-emerald-400 text-[10px] font-bold">152-ФЗ ОК</span>
                     </div>
 
@@ -663,25 +769,31 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
             </h3>
 
             <div className="space-y-2">
-              {employerInvitations.filter(i => i.status === 'accepted').map(inv => (
-                <div
-                  key={inv.id}
-                  onClick={() => setSelectedChatInvId(inv.id)}
-                  className={`p-3 rounded-2xl cursor-pointer transition-all border ${
-                    selectedChatInvId === inv.id
-                      ? 'bg-indigo-600/20 border-indigo-500 text-white'
-                      : 'bg-slate-900/80 border-slate-800 hover:bg-slate-800 text-slate-300'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-xs">{inv.candidateName}</span>
-                    <span className="text-[10px] text-emerald-400 font-mono font-bold">
-                      {inv.proposedSalary.toLocaleString('ru-RU')} ₽
-                    </span>
+              {employerInvitations.filter(i => i.status === 'accepted').map(inv => {
+                const cand = candidates.find(c => c.id === inv.candidateId);
+                return (
+                  <div
+                    key={inv.id}
+                    onClick={() => setSelectedChatInvId(inv.id)}
+                    className={`p-3 rounded-2xl cursor-pointer transition-all border ${
+                      selectedChatInvId === inv.id
+                        ? 'bg-indigo-600/20 border-indigo-500 text-white'
+                        : 'bg-slate-900/80 border-slate-800 hover:bg-slate-800 text-slate-300'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <UserAvatar name={inv.candidateName} src={cand?.avatarUrl} size="xs" rank={cand?.fspRank} />
+                        <span className="font-bold text-xs">{inv.candidateName}</span>
+                      </div>
+                      <span className="text-[10px] text-emerald-400 font-mono font-bold">
+                        {inv.proposedSalary.toLocaleString('ru-RU')} ₽
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 truncate mt-0.5">{inv.vacancyTitle}</p>
                   </div>
-                  <p className="text-[11px] text-slate-400 truncate mt-0.5">{inv.vacancyTitle}</p>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
@@ -689,13 +801,21 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
             {activeChatInv ? (
               <>
                 <div className="p-4 bg-[#11192e] border-b border-slate-800 flex items-center justify-between">
-                  <div>
-                    <h4 className="text-sm font-bold text-white">
-                      Кандидат: {activeChatInv.candidateName} ({activeChatInv.vacancyTitle})
-                    </h4>
-                    <p className="text-xs text-slate-400">
-                      Согласованный оффер: <strong className="text-emerald-400 font-mono">{activeChatInv.proposedSalary.toLocaleString('ru-RU')} ₽</strong>
-                    </p>
+                  <div className="flex items-center gap-3">
+                    <UserAvatar
+                      name={activeChatInv.candidateName}
+                      src={candidates.find(c => c.id === activeChatInv.candidateId)?.avatarUrl}
+                      size="sm"
+                      rank={candidates.find(c => c.id === activeChatInv.candidateId)?.fspRank}
+                    />
+                    <div>
+                      <h4 className="text-sm font-bold text-white">
+                        {activeChatInv.candidateName} ({activeChatInv.vacancyTitle})
+                      </h4>
+                      <p className="text-xs text-slate-400">
+                        Согласованный оффер: <strong className="text-emerald-400 font-mono">{activeChatInv.proposedSalary.toLocaleString('ru-RU')} ₽</strong>
+                      </p>
+                    </div>
                   </div>
                   <span className="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/30">
                     Контакты открыты
@@ -769,7 +889,15 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
             <div className="p-4 bg-slate-900 rounded-2xl border border-slate-800 space-y-3 text-xs">
               <div className="flex items-center justify-between border-b border-slate-800 pb-2">
                 <span className="text-slate-400">Кандидат:</span>
-                <span className="text-white font-bold">{explainModalCandidate.fullName}</span>
+                <div className="flex items-center gap-2">
+                  <UserAvatar
+                    name={explainModalCandidate.fullName}
+                    src={explainModalCandidate.avatarUrl}
+                    size="xs"
+                    rank={explainModalCandidate.fspRank}
+                  />
+                  <span className="text-white font-bold">{explainModalCandidate.fullName}</span>
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -833,6 +961,21 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
           importedList.forEach(vac => onAddVacancy(vac));
         }}
       />
+
+      {/* Candidate AI Summary Modal */}
+      {aiModalCandidate && (
+        <CandidateAiSummaryModal
+          isOpen={!!aiModalCandidate}
+          onClose={() => setAiModalCandidate(null)}
+          candidate={aiModalCandidate}
+          onSaveSummary={(updatedSummary) => {
+            if (onUpdateCandidate) {
+              onUpdateCandidate(aiModalCandidate.id, { aiSummary: updatedSummary });
+            }
+            setAiModalCandidate(null);
+          }}
+        />
+      )}
 
     </div>
   );

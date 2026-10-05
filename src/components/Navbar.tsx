@@ -1,7 +1,8 @@
 import React from 'react';
 import { Award, ShieldCheck, Building2, Code2, BookOpen, Presentation, UserCheck, Lock, Github, Sparkles } from 'lucide-react';
-import { UserRole } from '../types';
+import { CandidateProfile, UserRole } from '../types';
 import { FspLogo } from './brand/FspLogo';
+import { UserAvatar } from './brand/UserAvatar';
 
 interface NavbarProps {
   currentRole: UserRole;
@@ -10,6 +11,7 @@ interface NavbarProps {
   acceptedOffersCount: number;
   onOpenOAuthModal?: () => void;
   isOAuthConnected?: boolean;
+  candidate?: CandidateProfile;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -18,7 +20,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   invitationsCount,
   acceptedOffersCount,
   onOpenOAuthModal,
-  isOAuthConnected = true
+  isOAuthConnected = true,
+  candidate
 }) => {
   return (
     <header className="sticky top-0 z-50 bg-[#060811]/95 backdrop-blur-md border-b border-[#141b2e]">
@@ -117,6 +120,30 @@ export const Navbar: React.FC<NavbarProps> = ({
               <ShieldCheck className="w-4 h-4 text-emerald-400" />
               <span className="text-[11px] text-slate-300 font-bold">Keycloak SSO</span>
             </div>
+
+            {/* Logged In Candidate Avatar */}
+            {candidate && (
+              <div
+                onClick={() => onRoleChange('candidate')}
+                className="flex items-center gap-2.5 pl-1 sm:pl-2 py-1 pr-2 rounded-2xl hover:bg-[#0b0f1d] cursor-pointer transition-colors border border-transparent hover:border-[#162038]"
+                title={`Профиль: ${candidate.fullName} (${candidate.fspRank})`}
+              >
+                <UserAvatar
+                  name={candidate.fullName}
+                  src={candidate.avatarUrl}
+                  size="sm"
+                  rank={candidate.fspRank}
+                />
+                <div className="hidden lg:flex flex-col text-left">
+                  <span className="text-[11px] font-bold text-white leading-tight truncate max-w-[120px]">
+                    {candidate.fullName.split(' ')[0]}
+                  </span>
+                  <span className="text-[9px] font-mono text-amber-400 leading-tight">
+                    {candidate.fspRating} ELO
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
 
         </div>

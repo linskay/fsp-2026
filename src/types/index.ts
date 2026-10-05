@@ -40,10 +40,46 @@ export interface CandidateAiSummary {
   summaryText: string;
   keyStrengths: string[];
   recommendedProjects: string[];
+  recommendedRoles?: string[];
+  recommendationLevel?: 'HIGHLY_RECOMMENDED' | 'RECOMMENDED' | 'ACCEPTABLE';
   codeCleanlinessScore: number;
   averageSolveTimeMinutes: number;
-  modelUsed: 'YandexGPT Pro' | 'GigaChat Max' | 'Gemini 2.5 Flash';
+  modelUsed: 'YandexGPT Pro' | 'GigaChat Max' | 'Gemini 2.5 Flash' | 'Spring Boot AI Service';
   generatedAt: string;
+}
+
+export interface LeetCodeSubmissionItem {
+  id: string;
+  title: string;
+  titleSlug: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+  timestamp: string;
+  language: string;
+  runtimeBeatsPercent: number;
+  memoryBeatsPercent: number;
+  status: 'Accepted' | 'Time Limit Exceeded' | 'Wrong Answer';
+}
+
+export interface LeetCodeProfileStats {
+  username: string;
+  ranking: number;
+  totalSolved: number;
+  totalQuestions: number;
+  easySolved: number;
+  totalEasy: number;
+  mediumSolved: number;
+  totalMedium: number;
+  hardSolved: number;
+  totalHard: number;
+  acceptanceRate: number;
+  contestRating?: number;
+  contestGlobalRanking?: number;
+  contestTopPercentage?: number;
+  badge?: string;
+  syncedWithGithub: boolean;
+  syncedGithubRepo?: string;
+  recentSubmissions: LeetCodeSubmissionItem[];
+  lastSyncedAt: string;
 }
 
 export interface CandidateProfile {
@@ -75,6 +111,7 @@ export interface CandidateProfile {
   githubUrl?: string;
   fspProfileUrl?: string;
   aiSummary?: CandidateAiSummary;
+  leetcodeStats?: LeetCodeProfileStats;
 
   // Алгоритмическое тестирование
   solvedTasksCount: number;
