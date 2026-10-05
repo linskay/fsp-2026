@@ -371,6 +371,8 @@ export default function App() {
         {currentRole === 'candidate' && (
           <CandidateDashboard
             candidate={currentCandidate}
+            allCandidates={candidates}
+            onSelectCandidate={(id) => setActiveCandidateId(id)}
             invitations={invitations}
             tasks={tasks}
             githubData={githubData}

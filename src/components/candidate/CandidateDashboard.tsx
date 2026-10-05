@@ -34,8 +34,57 @@ import { UserAvatar } from '../brand/UserAvatar';
 import { LeetCodeStatsCard } from './LeetCodeStatsCard';
 import { Github, Star, GitBranch, Share2, Bot, BrainCircuit, LineChart } from 'lucide-react';
 
+function getEloPercentile(elo: number): string {
+  if (elo >= 2700) return 'Топ 0.1% по РФ';
+  if (elo >= 2500) return 'Топ 0.5% по РФ';
+  if (elo >= 2300) return 'Топ 1.5% по РФ';
+  if (elo >= 2000) return 'Топ 5.0% по РФ';
+  return 'Топ 12% по РФ';
+}
+
+function getFspTier(grade: string, elo: number): string {
+  if (elo >= 2650) return 'ФСП Tier-1 (Элита)';
+  if (elo >= 2300) return 'ФСП Tier-2 (Мастер)';
+  return 'ФСП Tier-3 (Атлет)';
+}
+
+interface EloMilestone {
+  pts: number;
+  label: string;
+  stage: string;
+  color?: string;
+}
+
+function getDynamicEloProgression(currentElo: number, rank: string): EloMilestone[] {
+  const p1 = Math.round((currentElo * 0.78) / 10) * 10;
+  const p2 = Math.round((currentElo * 0.85) / 10) * 10;
+  const p3 = Math.round((currentElo * 0.94) / 10) * 10;
+  const p4 = Math.round((currentElo * 0.97) / 10) * 10;
+  const p5 = currentElo;
+
+  let s3 = 'Чемпионат РФ';
+  let s4 = 'Высшая Лига ФСП';
+  if (currentElo < 2300) {
+    s3 = 'Городской кубок';
+    s4 = '1-й спорт. разряд';
+  } else if (currentElo < 2550) {
+    s3 = 'Чемпионат ФО';
+    s4 = 'Норматив КМС';
+  }
+
+  return [
+    { pts: p1, label: 'Отбор ФСП', stage: 'Квалификация' },
+    { pts: p2, label: 'Кубок Региона', stage: 'Плей-офф' },
+    { pts: p3, label: s3, stage: 'Финал РФ', color: 'text-amber-400' },
+    { pts: p4, label: s4, stage: 'Гранд-финал' },
+    { pts: p5, label: 'Judge0 Sandbox', stage: 'Текущий пик', color: 'text-[#00f0ff]' },
+  ];
+}
+
 interface CandidateDashboardProps {
   candidate: CandidateProfile;
+  allCandidates?: CandidateProfile[];
+  onSelectCandidate?: (candidateId: string) => void;
   invitations: Invitation[];
   tasks: AlgorithmTask[];
   githubData: GitHubProfileData | null;
@@ -51,6 +100,8 @@ interface CandidateDashboardProps {
 
 export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
   candidate,
+  allCandidates,
+  onSelectCandidate,
   invitations,
   tasks,
   githubData,
@@ -63,6 +114,21 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
   onTaskSolved,
   onUpdateCandidate
 }) => {
+  const milestones = getDynamicEloProgression(candidate.fspRating, candidate.fspRank);
+  const minElo = Math.min(...milestones.map(m => m.pts)) - 50;
+  const maxElo = Math.max(...milestones.map(m => m.pts)) + 20;
+
+  const sparkPoints = milestones.map((m, idx) => {
+    const x = 30 + (idx * (440 / (milestones.length - 1)));
+    const ratio = (m.pts - minElo) / (maxElo - minElo);
+    const y = 65 - ratio * 50;
+    return { ...m, x, y };
+  });
+
+  const sparkLinePath = `M ${sparkPoints.map(p => `${p.x} ${p.y}`).join(' L ')}`;
+  const sparkAreaPath = `M ${sparkPoints[0].x} 75 L ${sparkPoints.map(p => `${p.x} ${p.y}`).join(' L ')} L ${sparkPoints[sparkPoints.length - 1].x} 75 Z`;
+
+  const nextAttemptDate = new Date(Date.now() + 75 * 24 * 60 * 60 * 1000).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
   const [activeTab, setActiveTab] = useState<'invitations' | 'arena' | 'chat' | 'portfolio'>('invitations');
   const [selectedInvitationForChat, setSelectedInvitationForChat] = useState<string | null>(
     invitations.find(i => i.status === 'accepted')?.id || invitations[0]?.id || null
@@ -119,6 +185,22 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
                   <h1 className="text-lg sm:text-xl font-black text-white leading-tight">
                     {candidate.fullName}
                   </h1>
+
+                  {/* Dynamic Candidate Selector for paired inspection */}
+                  {allCandidates && allCandidates.length > 1 && onSelectCandidate && (
+                    <select
+                      value={candidate.id}
+                      onChange={(e) => onSelectCandidate(e.target.value)}
+                      className="px-2 py-0.5 rounded-lg bg-[#0c1224] border border-[#2b35ff]/50 text-xs text-[#00f0ff] font-semibold cursor-pointer focus:outline-none hover:border-[#00f0ff] transition-colors"
+                      title="Переключить соискателя для проверки динамических данных"
+                    >
+                      {allCandidates.map(c => (
+                        <option key={c.id} value={c.id} className="bg-[#090d1a] text-white">
+                          {c.fullName} ({c.fspRating} ELO, {c.fspRank})
+                        </option>
+                      ))}
+                    </select>
+                  )}
                 </div>
                 <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#2b35ff]/20 text-[#00f0ff] border border-[#2b35ff]/40 text-[11px] font-bold">
                   <ShieldCheck className="w-3.5 h-3.5" />
@@ -131,7 +213,7 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
               </div>
             </div>
 
-            {/* Key Metrics Grid */}
+            {/* Key Metrics Grid (100% Dynamic) */}
             <div className="grid grid-cols-2 gap-3 pt-1">
               <div className="p-3.5 bg-[#0c1224] rounded-2xl border border-[#162038] space-y-1">
                 <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">
@@ -140,7 +222,9 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
                 <span className="text-lg font-black text-[#00f0ff] font-mono block">
                   {candidate.fspRating} pts
                 </span>
-                <span className="text-[10px] text-slate-500 block">Топ 0.5% по РФ</span>
+                <span className="text-[10px] text-emerald-400 font-semibold block">
+                  {getEloPercentile(candidate.fspRating)}
+                </span>
               </div>
 
               <div className="p-3.5 bg-[#0c1224] rounded-2xl border border-[#162038] space-y-1">
@@ -150,7 +234,9 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
                 <span className="text-lg font-black text-purple-400 font-mono block">
                   {candidate.currentGradeAssigned.toUpperCase()}
                 </span>
-                <span className="text-[10px] text-slate-500 block">ФСП Tier-1</span>
+                <span className="text-[10px] text-purple-300 font-medium block">
+                  {getFspTier(candidate.currentGradeAssigned, candidate.fspRating)}
+                </span>
               </div>
 
               <div className="p-3.5 bg-[#0c1224] rounded-2xl border border-[#162038] space-y-1">
@@ -273,7 +359,7 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
             </div>
 
             <p className="text-xs sm:text-[13px] text-slate-200 leading-relaxed font-mono pt-3">
-              "{candidate.aiSummary?.summaryText || 'Сильный Backend-разработчик (Senior / Lead). Основной стек: Java 21, Spring Boot 3, Go, C++. По данным GitHub, активно развивает микросервисные архитектуры. Задачи уровня LeetCode Medium и Hard решает в среднем за 12 минут. Имеет ELO 2740 и статус мастера спорта ФСП. Рекомендуется на Highload-проекты.'}"
+              "{candidate.aiSummary?.summaryText || `${candidate.currentGradeAssigned?.toUpperCase() || 'SENIOR'}-разработчик (${candidate.title}). Стек: ${candidate.skills.slice(0, 5).join(', ')}. Решает задачи в среднем за ${candidate.avgExecutionTimeMs || 15} мс с точностью ${candidate.testScorePercent || 98}%. Рейтинг ФСП: ${candidate.fspRating} ELO (${candidate.fspRank}). Рекомендуется на Highload и критические сервисы.`}"
             </p>
 
             {candidate.aiSummary?.keyStrengths && (
@@ -296,61 +382,64 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
                 Динамика киберспортивного рейтинга ФСП ELO (Турниры & LeetCode Hard)
               </span>
               <span className="text-xs font-mono font-bold text-emerald-400">
-                Текущий: {candidate.fspRating} pts (Мастер спорта РФ)
+                Текущий: {candidate.fspRating} pts ({candidate.fspRank})
               </span>
             </div>
 
-            {/* Visual SVG Sparkline */}
+            {/* Visual SVG Sparkline (100% Dynamic Math) */}
             <div className="relative pt-2">
               <svg className="w-full h-24 overflow-visible" viewBox="0 0 500 80" fill="none">
                 <defs>
-                  <linearGradient id="eloGrad" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id={`eloGrad-${candidate.id}`} x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#00f0ff" stopOpacity="0.4" />
                     <stop offset="100%" stopColor="#2b35ff" stopOpacity="0.0" />
                   </linearGradient>
                 </defs>
-                {/* Area */}
+                {/* Dynamic Area */}
                 <path
-                  d="M 20 65 L 120 50 L 220 35 L 340 25 L 480 10 L 480 75 L 20 75 Z"
-                  fill="url(#eloGrad)"
+                  d={sparkAreaPath}
+                  fill={`url(#eloGrad-${candidate.id})`}
                 />
-                {/* Line */}
+                {/* Dynamic Line */}
                 <path
-                  d="M 20 65 L 120 50 L 220 35 L 340 25 L 480 10"
+                  d={sparkLinePath}
                   stroke="#00f0ff"
                   strokeWidth="3"
                   strokeLinecap="round"
                 />
-                {/* Points */}
-                <circle cx="20" cy="65" r="4" fill="#ffffff" stroke="#2b35ff" strokeWidth="2" />
-                <circle cx="120" cy="50" r="4" fill="#ffffff" stroke="#2b35ff" strokeWidth="2" />
-                <circle cx="220" cy="35" r="4" fill="#ffffff" stroke="#2b35ff" strokeWidth="2" />
-                <circle cx="340" cy="25" r="4" fill="#ffffff" stroke="#2b35ff" strokeWidth="2" />
-                <circle cx="480" cy="10" r="6" fill="#00f0ff" stroke="#ffffff" strokeWidth="2" className="animate-pulse" />
+                {/* Dynamic Points */}
+                {sparkPoints.map((p, idx) => {
+                  const isLast = idx === sparkPoints.length - 1;
+                  return (
+                    <circle
+                      key={idx}
+                      cx={p.x}
+                      cy={p.y}
+                      r={isLast ? 6 : 4}
+                      fill={isLast ? '#00f0ff' : '#ffffff'}
+                      stroke={isLast ? '#ffffff' : '#2b35ff'}
+                      strokeWidth={2}
+                      className={isLast ? 'animate-pulse' : ''}
+                    />
+                  );
+                })}
               </svg>
 
-              {/* Checkpoints labels */}
+              {/* Dynamic Checkpoint Milestones */}
               <div className="grid grid-cols-5 gap-1 text-[10px] text-slate-400 font-mono text-center pt-2">
-                <div>
-                  <div className="text-slate-300 font-bold">2 150</div>
-                  <div className="text-[9px] text-slate-500">Отбор ФСП</div>
-                </div>
-                <div>
-                  <div className="text-slate-300 font-bold">2 340</div>
-                  <div className="text-[9px] text-slate-500">Кубок Москвы</div>
-                </div>
-                <div>
-                  <div className="text-slate-300 font-bold">2 580</div>
-                  <div className="text-[9px] text-yellow-400">Чемпионат РФ</div>
-                </div>
-                <div>
-                  <div className="text-slate-300 font-bold">2 650</div>
-                  <div className="text-[9px] text-slate-500">Высшая Лига</div>
-                </div>
-                <div>
-                  <div className="text-[#00f0ff] font-black">2 740 pts</div>
-                  <div className="text-[9px] text-emerald-400">Judge0 Hard</div>
-                </div>
+                {sparkPoints.map((m, idx) => {
+                  const isLast = idx === sparkPoints.length - 1;
+                  return (
+                    <div key={idx}>
+                      <div className={isLast ? 'text-[#00f0ff] font-black' : (m.color ? `${m.color} font-bold` : 'text-slate-300 font-bold')}>
+                        {m.pts.toLocaleString('ru-RU')} {isLast ? 'pts' : ''}
+                      </div>
+                      <div className={`text-[9px] ${isLast ? 'text-emerald-400' : 'text-slate-500'}`}>
+                        {m.label}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -480,7 +569,7 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
         {/* Retake Cooldown status pill */}
         <div className="hidden md:flex items-center gap-2 text-xs text-slate-400 bg-[#0a0e1c] px-3.5 py-2 rounded-xl border border-[#1b233a]">
           <Clock className="w-4 h-4 text-[#00f0ff]" />
-          <span>Кулдаун пересдачи: <strong className="text-slate-200">1 раз в 3 мес.</strong> (след. попытка: 12 июня)</span>
+          <span>Кулдаун пересдачи: <strong className="text-slate-200">1 раз в 3 мес.</strong> (след. попытка: {nextAttemptDate})</span>
         </div>
       </div>
 
