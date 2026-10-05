@@ -30,13 +30,14 @@ import { CodeArenaIDE } from './components/arena/CodeArenaIDE';
 import { SwaggerApiView } from './components/swagger/SwaggerApiView';
 import { ArchitectureView } from './components/architecture/ArchitectureView';
 import { RoadmapPresentation } from './components/roadmap/RoadmapPresentation';
+import { LandingPage } from './components/landing/LandingPage';
 import { OAuthModal } from './components/auth/OAuthModal';
 import { FspFooterPartners } from './components/brand/FspLogo';
 import { Sparkles, Trophy, Bell, CheckCircle2, ShieldCheck, ArrowRight, X } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export default function App() {
-  const [currentRole, setCurrentRole] = useState<UserRole>('candidate');
+  const [currentRole, setCurrentRole] = useState<UserRole>('landing');
   const [candidates, setCandidates] = useState<CandidateProfile[]>(INITIAL_CANDIDATES);
   const [employers, setEmployers] = useState<EmployerProfile[]>(INITIAL_EMPLOYERS);
   const [vacancies, setVacancies] = useState<Vacancy[]>(INITIAL_VACANCIES);
@@ -339,6 +340,15 @@ export default function App() {
 
       {/* Main Container by Active Role */}
       <main className="flex-1 pb-12">
+        {currentRole === 'landing' && (
+          <LandingPage
+            onSelectRole={(role) => setCurrentRole(role)}
+            onOpenOAuth={(provider) => {
+              setIsOAuthModalOpen(true);
+            }}
+          />
+        )}
+
         {currentRole === 'candidate' && (
           <CandidateDashboard
             candidate={currentCandidate}

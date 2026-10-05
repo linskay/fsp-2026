@@ -27,8 +27,9 @@ export const Navbar: React.FC<NavbarProps> = ({
           
           {/* Left: Official FSP Brand Logo */}
           <div 
-            onClick={() => onRoleChange('candidate')} 
+            onClick={() => onRoleChange('landing')} 
             className="cursor-pointer group select-none shrink-0"
+            title="Перейти на Главный экран"
           >
             <FspLogo size="md" variant="tricolor" showText={true} />
           </div>
@@ -36,6 +37,18 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Right: Navigation Tabs & Verified Badge */}
           <div className="flex items-center gap-3 overflow-x-auto">
             <nav className="flex items-center gap-1 bg-[#0b0f1d] p-1.5 rounded-2xl border border-[#162038]">
+              <button
+                onClick={() => onRoleChange('landing')}
+                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                  currentRole === 'landing'
+                    ? 'bg-[#2b35ff] text-white shadow-md shadow-[#2b35ff]/30'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-[#121930]'
+                }`}
+              >
+                <Sparkles className="w-3.5 h-3.5 text-[#00f0ff]" />
+                <span>Главная</span>
+              </button>
+
               <button
                 onClick={() => onRoleChange('candidate')}
                 className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${

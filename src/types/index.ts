@@ -1,4 +1,4 @@
-export type UserRole = 'candidate' | 'employer' | 'arena' | 'swagger' | 'architecture' | 'roadmap';
+export type UserRole = 'landing' | 'candidate' | 'employer' | 'arena' | 'swagger' | 'architecture' | 'roadmap';
 
 export type FspRank =
   | 'Мастер спорта РФ'
