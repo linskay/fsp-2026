@@ -180,7 +180,7 @@ public class Solution {
               onClick={() => scrollToSection('bento-grid')}
               className="px-3 py-1 rounded-lg hover:text-yellow-400 hover:bg-[#101833] transition-colors whitespace-nowrap"
             >
-              Bento Grid Мозаика
+              Преимущества
             </button>
             <button 
               onClick={() => scrollToSection('calculator-section')}
@@ -192,7 +192,7 @@ public class Solution {
               onClick={() => scrollToSection('live-profile-demo')}
               className="px-3 py-1 rounded-lg hover:text-purple-400 hover:bg-[#101833] transition-colors whitespace-nowrap"
             >
-              AI-Summary Демо
+              Цифровой профиль
             </button>
           </div>
 
@@ -552,10 +552,10 @@ public class Solution {
       <section id="bento-grid" className="relative z-10 py-16 lg:py-24 bg-[#050711] border-t border-[#141d38]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           
-          {/* Bento Header */}
+          {/* Advantages Section Header */}
           <div className="text-center max-w-3xl mx-auto space-y-3">
             <span className="text-xs font-bold text-[#00f0ff] tracking-widest uppercase bg-[#2b35ff]/15 px-3 py-1 rounded-full border border-[#2b35ff]/30">
-              BENTO GRID МОЗАИКА
+              ПРЕИМУЩЕСТВА ПЛАТФОРМЫ
             </span>
             <h2 className="text-2xl sm:text-4xl font-black text-white">
               Технологическое превосходство платформы
@@ -565,7 +565,7 @@ public class Solution {
             </p>
           </div>
 
-          {/* BENTO GRID CONTAINER (4 MAIN TILES) */}
+          {/* GRID CONTAINER (4 MAIN TILES) */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
             
             {/* ПЛИТКА №1 (Обратная механика найма) - Large 7 cols */}
@@ -576,7 +576,7 @@ public class Solution {
                     <Zap className="w-6 h-6" />
                   </div>
                   <span className="px-2.5 py-1 rounded-full bg-[#2b35ff]/20 text-[#00f0ff] text-[10px] font-bold">
-                    МЕХАНИКА №1
+                    Обратный подбор
                   </span>
                 </div>
 
@@ -624,7 +624,7 @@ public class Solution {
                     <Trophy className="w-6 h-6" />
                   </div>
                   <span className="px-2.5 py-1 rounded-full bg-[#00f0ff]/20 text-[#00f0ff] text-[10px] font-bold">
-                    МЕХАНИКА №2
+                    Верификация ФСП
                   </span>
                 </div>
 
@@ -667,7 +667,7 @@ public class Solution {
                     <Code2 className="w-6 h-6" />
                   </div>
                   <span className="px-2.5 py-1 rounded-full bg-purple-500/20 text-purple-300 text-[10px] font-bold">
-                    МЕХАНИКА №3 • ИНТЕРАКТИВНЫЙ ТЕСТ
+                    Интерактивный тест
                   </span>
                 </div>
 
@@ -742,7 +742,7 @@ public class Solution {
                     <Scale className="w-6 h-6" />
                   </div>
                   <span className="px-2.5 py-1 rounded-full bg-[#ff2b42]/20 text-[#ff2b42] text-[10px] font-bold">
-                    МЕХАНИКА №4 • ЧЕСТНЫЕ УСЛОВИЯ
+                    Прозрачные вилки
                   </span>
                 </div>
 
@@ -772,7 +772,7 @@ public class Solution {
               </div>
 
               <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs">
-                <span className="text-slate-400">Бэкенд-валидация Jakarta Bean</span>
+                <span className="text-slate-400">Фиксация вилок в оффере</span>
                 <span className="text-emerald-400 font-bold">100% контроль</span>
               </div>
             </div>
@@ -790,13 +790,13 @@ public class Solution {
           
           <div className="text-center max-w-3xl mx-auto space-y-3">
             <span className="text-xs font-bold text-purple-400 tracking-widest uppercase bg-purple-500/15 px-3 py-1 rounded-full border border-purple-500/30">
-              ИНТЕРАКТИВНЫЙ LIVE-ВИДЖЕТ
+              ЦИФРОВОЙ ПАСПОРТ СПЕЦИАЛИСТА
             </span>
             <h2 className="text-2xl sm:text-4xl font-black text-white">
               AI-Summary & Цифровой профиль спортсмена ФСП
             </h2>
             <p className="text-sm sm:text-base text-slate-400">
-              Глубокая ИИ-аналитика кода, стиля решений, алгоритмической сложности и практического опыта
+              Глубокая аналитика решений, алгоритмической сложности и практического стека
             </p>
           </div>
 
@@ -838,7 +838,7 @@ public class Solution {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-purple-300 font-bold text-xs sm:text-sm">
                   <Bot className="w-5 h-5 text-purple-400" />
-                  <span>AI-Summary профиля (LLM YandexGPT Pro / Gemini 2.5)</span>
+                  <span>AI-Summary технического профиля</span>
                 </div>
                 <span className="text-[10px] text-purple-400 bg-purple-500/20 px-2 py-0.5 rounded-md font-bold">
                   Чистота кода: 98/100
