@@ -29,6 +29,7 @@ import { ResumeParserModal } from './ResumeParserModal';
 import { CandidateAiSummaryModal } from './CandidateAiSummaryModal';
 import { FspPrivacyModal, FSP_PRIVACY_PDF_URL } from '../common/FspPrivacyModal';
 import { FspStarIcon, FspCircuitBackground } from '../brand/FspLogo';
+import { EloTierProgressBar } from './EloTierProgressBar';
 import { Github, Star, GitBranch, Share2, Bot, BrainCircuit, LineChart } from 'lucide-react';
 
 interface CandidateDashboardProps {
@@ -393,6 +394,14 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
         </div>
 
       </div>
+
+      {/* ========================================================================= */}
+      {/* ELO TIER PROGRESS BAR COMPONENT */}
+      {/* ========================================================================= */}
+      <EloTierProgressBar
+        currentElo={candidate.fspRating}
+        onOpenArena={() => setActiveTab('arena')}
+      />
 
       {/* Main Navigation Sub-Tabs */}
       <div className="flex items-center justify-between border-b border-[#1b233a] pb-4 overflow-x-auto gap-4">

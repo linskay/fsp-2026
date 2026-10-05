@@ -147,20 +147,10 @@ public class Solution {
       {/* ========================================================================= */}
       {/* 2.2 ИНТЕРАКТИВНАЯ HERO-СЕКЦИЯ (ПЕРВЫЙ ЭКРАН С «ВАУ-ЭФФЕКТОМ») */}
       {/* ========================================================================= */}
-      <section id="hero-section" className="relative z-10 pt-6 sm:pt-10 lg:pt-16 pb-10 sm:pb-16 lg:pb-24 px-3 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <section id="hero-section" className="relative z-10 pt-4 sm:pt-8 lg:pt-14 pb-10 sm:pb-16 lg:pb-24 px-3 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         
-        {/* Top Official Badge */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mb-3 sm:mb-5">
-          <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-[#0a112c] border border-[#2b35ff]/50 shadow-[0_0_20px_rgba(43,53,255,0.25)] text-[11px] sm:text-xs text-blue-200">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-            <span className="font-black text-[#00f0ff]">ФСП РФ</span>
-            <span className="text-slate-500">|</span>
-            <span className="truncate">Официальная платформа Федерации спортивного программирования</span>
-          </div>
-        </div>
-
         {/* Hero Title (H1) & Subtitle according to ТЗ */}
-        <div className="text-center max-w-4xl mx-auto space-y-2 sm:space-y-4 px-1">
+        <div className="text-center max-w-4xl mx-auto space-y-2.5 sm:space-y-4 px-1">
           <h1 className="text-2xl sm:text-4xl lg:text-6xl font-black tracking-tight text-white leading-tight">
             FSP Career Arena — <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00f0ff] via-[#4d6aff] to-[#ff2b42] drop-shadow-[0_0_35px_rgba(43,53,255,0.4)]">
