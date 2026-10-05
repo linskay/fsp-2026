@@ -32,6 +32,7 @@ import { SwaggerApiView } from './components/swagger/SwaggerApiView';
 import { ArchitectureView } from './components/architecture/ArchitectureView';
 import { RoadmapPresentation } from './components/roadmap/RoadmapPresentation';
 import { LandingPage } from './components/landing/LandingPage';
+import { NotFoundPage } from './components/common/NotFoundPage';
 import { OAuthModal } from './components/auth/OAuthModal';
 import { FspFooterPartners } from './components/brand/FspLogo';
 import { Sparkles, Trophy, Bell, CheckCircle2, ShieldCheck, ArrowRight, X } from 'lucide-react';
@@ -91,6 +92,34 @@ export default function App() {
     }
     loadBackendData();
   }, []);
+
+  // Handle URL hash routing (e.g. #404, #candidate, #employer, #arena, #roadmap)
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '').toLowerCase();
+      if (!hash) return;
+      if (['landing', 'candidate', 'employer', 'arena', 'swagger', 'architecture', 'roadmap'].includes(hash)) {
+        setCurrentRole(hash as UserRole);
+      } else if (hash === '404' || hash === 'not_found') {
+        setCurrentRole('not_found');
+      } else {
+        setCurrentRole('not_found');
+      }
+    };
+
+    handleHashChange();
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  const handleRoleChange = (role: UserRole) => {
+    if (role === 'landing') {
+      window.location.hash = '';
+    } else {
+      window.location.hash = role;
+    }
+    setCurrentRole(role);
+  };
 
   const handleConnectGitHub = (data: GitHubProfileData) => {
     setGithubData(data);
@@ -319,13 +348,36 @@ export default function App() {
   const candidateInvitationsCount = invitations.filter(i => i.candidateId === activeCandidateId && i.status === 'sent').length;
   const acceptedOffersCount = invitations.filter(i => i.status === 'accepted').length;
 
+  if (currentRole === 'not_found') {
+    return (
+      <div className="min-h-screen bg-[#04060d]">
+        <NotFoundPage
+          onNavigate={handleRoleChange}
+          onOpenOAuth={() => setIsOAuthModalOpen(true)}
+        />
+        <OAuthModal
+          isOpen={isOAuthModalOpen}
+          onClose={() => setIsOAuthModalOpen(false)}
+          candidate={currentCandidate}
+          githubData={githubData}
+          hhData={hhData}
+          yandexConnected={yandexConnected}
+          onConnectGitHub={handleConnectGitHub}
+          onConnectHh={handleConnectHh}
+          onConnectYandex={handleConnectYandex}
+          onDisconnectProvider={handleDisconnectProvider}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#04060d] text-slate-100 flex flex-col selection:bg-[#2b35ff] selection:text-white font-sans antialiased">
       
       {/* Top Navigation */}
       <Navbar
         currentRole={currentRole}
-        onRoleChange={(role) => setCurrentRole(role)}
+        onRoleChange={handleRoleChange}
         invitationsCount={candidateInvitationsCount}
         acceptedOffersCount={acceptedOffersCount}
         onOpenOAuthModal={() => setIsOAuthModalOpen(true)}
@@ -361,7 +413,7 @@ export default function App() {
       <main className="flex-1 pb-12">
         {currentRole === 'landing' && (
           <LandingPage
-            onSelectRole={(role) => setCurrentRole(role)}
+            onSelectRole={handleRoleChange}
             onOpenOAuth={(provider) => {
               setIsOAuthModalOpen(true);
             }}
@@ -436,7 +488,7 @@ export default function App() {
 
         {currentRole === 'roadmap' && (
           <RoadmapPresentation
-            onNavigateToRole={(r) => setCurrentRole(r)}
+            onNavigateToRole={handleRoleChange}
             onRunDemoScenario={runDemoScenario}
           />
         )}
@@ -457,7 +509,7 @@ export default function App() {
       />
 
       {/* Footer with clean ministry & partner attribution */}
-      <FspFooterPartners />
+      <FspFooterPartners onNavigate={handleRoleChange} />
     </div>
   );
 }

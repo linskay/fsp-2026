@@ -50,24 +50,73 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
   const [activeTab, setActiveTab] = useState<'github' | 'hh' | 'yandex'>('github');
   const [loadingProvider, setLoadingProvider] = useState<string | null>(null);
   const [syncStep, setSyncStep] = useState<string>('');
+  const [customGithubUser, setCustomGithubUser] = useState<string>('ipesterev');
 
   if (!isOpen) return null;
 
   const handleSimulateGitHubAuth = () => {
+    const targetUser = customGithubUser.trim() || 'ipesterev';
     setLoadingProvider('github');
-    setSyncStep('Инициализация Spring Security OAuth2 Client...');
+    setSyncStep(`Инициализация Spring Security OAuth2 Client для @${targetUser}...`);
     
     setTimeout(() => {
-      setSyncStep('Обмен authorization_code на Access Token (GitHub API)...');
+      setSyncStep(`Обмен authorization_code на Access Token (GitHub API для @${targetUser})...`);
     }, 700);
 
     setTimeout(() => {
-      setSyncStep('Извлечение репозиториев, коммитов и активности...');
+      setSyncStep('Извлечение репозиториев, коммитов, pull requests и языка...');
     }, 1400);
 
     setTimeout(async () => {
-      await api.syncGithub(MOCK_GITHUB_PROFILE.username);
-      onConnectGitHub(MOCK_GITHUB_PROFILE);
+      let profileToUse = MOCK_GITHUB_PROFILE;
+      if (targetUser.toLowerCase().includes('pesterev')) {
+        profileToUse = {
+          username: targetUser,
+          avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80',
+          bio: 'Fullstack Engineer & Architect • React, TypeScript, Java, Python • ФСП Атлет',
+          reposCount: 34,
+          commitsCountYear: 842,
+          mainLanguage: 'TypeScript / Java / Python',
+          connectedAt: new Date().toISOString(),
+          topRepos: [
+            {
+              name: 'fsp-2026-career-arena',
+              stars: 48,
+              language: 'TypeScript',
+              description: 'Платформа обратного найма и соревновательного программирования ФСП РФ.',
+              url: `https://github.com/${targetUser}/fsp-2026-career-arena`,
+              updatedAt: 'Сегодня'
+            },
+            {
+              name: 'enterprise-microservices-core',
+              stars: 62,
+              language: 'Java',
+              description: 'Высоконагруженное ядро микросервисов с интеграцией Spring Security, Kafka и PostgreSQL.',
+              url: `https://github.com/${targetUser}/enterprise-microservices-core`,
+              updatedAt: 'Вчера'
+            },
+            {
+              name: 'async-pipeline-optimizer',
+              stars: 29,
+              language: 'Python',
+              description: 'Асинхронный пайплайн обработки потоковых данных с контролем памяти и задержек.',
+              url: `https://github.com/${targetUser}/async-pipeline-optimizer`,
+              updatedAt: '3 дня назад'
+            }
+          ]
+        };
+      } else if (targetUser !== 'alex-belov-fsp') {
+        profileToUse = {
+          ...MOCK_GITHUB_PROFILE,
+          username: targetUser,
+          bio: `Software Engineer @${targetUser} • Подтвержденный профиль через Spring Security OAuth2`,
+          commitsCountYear: 615,
+          connectedAt: new Date().toISOString()
+        };
+      }
+
+      await api.syncGithub(targetUser);
+      onConnectGitHub(profileToUse);
       setLoadingProvider(null);
       setSyncStep('');
     }, 2000);
@@ -218,21 +267,43 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
                 {githubData ? (
                   <button
                     onClick={() => onDisconnectProvider('github')}
-                    className="px-3 py-1.5 rounded-xl border border-red-500/40 text-red-400 hover:bg-red-500/10 text-xs font-bold transition-all shrink-0"
+                    className="px-3 py-1.5 rounded-xl border border-red-500/40 text-red-400 hover:bg-red-500/10 text-xs font-bold transition-all shrink-0 cursor-pointer"
                   >
                     Отключить
                   </button>
-                ) : (
-                  <button
-                    disabled={!!loadingProvider}
-                    onClick={handleSimulateGitHubAuth}
-                    className="px-4 py-2 rounded-xl bg-[#2b35ff] hover:bg-[#3d49ff] text-white text-xs font-bold transition-all shadow-md shadow-[#2b35ff]/30 flex items-center gap-2 shrink-0 disabled:opacity-50"
-                  >
-                    <Github className="w-3.5 h-3.5" />
-                    Подключить GitHub
-                  </button>
-                )}
+                ) : null}
               </div>
+
+              {!githubData && (
+                <div className="p-3.5 rounded-2xl bg-[#0b1021] border border-[#192340] space-y-3">
+                  <span className="text-[11px] font-bold text-slate-300 block">
+                    Укажите ваш логин GitHub (по умолчанию <strong className="text-[#00f0ff]">ipesterev</strong>):
+                  </span>
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                    <div className="relative flex-1">
+                      <Github className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                      <input
+                        type="text"
+                        value={customGithubUser}
+                        onChange={(e) => setCustomGithubUser(e.target.value)}
+                        placeholder="ipesterev"
+                        className="w-full pl-9 pr-3 py-2 bg-[#060914] border border-[#1e2a4a] focus:border-[#00f0ff] rounded-xl text-xs text-white placeholder:text-slate-500 font-mono outline-none transition-colors"
+                      />
+                    </div>
+                    <button
+                      disabled={!!loadingProvider}
+                      onClick={handleSimulateGitHubAuth}
+                      className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#2b35ff] to-[#00f0ff] hover:from-[#3d49ff] hover:to-[#22f2ff] text-white text-xs font-bold transition-all shadow-md shadow-[#2b35ff]/30 flex items-center justify-center gap-2 shrink-0 disabled:opacity-50 cursor-pointer"
+                    >
+                      <Github className="w-3.5 h-3.5" />
+                      <span>Подключить @{customGithubUser || 'profile'}</span>
+                    </button>
+                  </div>
+                  <p className="text-[10px] text-slate-400 font-mono">
+                    * Spring Security OAuth2 Client запросит публичный профиль, репозитории и проверит коммиты без раскрытия приватных данных (152-ФЗ).
+                  </p>
+                </div>
+              )}
 
               {githubData ? (
                 <div className="p-4 rounded-2xl bg-[#0b1021] border border-[#192340] space-y-4">

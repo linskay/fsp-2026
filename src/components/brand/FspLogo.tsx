@@ -84,7 +84,7 @@ export const FspLogo: React.FC<FspLogoProps> = ({
   );
 };
 
-export const FspFooterPartners: React.FC = () => {
+export const FspFooterPartners: React.FC<{ onNavigate?: (role: any) => void }> = ({ onNavigate }) => {
   return (
     <footer className="border-t border-[#141b2e] bg-[#04060d] py-7 px-4 mt-auto">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5 text-xs text-slate-400 font-['JetBrains_Mono']">
@@ -121,9 +121,18 @@ export const FspFooterPartners: React.FC = () => {
           </a>
         </div>
 
-        {/* Right: Copyright */}
-        <div className="text-center md:text-right text-[11px] text-slate-400 font-mono font-bold">
-          No PHP - No Problems, 2026
+        {/* Right: Copyright & 404 test shortcut */}
+        <div className="flex items-center gap-3 text-center md:text-right text-[11px] text-slate-400 font-mono font-bold">
+          {onNavigate && (
+            <button
+              onClick={() => onNavigate('not_found')}
+              className="px-2 py-0.5 rounded bg-white/[0.04] hover:bg-white/[0.1] text-slate-500 hover:text-[#00f0ff] border border-white/[0.05] transition-colors cursor-pointer"
+              title="Проверить страницу ошибки 404"
+            >
+              404
+            </button>
+          )}
+          <span>No PHP - No Problems, 2026</span>
         </div>
 
       </div>
