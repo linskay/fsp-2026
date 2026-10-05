@@ -250,10 +250,13 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
 
               <div className="p-3.5 bg-[#0c1224] rounded-2xl border border-[#162038] space-y-1">
                 <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">
-                  Решено задач
+                  Задачи в Арене ФСП
                 </span>
                 <span className="text-base font-bold text-white font-mono block">
-                  {candidate.solvedTasksCount} / {candidate.totalTasksAttempted}
+                  {Math.min(candidate.solvedTasksCount, tasks.length)} / {tasks.length}
+                </span>
+                <span className="text-[10px] text-amber-400 font-medium block">
+                  LeetCode: {candidate.leetcodeStats?.totalSolved ?? 642} решено
                 </span>
               </div>
             </div>

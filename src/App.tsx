@@ -350,7 +350,8 @@ export default function App() {
           return {
             ...c,
             fspRating: c.fspRating + submission.fspRatingEarned,
-            solvedTasksCount: c.solvedTasksCount + 1,
+            solvedTasksCount: Math.min(c.solvedTasksCount + 1, tasks.length),
+            totalTasksAttempted: Math.max(c.totalTasksAttempted, tasks.length),
             currentGradeAssigned: submission.gradeCalculated,
             lastTestingDate: new Date().toISOString()
           };
