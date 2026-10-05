@@ -57,10 +57,7 @@ export default function App() {
   const currentEmployer = employers[0];
 
   // Toast notification
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'fsp' } | null>({
-    message: 'Добро пожаловать в FSP Career Arena! Вы вошли как Александр Белов (Мастер спорта РФ по СП, ELO 2740). GitHub и hh.ru синхронизированы.',
-    type: 'fsp'
-  });
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'fsp' } | null>(null);
 
   const showToast = (message: string, type: 'success' | 'info' | 'fsp' = 'info') => {
     setToast({ message, type });
@@ -323,7 +320,7 @@ export default function App() {
   const acceptedOffersCount = invitations.filter(i => i.status === 'accepted').length;
 
   return (
-    <div className="min-h-screen bg-[#060811] text-slate-100 flex flex-col selection:bg-[#2b35ff] selection:text-white font-['JetBrains_Mono']">
+    <div className="min-h-screen bg-[#04060d] text-slate-100 flex flex-col selection:bg-[#2b35ff] selection:text-white font-sans antialiased">
       
       {/* Top Navigation */}
       <Navbar
@@ -338,21 +335,21 @@ export default function App() {
 
       {/* Toast Notification Bar */}
       {toast && (
-        <div className="fixed bottom-6 right-6 z-50 max-w-md animate-bounce-short">
-          <div className={`p-4 rounded-2xl border shadow-2xl flex items-start gap-3 backdrop-blur-md ${
+        <div className="fixed bottom-6 right-6 z-50 max-w-sm animate-bounce-short">
+          <div className={`p-4 rounded-2xl border shadow-2xl flex items-start gap-3 backdrop-blur-xl ${
             toast.type === 'fsp'
-              ? 'bg-[#0a1226]/95 border-[#2b35ff]/60 text-blue-100 shadow-[0_0_25px_rgba(43,53,255,0.25)]'
+              ? 'bg-[#090e24]/95 border-[#2b35ff]/50 text-blue-100 shadow-[0_10px_35px_rgba(43,53,255,0.25)]'
               : toast.type === 'success'
-              ? 'bg-[#091f1a]/95 border-emerald-500/60 text-emerald-100 shadow-[0_0_25px_rgba(16,185,129,0.2)]'
-              : 'bg-[#0d1326]/95 border-[#1e294b] text-slate-200'
+              ? 'bg-[#061814]/95 border-emerald-500/50 text-emerald-100 shadow-[0_10px_35px_rgba(16,185,129,0.2)]'
+              : 'bg-[#090d1e]/95 border-white/10 text-slate-200'
           }`}>
-            <div className="p-1.5 rounded-xl bg-[#2b35ff]/20 text-[#00f0ff] shrink-0 mt-0.5 border border-[#2b35ff]/30">
-              {toast.type === 'fsp' ? <Trophy className="w-4 h-4 text-yellow-400" /> : <CheckCircle2 className="w-4 h-4 text-emerald-400" />}
+            <div className="p-1.5 rounded-xl bg-white/5 shrink-0 mt-0.5 border border-white/10">
+              {toast.type === 'fsp' ? <Trophy className="w-4 h-4 text-amber-400" /> : <CheckCircle2 className="w-4 h-4 text-emerald-400" />}
             </div>
-            <p className="text-xs leading-relaxed flex-1 font-medium">{toast.message}</p>
+            <p className="text-xs leading-relaxed flex-1 font-medium text-slate-200">{toast.message}</p>
             <button
               onClick={() => setToast(null)}
-              className="text-slate-400 hover:text-white shrink-0 p-1"
+              className="text-slate-400 hover:text-white shrink-0 p-1 rounded-lg hover:bg-white/5 transition-colors"
             >
               <X className="w-4 h-4" />
             </button>

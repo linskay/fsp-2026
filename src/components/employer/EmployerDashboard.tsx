@@ -127,7 +127,7 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
               <Building2 className="w-9 h-9 text-[#60a5fa]" />
             </div>
 
-            <div className="space-y-1.5 font-['JetBrains_Mono']">
+            <div className="space-y-1.5">
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-xl sm:text-2xl font-black text-white">
                   {currentEmployer.companyName}

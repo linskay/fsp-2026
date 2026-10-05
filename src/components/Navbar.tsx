@@ -24,14 +24,14 @@ export const Navbar: React.FC<NavbarProps> = ({
   candidate
 }) => {
   return (
-    <header className="sticky top-0 z-50 bg-[#060811]/95 backdrop-blur-md border-b border-[#141b2e]">
+    <header className="sticky top-0 z-50 bg-[#04060d]/80 backdrop-blur-2xl border-b border-white/[0.06] transition-colors">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14 sm:h-16 gap-2 sm:gap-4">
           
           {/* Left: Official FSP Brand Logo */}
           <div 
             onClick={() => onRoleChange('landing')} 
-            className="cursor-pointer group select-none shrink-0"
+            className="cursor-pointer group select-none shrink-0 transition-transform hover:scale-[1.02]"
             title="Перейти на Главный экран"
           >
             <FspLogo size="sm" variant="tricolor" showText={true} />
@@ -39,31 +39,31 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Right: Navigation Tabs for Main User Experience */}
           <div className="flex items-center gap-2 sm:gap-3 py-1">
-            <nav className="flex items-center gap-1 bg-[#0b0f1d] p-1 sm:p-1.5 rounded-xl sm:rounded-2xl border border-[#162038]">
+            <nav className="flex items-center gap-1 bg-white/[0.03] p-1 sm:p-1.5 rounded-2xl border border-white/[0.08] backdrop-blur-md shadow-inner">
               <button
                 onClick={() => onRoleChange('landing')}
-                className={`flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
                   currentRole === 'landing'
-                    ? 'bg-[#2b35ff] text-white shadow-md shadow-[#2b35ff]/30'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-[#121930]'
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/30'
+                    : 'text-slate-400 hover:text-white hover:bg-white/[0.05]'
                 }`}
               >
-                <Sparkles className="w-3.5 h-3.5 text-[#00f0ff]" />
+                <Sparkles className="w-3.5 h-3.5 text-cyan-300" />
                 <span>Главная</span>
               </button>
 
               <button
                 onClick={() => onRoleChange('candidate')}
-                className={`flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
                   currentRole === 'candidate'
-                    ? 'bg-[#2b35ff] text-white shadow-md shadow-[#2b35ff]/30'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-[#121930]'
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/30'
+                    : 'text-slate-400 hover:text-white hover:bg-white/[0.05]'
                 }`}
               >
                 <UserCheck className="w-3.5 h-3.5" />
                 <span>Кандидат</span>
                 {invitationsCount > 0 && (
-                  <span className="px-1.5 py-0.2 bg-[#ff2b42] text-white text-[10px] font-bold rounded-full">
+                  <span className="px-1.5 py-0.2 bg-rose-500 text-white text-[10px] font-bold rounded-full">
                     {invitationsCount}
                   </span>
                 )}
@@ -71,10 +71,10 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               <button
                 onClick={() => onRoleChange('employer')}
-                className={`flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
                   currentRole === 'employer'
-                    ? 'bg-[#2b35ff] text-white shadow-md shadow-[#2b35ff]/30'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-[#121930]'
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/30'
+                    : 'text-slate-400 hover:text-white hover:bg-white/[0.05]'
                 }`}
               >
                 <Building2 className="w-3.5 h-3.5" />
@@ -88,10 +88,10 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               <button
                 onClick={() => onRoleChange('arena')}
-                className={`flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
                   currentRole === 'arena'
-                    ? 'bg-[#2b35ff] text-[#00f0ff] shadow-md shadow-[#2b35ff]/30'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-[#121930]'
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-cyan-300 shadow-md shadow-blue-500/30'
+                    : 'text-slate-400 hover:text-white hover:bg-white/[0.05]'
                 }`}
               >
                 <Code2 className="w-3.5 h-3.5" />
@@ -103,10 +103,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             {onOpenOAuthModal && (
               <button
                 onClick={onOpenOAuthModal}
-                className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0b0f1d] hover:bg-[#12182c] border border-[#2b35ff]/30 text-xs text-slate-300 font-bold transition-all cursor-pointer"
+                className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.08] text-xs text-slate-300 font-semibold transition-all cursor-pointer shadow-sm"
                 title="Spring Security OAuth2 Авторизация"
               >
-                <Lock className="w-3.5 h-3.5 text-[#00f0ff]" />
+                <Lock className="w-3.5 h-3.5 text-cyan-400" />
                 <span>OAuth</span>
                 {isOAuthConnected && (
                   <span className="w-2 h-2 rounded-full bg-emerald-400" />
@@ -115,10 +115,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             )}
 
             {/* Keycloak Verified Pill */}
-            <div className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#0b0f1d] border border-[#162038]">
+            <div className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.03] border border-white/[0.08]">
               <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <span className="text-[11px] text-slate-300 font-bold">Keycloak SSO</span>
+              <span className="text-[11px] text-slate-300 font-semibold">Keycloak SSO</span>
             </div>
 
             {/* Logged In Candidate Avatar */}
