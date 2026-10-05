@@ -105,18 +105,17 @@ export const FspFooterPartners: React.FC = () => {
           </span>
         </div>
 
-        {/* Center/Right: 152-FZ Legal compliance with direct link to PDF */}
-        <div className="text-center text-[11px] text-slate-400 flex items-center flex-wrap justify-center gap-2">
-          <span>Соблюдение 152-ФЗ РФ</span>
-          <span>•</span>
+        {/* Center: 152-FZ Legal compliance direct link to PDF */}
+        <div className="text-center text-[11px] text-slate-400">
           <a
             href="https://fsp-russia.ru/files/Положение%20обработку%20пдн%20(1).pdf"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#00f0ff] hover:underline font-bold transition-colors inline-flex items-center gap-1"
+            className="text-slate-300 hover:text-[#00f0ff] hover:underline transition-colors inline-flex items-center gap-1.5 font-medium"
+            title="Официальное Положение об обработке персональных данных ФСП РФ"
           >
-            Положение об обработке ПДн (.pdf)
-            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <span>Соблюдение 152-ФЗ РФ — Положение об обработке ПДн (.pdf)</span>
+            <svg className="w-3.5 h-3.5 text-[#00f0ff] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
             </svg>
           </a>

@@ -147,14 +147,14 @@ public class Solution {
       {/* ========================================================================= */}
       {/* 2.1 ВНУТРЕННИЙ МИНИ-ХЕДЕР НАВИГАЦИИ ПО ЛЕНДИНГУ */}
       {/* ========================================================================= */}
-      <div className="border-b border-[#141d38]/80 bg-[#070b1a]/90 backdrop-blur-md sticky top-16 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between gap-4">
+      <div className="border-b border-[#141d38]/80 bg-[#070b1a]/90 backdrop-blur-md sticky top-14 sm:top-16 z-40">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-1.5 sm:py-2 flex items-center justify-between gap-2 sm:gap-4">
           
           {/* Quick Section Nav Links */}
-          <div className="flex items-center gap-1 sm:gap-4 overflow-x-auto text-xs font-bold text-slate-400">
+          <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto no-scrollbar text-xs font-bold text-slate-400 py-0.5">
             <button 
               onClick={() => scrollToSection('hero-section')}
-              className="px-3 py-1 rounded-lg hover:text-[#00f0ff] hover:bg-[#101833] transition-colors whitespace-nowrap"
+              className="px-2.5 py-1 rounded-lg hover:text-[#00f0ff] hover:bg-[#101833] transition-colors whitespace-nowrap text-[11px] sm:text-xs"
             >
               О платформе
             </button>
@@ -163,7 +163,7 @@ public class Solution {
                 setHeroRole('candidate');
                 scrollToSection('hero-section');
               }}
-              className="px-3 py-1 rounded-lg hover:text-[#00f0ff] hover:bg-[#101833] transition-colors whitespace-nowrap"
+              className="px-2.5 py-1 rounded-lg hover:text-[#00f0ff] hover:bg-[#101833] transition-colors whitespace-nowrap text-[11px] sm:text-xs"
             >
               Для кандидатов
             </button>
@@ -172,44 +172,44 @@ public class Solution {
                 setHeroRole('employer');
                 scrollToSection('hero-section');
               }}
-              className="px-3 py-1 rounded-lg hover:text-[#ff2b42] hover:bg-[#101833] transition-colors whitespace-nowrap"
+              className="px-2.5 py-1 rounded-lg hover:text-[#ff2b42] hover:bg-[#101833] transition-colors whitespace-nowrap text-[11px] sm:text-xs"
             >
               Для работодателей
             </button>
             <button 
               onClick={() => scrollToSection('bento-grid')}
-              className="px-3 py-1 rounded-lg hover:text-yellow-400 hover:bg-[#101833] transition-colors whitespace-nowrap"
+              className="px-2.5 py-1 rounded-lg hover:text-yellow-400 hover:bg-[#101833] transition-colors whitespace-nowrap text-[11px] sm:text-xs"
             >
               Преимущества
             </button>
             <button 
               onClick={() => scrollToSection('calculator-section')}
-              className="px-3 py-1 rounded-lg hover:text-emerald-400 hover:bg-[#101833] transition-colors whitespace-nowrap"
+              className="px-2.5 py-1 rounded-lg hover:text-emerald-400 hover:bg-[#101833] transition-colors whitespace-nowrap text-[11px] sm:text-xs"
             >
               Калькулятор ELO
             </button>
             <button 
               onClick={() => scrollToSection('live-profile-demo')}
-              className="px-3 py-1 rounded-lg hover:text-purple-400 hover:bg-[#101833] transition-colors whitespace-nowrap"
+              className="px-2.5 py-1 rounded-lg hover:text-purple-400 hover:bg-[#101833] transition-colors whitespace-nowrap text-[11px] sm:text-xs"
             >
               Цифровой профиль
             </button>
           </div>
 
           {/* Action Triggers: [Войти] & [Регистрация] */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <button
               onClick={() => onOpenOAuth()}
-              className="px-3 py-1 rounded-xl bg-[#121b36] hover:bg-[#1a274e] border border-[#2b35ff]/40 text-xs font-bold text-slate-200 transition-all cursor-pointer flex items-center gap-1.5"
+              className="px-2.5 sm:px-3 py-1 rounded-lg sm:rounded-xl bg-[#121b36] hover:bg-[#1a274e] border border-[#2b35ff]/40 text-[11px] sm:text-xs font-bold text-slate-200 transition-all cursor-pointer flex items-center gap-1"
             >
-              <Lock className="w-3.5 h-3.5 text-[#00f0ff]" />
-              <span className="hidden sm:inline">Быстрый</span> Войти
+              <Lock className="w-3 h-3 text-[#00f0ff]" />
+              <span>Войти</span>
             </button>
             <button
               onClick={() => {
                 onOpenOAuth('github');
               }}
-              className="px-3 py-1 rounded-xl bg-gradient-to-r from-[#2b35ff] to-[#00f0ff] text-white text-xs font-bold shadow-md shadow-[#2b35ff]/30 hover:shadow-[#00f0ff]/40 transition-all cursor-pointer"
+              className="px-2.5 sm:px-3 py-1 rounded-lg sm:rounded-xl bg-gradient-to-r from-[#2b35ff] to-[#00f0ff] text-white text-[11px] sm:text-xs font-bold shadow-md shadow-[#2b35ff]/30 hover:shadow-[#00f0ff]/40 transition-all cursor-pointer"
             >
               Регистрация
             </button>
@@ -221,33 +221,28 @@ public class Solution {
       {/* ========================================================================= */}
       {/* 2.2 ИНТЕРАКТИВНАЯ HERO-СЕКЦИЯ (ПЕРВЫЙ ЭКРАН С «ВАУ-ЭФФЕКТОМ») */}
       {/* ========================================================================= */}
-      <section id="hero-section" className="relative z-10 pt-10 pb-16 lg:pt-14 lg:pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <section id="hero-section" className="relative z-10 pt-4 sm:pt-8 lg:pt-12 pb-10 sm:pb-16 lg:pb-24 px-3 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         
         {/* Top Official Badge */}
-        <div className="flex flex-wrap items-center justify-center gap-3 mb-6">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#0a112c] border border-[#2b35ff]/50 shadow-[0_0_25px_rgba(43,53,255,0.3)] text-xs text-blue-200">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+        <div className="flex flex-wrap items-center justify-center gap-2 mb-3 sm:mb-5">
+          <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-[#0a112c] border border-[#2b35ff]/50 shadow-[0_0_20px_rgba(43,53,255,0.25)] text-[11px] sm:text-xs text-blue-200">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
             <span className="font-black text-[#00f0ff]">ФСП РФ</span>
             <span className="text-slate-500">|</span>
-            <span>Официальная платформа Федерации спортивного программирования</span>
-          </div>
-
-          <div className="hidden sm:inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0d142b]/80 border border-slate-700/60 text-[11px] text-slate-300">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Верификация 152-ФЗ РФ & Keycloak SSO</span>
+            <span className="truncate">Официальная платформа Федерации спортивного программирования</span>
           </div>
         </div>
 
         {/* Hero Title (H1) & Subtitle according to ТЗ */}
-        <div className="text-center max-w-4xl mx-auto space-y-4">
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight">
+        <div className="text-center max-w-4xl mx-auto space-y-2 sm:space-y-4 px-1">
+          <h1 className="text-2xl sm:text-4xl lg:text-6xl font-black tracking-tight text-white leading-tight">
             FSP Career Arena — <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00f0ff] via-[#4d6aff] to-[#ff2b42] drop-shadow-[0_0_35px_rgba(43,53,255,0.4)]">
               ИТ-найм нового поколения
             </span>
           </h1>
 
-          <p className="text-base sm:text-xl text-slate-300 font-medium max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xs sm:text-base lg:text-xl text-slate-300 font-medium max-w-2xl sm:max-w-3xl mx-auto leading-relaxed">
             Платформа обратного подбора ИТ-специалистов с верифицированным профилем достижений Федерации спортивного программирования.
           </p>
         </div>
@@ -255,53 +250,46 @@ public class Solution {
         {/* ========================================================================= */}
         {/* ИНТЕРАКТИВНЫЙ ПЕРЕКЛЮЧАТЕЛЬ РЕЖИМОВ (ROLE SWITCHER) */}
         {/* ========================================================================= */}
-        <div className="mt-8 flex justify-center">
-          <div className="p-1.5 rounded-2xl bg-[#090e24] border-2 border-[#2b35ff]/50 shadow-[0_0_30px_rgba(43,53,255,0.25)] inline-flex items-center gap-2">
+        <div className="mt-4 sm:mt-7 max-w-xl mx-auto w-full px-1">
+          <div className="w-full p-1 sm:p-1.5 rounded-2xl bg-[#090e24] border border-[#2b35ff]/50 shadow-[0_0_30px_rgba(43,53,255,0.25)] grid grid-cols-2 gap-1 sm:gap-2">
             <button
               onClick={() => setHeroRole('candidate')}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all cursor-pointer ${
+              className={`w-full flex items-center justify-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all cursor-pointer text-center ${
                 heroRole === 'candidate'
-                  ? 'bg-gradient-to-r from-[#2b35ff] to-[#00f0ff] text-white shadow-lg shadow-[#2b35ff]/40 scale-105'
+                  ? 'bg-gradient-to-r from-[#2b35ff] to-[#00f0ff] text-white shadow-lg shadow-[#2b35ff]/40'
                   : 'text-slate-400 hover:text-white hover:bg-[#121b38]'
               }`}
             >
-              <UserCheck className="w-4 h-4" />
-              <span>Я — Кандидат / Разработчик</span>
+              <UserCheck className="w-4 h-4 shrink-0" />
+              <span className="truncate">Я — Кандидат</span>
             </button>
 
             <button
               onClick={() => setHeroRole('employer')}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all cursor-pointer ${
+              className={`w-full flex items-center justify-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all cursor-pointer text-center ${
                 heroRole === 'employer'
-                  ? 'bg-gradient-to-r from-[#ff2b42] to-[#b31427] text-white shadow-lg shadow-[#ff2b42]/30 scale-105'
+                  ? 'bg-gradient-to-r from-[#ff2b42] to-[#b31427] text-white shadow-lg shadow-[#ff2b42]/30'
                   : 'text-slate-400 hover:text-white hover:bg-[#121b38]'
               }`}
             >
-              <Building2 className="w-4 h-4" />
-              <span>Я — Работодатель / HR</span>
+              <Building2 className="w-4 h-4 shrink-0" />
+              <span className="truncate">Я — Работодатель</span>
             </button>
           </div>
         </div>
 
         {/* Dynamic Interactive Role Workspace Display */}
-        <div className="mt-8 max-w-5xl mx-auto">
+        <div className="mt-4 sm:mt-7 max-w-5xl mx-auto">
           {heroRole === 'candidate' ? (
             /* CANDIDATE HERO INTERACTIVE PREVIEW & OAUTH */
-            <div className="rounded-3xl p-6 sm:p-8 bg-[#0a112c]/95 border-2 border-[#2b35ff]/60 shadow-[0_0_40px_rgba(43,53,255,0.25)] backdrop-blur-xl relative overflow-hidden animate-fadeIn">
+            <div className="rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 bg-[#0a112c]/95 border-2 border-[#2b35ff]/60 shadow-[0_0_40px_rgba(43,53,255,0.25)] backdrop-blur-xl relative overflow-hidden animate-fadeIn">
               <div className="absolute top-0 right-0 w-80 h-80 bg-[#00f0ff]/10 rounded-full blur-[100px] pointer-events-none" />
               
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-center">
                 
                 {/* Left: Info & OAuth Entry */}
-                <div className="lg:col-span-6 space-y-4">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-0.5 rounded-md bg-[#2b35ff]/30 text-[#00f0ff] text-[11px] font-bold uppercase">
-                      Режим соискателя
-                    </span>
-                    <span className="text-xs text-slate-400">Верификация в 1 клик</span>
-                  </div>
-
-                  <h3 className="text-2xl sm:text-3xl font-black text-white">
+                <div className="lg:col-span-6 space-y-3 sm:space-y-4">
+                  <h3 className="text-lg sm:text-2xl lg:text-3xl font-black text-white leading-snug">
                     Конвертируй свой рейтинг ELO и код с GitHub в лучшие карьерные предложения
                   </h3>
 
@@ -310,14 +298,14 @@ public class Solution {
                   </p>
 
                   {/* OAuth Actions */}
-                  <div className="space-y-2.5 pt-2">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <div className="space-y-2 pt-1">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       <button
                         onClick={() => {
                           onOpenOAuth('github');
                           onSelectRole('candidate');
                         }}
-                        className="py-3 px-4 rounded-xl bg-[#1e293b] hover:bg-[#2c3b52] border border-slate-700 text-white text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md group"
+                        className="py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl bg-[#1e293b] hover:bg-[#2c3b52] border border-slate-700 text-white text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md group"
                       >
                         <Github className="w-4 h-4 group-hover:scale-110 transition-transform" />
                         <span>Войти через GitHub</span>
@@ -328,7 +316,7 @@ public class Solution {
                           onOpenOAuth('hh');
                           onSelectRole('candidate');
                         }}
-                        className="py-3 px-4 rounded-xl bg-[#16213e] hover:bg-[#1e2e56] border border-[#2b35ff]/40 text-[#00f0ff] text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md group"
+                        className="py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl bg-[#16213e] hover:bg-[#1e2e56] border border-[#2b35ff]/40 text-[#00f0ff] text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md group"
                       >
                         <div className="w-4 h-4 rounded-full bg-[#ff2b42] flex items-center justify-center text-[9px] font-black text-white">
                           hh
@@ -339,7 +327,7 @@ public class Solution {
 
                     <button
                       onClick={() => onSelectRole('candidate')}
-                      className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-[#2b35ff] to-[#00f0ff] hover:from-[#3b47ff] hover:to-[#1de9b6] text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#2b35ff]/30 cursor-pointer"
+                      className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-[#2b35ff] to-[#00f0ff] hover:from-[#3b47ff] hover:to-[#1de9b6] text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#2b35ff]/30 cursor-pointer"
                     >
                       <span>Перейти в кабинет кандидата (Александр Белов, ELO 2740)</span>
                       <ArrowRight className="w-4 h-4" />
@@ -348,7 +336,7 @@ public class Solution {
                 </div>
 
                 {/* Right: Live Interactive Esports Profile Card */}
-                <div className="lg:col-span-6 rounded-2xl bg-[#070b1c] border border-[#2b35ff]/50 p-5 shadow-2xl relative space-y-4">
+                <div className="lg:col-span-6 rounded-2xl bg-[#070b1c] border border-[#2b35ff]/50 p-4 sm:p-5 shadow-2xl relative space-y-3 sm:space-y-4">
                   
                   {/* Candidate Header */}
                   <div className="flex items-start justify-between gap-3 border-b border-slate-800 pb-3">
@@ -357,7 +345,7 @@ public class Solution {
                         <img 
                           src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" 
                           alt="Александр Белов" 
-                          className="w-12 h-12 rounded-xl object-cover border border-[#00f0ff]"
+                          className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl object-cover border border-[#00f0ff]"
                         />
                         <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-[#070b1c] flex items-center justify-center">
                           <Check className="w-2.5 h-2.5 text-white" />
@@ -375,7 +363,7 @@ public class Solution {
                     </div>
 
                     <div className="text-right">
-                      <div className="text-xl font-black text-[#00f0ff] font-mono">2740 ELO</div>
+                      <div className="text-lg sm:text-xl font-black text-[#00f0ff] font-mono">2740 ELO</div>
                       <div className="text-[9px] text-emerald-400 font-bold">TOP 0.1% В РФ</div>
                     </div>
                   </div>
@@ -384,7 +372,7 @@ public class Solution {
                   <div className="grid grid-cols-3 gap-2 text-center text-xs">
                     <div className="p-2 rounded-xl bg-[#0a1128] border border-slate-800">
                       <div className="font-bold text-white font-mono">1,842</div>
-                      <div className="text-[9px] text-slate-400">GitHub коммитов</div>
+                      <div className="text-[9px] text-slate-400">Коммиты GitHub</div>
                     </div>
                     <div className="p-2 rounded-xl bg-[#0a1128] border border-slate-800">
                       <div className="font-bold text-yellow-400 font-mono">24 победы</div>
@@ -418,21 +406,14 @@ public class Solution {
             </div>
           ) : (
             /* EMPLOYER HERO INTERACTIVE PREVIEW & OAUTH */
-            <div className="rounded-3xl p-6 sm:p-8 bg-[#110a1c]/95 border-2 border-[#ff2b42]/60 shadow-[0_0_40px_rgba(255,43,66,0.2)] backdrop-blur-xl relative overflow-hidden animate-fadeIn">
+            <div className="rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 bg-[#110a1c]/95 border-2 border-[#ff2b42]/60 shadow-[0_0_40px_rgba(255,43,66,0.2)] backdrop-blur-xl relative overflow-hidden animate-fadeIn">
               <div className="absolute top-0 right-0 w-80 h-80 bg-[#ff2b42]/10 rounded-full blur-[100px] pointer-events-none" />
               
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-center">
                 
                 {/* Left: Info & Employer Action */}
-                <div className="lg:col-span-6 space-y-4">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-0.5 rounded-md bg-[#ff2b42]/30 text-[#ff2b42] text-[11px] font-bold uppercase">
-                      Режим работодателя
-                    </span>
-                    <span className="text-xs text-slate-400">Прямой поиск по ELO</span>
-                  </div>
-
-                  <h3 className="text-2xl sm:text-3xl font-black text-white">
+                <div className="lg:col-span-6 space-y-3 sm:space-y-4">
+                  <h3 className="text-lg sm:text-2xl lg:text-3xl font-black text-white leading-snug">
                     Никаких слепых откликов. Выбирай проверенных разработчиков с подтвержденными навыками
                   </h3>
 
@@ -441,11 +422,11 @@ public class Solution {
                   </p>
 
                   {/* Employer Actions */}
-                  <div className="space-y-2.5 pt-2">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <div className="space-y-2 pt-1">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       <button
                         onClick={() => onSelectRole('employer')}
-                        className="py-3 px-4 rounded-xl bg-[#ff2b42] hover:bg-[#ff4458] text-white text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md group"
+                        className="py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl bg-[#ff2b42] hover:bg-[#ff4458] text-white text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md group"
                       >
                         <Building2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
                         <span>Войти как компания</span>
@@ -456,7 +437,7 @@ public class Solution {
                           onOpenOAuth('hh');
                           onSelectRole('employer');
                         }}
-                        className="py-3 px-4 rounded-xl bg-[#1e132b] hover:bg-[#2a1a3c] border border-[#ff2b42]/40 text-[#ff7888] text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md group"
+                        className="py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl bg-[#1e132b] hover:bg-[#2a1a3c] border border-[#ff2b42]/40 text-[#ff7888] text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md group"
                       >
                         <div className="w-4 h-4 rounded-full bg-[#ff2b42] flex items-center justify-center text-[9px] font-black text-white">
                           hh
@@ -467,7 +448,7 @@ public class Solution {
 
                     <button
                       onClick={() => onSelectRole('employer')}
-                      className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-[#ff2b42] to-[#ff6b7d] hover:from-[#ff4155] hover:to-[#ff2b42] text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#ff2b42]/30 cursor-pointer"
+                      className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-[#ff2b42] to-[#ff6b7d] hover:from-[#ff4155] hover:to-[#ff2b42] text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#ff2b42]/30 cursor-pointer"
                     >
                       <span>Открыть HR-панель поиска (База 50 000+ атлетов)</span>
                       <ArrowRight className="w-4 h-4" />
@@ -476,7 +457,7 @@ public class Solution {
                 </div>
 
                 {/* Right: Employer HR Filter & Candidate Bank Preview */}
-                <div className="lg:col-span-6 rounded-2xl bg-[#090610] border border-[#ff2b42]/40 p-5 shadow-2xl relative space-y-3">
+                <div className="lg:col-span-6 rounded-2xl bg-[#090610] border border-[#ff2b42]/40 p-4 sm:p-5 shadow-2xl relative space-y-3">
                   <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
                     <div className="flex items-center gap-2">
                       <Filter className="w-4 h-4 text-[#ff2b42]" />
@@ -547,16 +528,13 @@ public class Solution {
       </section>
 
       {/* ========================================================================= */}
-      {/* 2.3 СЕТКА ПРЕИМУЩЕСТВ (BENTO GRID МОЗАИКА) */}
+      {/* 2.3 СЕТКА ПРЕИМУЩЕСТВ */}
       {/* ========================================================================= */}
-      <section id="bento-grid" className="relative z-10 py-16 lg:py-24 bg-[#050711] border-t border-[#141d38]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+      <section id="bento-grid" className="relative z-10 py-12 lg:py-20 bg-[#050711] border-t border-[#141d38]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
           
           {/* Advantages Section Header */}
-          <div className="text-center max-w-3xl mx-auto space-y-3">
-            <span className="text-xs font-bold text-[#00f0ff] tracking-widest uppercase bg-[#2b35ff]/15 px-3 py-1 rounded-full border border-[#2b35ff]/30">
-              ПРЕИМУЩЕСТВА ПЛАТФОРМЫ
-            </span>
+          <div className="text-center max-w-3xl mx-auto space-y-2.5">
             <h2 className="text-2xl sm:text-4xl font-black text-white">
               Технологическое превосходство платформы
             </h2>
@@ -566,18 +544,13 @@ public class Solution {
           </div>
 
           {/* GRID CONTAINER (4 MAIN TILES) */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-6">
             
             {/* ПЛИТКА №1 (Обратная механика найма) - Large 7 cols */}
-            <div className="md:col-span-7 rounded-3xl p-7 bg-[#090f24] border border-[#1a284e] hover:border-[#2b35ff] transition-all duration-300 shadow-xl hover:shadow-[0_0_35px_rgba(43,53,255,0.2)] flex flex-col justify-between group relative overflow-hidden">
+            <div className="md:col-span-7 rounded-3xl p-6 sm:p-7 bg-[#090f24] border border-[#1a284e] hover:border-[#2b35ff] transition-all duration-300 shadow-xl hover:shadow-[0_0_35px_rgba(43,53,255,0.2)] flex flex-col justify-between group relative overflow-hidden">
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 rounded-2xl bg-[#2b35ff]/20 border border-[#2b35ff]/40 flex items-center justify-center text-[#00f0ff]">
-                    <Zap className="w-6 h-6" />
-                  </div>
-                  <span className="px-2.5 py-1 rounded-full bg-[#2b35ff]/20 text-[#00f0ff] text-[10px] font-bold">
-                    Обратный подбор
-                  </span>
+                <div className="w-12 h-12 rounded-2xl bg-[#2b35ff]/20 border border-[#2b35ff]/40 flex items-center justify-center text-[#00f0ff]">
+                  <Zap className="w-6 h-6" />
                 </div>
 
                 <h3 className="text-xl sm:text-2xl font-black text-white">
@@ -617,15 +590,10 @@ public class Solution {
             </div>
 
             {/* ПЛИТКА №2 (Киберспорт и рейтинг ELO) - 5 cols */}
-            <div className="md:col-span-5 rounded-3xl p-7 bg-[#090f24] border border-[#1a284e] hover:border-[#00f0ff] transition-all duration-300 shadow-xl hover:shadow-[0_0_35px_rgba(0,240,255,0.2)] flex flex-col justify-between group relative overflow-hidden">
+            <div className="md:col-span-5 rounded-3xl p-6 sm:p-7 bg-[#090f24] border border-[#1a284e] hover:border-[#00f0ff] transition-all duration-300 shadow-xl hover:shadow-[0_0_35px_rgba(0,240,255,0.2)] flex flex-col justify-between group relative overflow-hidden">
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 rounded-2xl bg-[#00f0ff]/20 border border-[#00f0ff]/40 flex items-center justify-center text-yellow-400">
-                    <Trophy className="w-6 h-6" />
-                  </div>
-                  <span className="px-2.5 py-1 rounded-full bg-[#00f0ff]/20 text-[#00f0ff] text-[10px] font-bold">
-                    Верификация ФСП
-                  </span>
+                <div className="w-12 h-12 rounded-2xl bg-[#00f0ff]/20 border border-[#00f0ff]/40 flex items-center justify-center text-yellow-400">
+                  <Trophy className="w-6 h-6" />
                 </div>
 
                 <h3 className="text-xl sm:text-2xl font-black text-white">
@@ -660,15 +628,10 @@ public class Solution {
             </div>
 
             {/* ПЛИТКА №3 (LeetCode-песочница с интерактивным запуском теста) - 6 cols */}
-            <div className="md:col-span-6 rounded-3xl p-7 bg-[#090f24] border border-[#1a284e] hover:border-[#2b35ff] transition-all duration-300 shadow-xl hover:shadow-[0_0_35px_rgba(43,53,255,0.2)] flex flex-col justify-between group relative">
+            <div className="md:col-span-6 rounded-3xl p-6 sm:p-7 bg-[#090f24] border border-[#1a284e] hover:border-[#2b35ff] transition-all duration-300 shadow-xl hover:shadow-[0_0_35px_rgba(43,53,255,0.2)] flex flex-col justify-between group relative">
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 rounded-2xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-400">
-                    <Code2 className="w-6 h-6" />
-                  </div>
-                  <span className="px-2.5 py-1 rounded-full bg-purple-500/20 text-purple-300 text-[10px] font-bold">
-                    Интерактивный тест
-                  </span>
+                <div className="w-12 h-12 rounded-2xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-400">
+                  <Code2 className="w-6 h-6" />
                 </div>
 
                 <h3 className="text-xl font-black text-white">
@@ -735,15 +698,10 @@ public class Solution {
             </div>
 
             {/* ПЛИТКА №4 (Честные зарплатные вилки) - 6 cols */}
-            <div className="md:col-span-6 rounded-3xl p-7 bg-[#090f24] border border-[#1a284e] hover:border-[#ff2b42] transition-all duration-300 shadow-xl hover:shadow-[0_0_35px_rgba(255,43,66,0.2)] flex flex-col justify-between group relative">
+            <div className="md:col-span-6 rounded-3xl p-6 sm:p-7 bg-[#090f24] border border-[#1a284e] hover:border-[#ff2b42] transition-all duration-300 shadow-xl hover:shadow-[0_0_35px_rgba(255,43,66,0.2)] flex flex-col justify-between group relative">
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 rounded-2xl bg-[#ff2b42]/20 border border-[#ff2b42]/40 flex items-center justify-center text-[#ff2b42]">
-                    <Scale className="w-6 h-6" />
-                  </div>
-                  <span className="px-2.5 py-1 rounded-full bg-[#ff2b42]/20 text-[#ff2b42] text-[10px] font-bold">
-                    Прозрачные вилки
-                  </span>
+                <div className="w-12 h-12 rounded-2xl bg-[#ff2b42]/20 border border-[#ff2b42]/40 flex items-center justify-center text-[#ff2b42]">
+                  <Scale className="w-6 h-6" />
                 </div>
 
                 <h3 className="text-xl font-black text-white">
@@ -785,13 +743,10 @@ public class Solution {
       {/* ========================================================================= */}
       {/* 2.4 ИНТЕРАКТИВНОЕ ДЕМО / LIVE-ВИДЖЕТ ПРОФИЛЯ С AI-SUMMARY */}
       {/* ========================================================================= */}
-      <section id="live-profile-demo" className="relative z-10 py-16 lg:py-24 bg-[#060a1c] border-t border-[#141d38]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+      <section id="live-profile-demo" className="relative z-10 py-12 lg:py-20 bg-[#060a1c] border-t border-[#141d38]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           
-          <div className="text-center max-w-3xl mx-auto space-y-3">
-            <span className="text-xs font-bold text-purple-400 tracking-widest uppercase bg-purple-500/15 px-3 py-1 rounded-full border border-purple-500/30">
-              ЦИФРОВОЙ ПАСПОРТ СПЕЦИАЛИСТА
-            </span>
+          <div className="text-center max-w-3xl mx-auto space-y-2.5">
             <h2 className="text-2xl sm:text-4xl font-black text-white">
               AI-Summary & Цифровой профиль спортсмена ФСП
             </h2>
@@ -898,7 +853,6 @@ public class Solution {
           <div className="rounded-3xl bg-gradient-to-r from-[#0b122c] via-[#080d22] to-[#0b122c] border-2 border-[#2b35ff]/40 p-6 sm:p-10 shadow-2xl space-y-6">
             
             <div className="text-center space-y-2">
-              <span className="text-xs font-bold text-[#00f0ff] uppercase tracking-wider">Интерактивный расчет</span>
               <h3 className="text-xl sm:text-3xl font-black text-white">
                 Калькулятор: ELO рейтинг ФСП → Рыночная вилка в ₽
               </h3>

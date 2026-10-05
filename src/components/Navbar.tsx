@@ -22,8 +22,8 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   return (
     <header className="sticky top-0 z-50 bg-[#060811]/95 backdrop-blur-md border-b border-[#141b2e]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 gap-4">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-14 sm:h-16 gap-2 sm:gap-4">
           
           {/* Left: Official FSP Brand Logo */}
           <div 
@@ -31,15 +31,15 @@ export const Navbar: React.FC<NavbarProps> = ({
             className="cursor-pointer group select-none shrink-0"
             title="Перейти на Главный экран"
           >
-            <FspLogo size="md" variant="tricolor" showText={true} />
+            <FspLogo size="sm" variant="tricolor" showText={true} />
           </div>
 
           {/* Right: Navigation Tabs & Verified Badge */}
-          <div className="flex items-center gap-3 overflow-x-auto">
-            <nav className="flex items-center gap-1 bg-[#0b0f1d] p-1.5 rounded-2xl border border-[#162038]">
+          <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto no-scrollbar py-1">
+            <nav className="flex items-center gap-1 bg-[#0b0f1d] p-1 sm:p-1.5 rounded-xl sm:rounded-2xl border border-[#162038] shrink-0">
               <button
                 onClick={() => onRoleChange('landing')}
-                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all whitespace-nowrap ${
                   currentRole === 'landing'
                     ? 'bg-[#2b35ff] text-white shadow-md shadow-[#2b35ff]/30'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-[#121930]'
@@ -51,7 +51,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               <button
                 onClick={() => onRoleChange('candidate')}
-                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all whitespace-nowrap ${
                   currentRole === 'candidate'
                     ? 'bg-[#2b35ff] text-white shadow-md shadow-[#2b35ff]/30'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-[#121930]'
@@ -68,7 +68,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               <button
                 onClick={() => onRoleChange('employer')}
-                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all whitespace-nowrap ${
                   currentRole === 'employer'
                     ? 'bg-[#2b35ff] text-white shadow-md shadow-[#2b35ff]/30'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-[#121930]'
@@ -85,31 +85,31 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               <button
                 onClick={() => onRoleChange('arena')}
-                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all whitespace-nowrap ${
                   currentRole === 'arena'
                     ? 'bg-[#2b35ff] text-[#00f0ff] shadow-md shadow-[#2b35ff]/30'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-[#121930]'
                 }`}
               >
                 <Code2 className="w-3.5 h-3.5" />
-                <span>LeetCode Арена</span>
+                <span>Арена</span>
               </button>
 
               <button
                 onClick={() => onRoleChange('swagger')}
-                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all whitespace-nowrap ${
                   currentRole === 'swagger'
                     ? 'bg-[#2b35ff] text-white shadow-md shadow-[#2b35ff]/30'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-[#121930]'
                 }`}
               >
                 <BookOpen className="w-3.5 h-3.5" />
-                <span>Swagger API</span>
+                <span>Swagger</span>
               </button>
 
               <button
                 onClick={() => onRoleChange('architecture')}
-                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                className={`hidden sm:flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all whitespace-nowrap ${
                   currentRole === 'architecture'
                     ? 'bg-[#2b35ff] text-white shadow-md shadow-[#2b35ff]/30'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-[#121930]'
@@ -121,7 +121,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               <button
                 onClick={() => onRoleChange('roadmap')}
-                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                className={`hidden sm:flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all whitespace-nowrap ${
                   currentRole === 'roadmap'
                     ? 'bg-[#2b35ff] text-white shadow-md shadow-[#2b35ff]/30'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-[#121930]'
