@@ -34,7 +34,7 @@ spring:
           github:
             client-id: ${GITHUB_CLIENT_ID:mock-github-client-id}
             client-secret: ${GITHUB_CLIENT_SECRET:mock-github-client-secret}
-            scope: read:user,user:email,repo
+            scope: read:user,user:email,public_repo
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
           yandex:
             client-id: ${YANDEX_CLIENT_ID:mock-yandex-client-id}

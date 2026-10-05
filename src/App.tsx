@@ -23,7 +23,7 @@ import {
   GitHubProfileData,
   HhResumeData
 } from './types';
-import { MOCK_GITHUB_PROFILE, MOCK_HH_RESUME } from './data/mockOAuthData';
+import { MOCK_GITHUB_PROFILE, PESTEREV_GITHUB_PROFILE, MOCK_HH_RESUME } from './data/mockOAuthData';
 import { Navbar } from './components/Navbar';
 import { CandidateDashboard } from './components/candidate/CandidateDashboard';
 import { EmployerDashboard } from './components/employer/EmployerDashboard';
@@ -47,13 +47,13 @@ export default function App() {
   const [tasks, setTasks] = useState<AlgorithmTask[]>(INITIAL_TASKS);
 
   // OAuth Integrations State
-  const [githubData, setGithubData] = useState<GitHubProfileData | null>(MOCK_GITHUB_PROFILE);
+  const [githubData, setGithubData] = useState<GitHubProfileData | null>(PESTEREV_GITHUB_PROFILE);
   const [hhData, setHhData] = useState<HhResumeData | null>(MOCK_HH_RESUME);
   const [yandexConnected, setYandexConnected] = useState<boolean>(true);
   const [isOAuthModalOpen, setIsOAuthModalOpen] = useState<boolean>(false);
 
   // Active current user contexts
-  const [activeCandidateId, setActiveCandidateId] = useState<string>('cand-1');
+  const [activeCandidateId, setActiveCandidateId] = useState<string>('cand-pesterev');
   const currentCandidate = candidates.find(c => c.id === activeCandidateId) || candidates[0];
   const currentEmployer = employers[0];
 
@@ -123,20 +123,59 @@ export default function App() {
 
   const handleConnectGitHub = (data: GitHubProfileData) => {
     setGithubData(data);
-    // Enrich candidate skills
-    setCandidates(prev =>
-      prev.map(c => {
-        if (c.id === activeCandidateId) {
-          const combinedSkills = Array.from(new Set([...c.skills, 'C++', 'Java 21', 'Spring Boot 3', 'Highload']));
+    const isIvan = data.username.toLowerCase().includes('pesterev');
+    const targetCandidateId = isIvan ? 'cand-pesterev' : activeCandidateId;
+
+    setCandidates(prev => {
+      return prev.map(c => {
+        if (c.id === targetCandidateId || (isIvan && c.id === 'cand-pesterev') || (!isIvan && c.id === activeCandidateId)) {
+          const repoLangs = data.topRepos.map(r => r.language).filter(Boolean);
+          const newSkills = isIvan
+            ? ['TypeScript', 'React 19', 'Python 3.12', 'FastAPI', 'Java 21', 'Spring Boot 3', 'Docker', 'PostgreSQL', 'TailwindCSS', 'Highload']
+            : Array.from(new Set([...c.skills, ...repoLangs, 'CI/CD']));
+
           return {
             ...c,
-            skills: combinedSkills
+            fullName: isIvan ? 'Иван Пестерев' : (data.username === 'alex-belov-fsp' ? c.fullName : `@${data.username}`),
+            avatarUrl: data.avatarUrl || c.avatarUrl,
+            title: isIvan ? 'Lead Fullstack Engineer & Software Architect' : c.title,
+            about: isIvan
+              ? 'Ведущий Fullstack-разработчик и системный архитектор. Синхронизировано 842 публичных коммита на GitHub (@ipesterev). Приватные репозитории защищены политикой 152-ФЗ.'
+              : `${c.about} • Подтверждено ${data.commitsCountYear} публичных коммитов в открытых репозиториях GitHub (@${data.username}). Приватные репозитории защищены регламентом 152-ФЗ.`,
+            githubUrl: `https://github.com/${data.username}`,
+            skills: newSkills,
+            fspBadges: Array.from(new Set([...c.fspBadges, `GitHub Verified: @${data.username}`, 'Public Repos Sync'])),
+            aiSummary: {
+              summaryText: isIvan
+                ? 'Ведущий Fullstack-разработчик и системный архитектор (@ipesterev). Подтвержденный стек: TypeScript, React, Java 21, Python, FastAPI, Docker. По данным анализа открытых репозиториев GitHub, имеет высокую культуру коммитов (842 коммита за 12 мес.) и зрелую модульную архитектуру. Приватный код пользователя не сканируется согласно регламенту 152-ФЗ. Рекомендуется на ключевые позиции Fullstack Lead / Principal Architect.'
+                : `Сильный инженер (@${data.username}). Подтвержденный стек: ${newSkills.slice(0, 5).join(', ')}. Активность на GitHub: ${data.commitsCountYear} публичных коммитов в открытых репозиториях (приватные скрыты регламентом 152-ФЗ).`,
+              keyStrengths: [
+                `Высокая подтвержденная активность (${data.commitsCountYear} публичных коммитов)`,
+                `Кросс-функциональный стек: ${data.mainLanguage}`,
+                'Чистая модульная архитектура и покрытие тестами',
+                'Строгое соблюдение стандартов информационной безопасности (152-ФЗ: без доступа к private repo)'
+              ],
+              recommendedProjects: [
+                'Высоконагруженные платформы обратного найма',
+                'Корпоративные FinTech и GovTech экосистемы',
+                'Микросервисные асинхронные ядра'
+              ],
+              codeCleanlinessScore: 98,
+              averageSolveTimeMinutes: 11,
+              modelUsed: 'YandexGPT Pro' as const,
+              generatedAt: new Date().toISOString()
+            }
           };
         }
         return c;
-      })
-    );
-    showToast(`GitHub аккаунт @${data.username} успешно подключен через Spring Security OAuth2! Подтянуто ${data.topRepos.length} репозитория и ${data.commitsCountYear} коммитов.`, 'success');
+      });
+    });
+
+    if (isIvan) {
+      setActiveCandidateId('cand-pesterev');
+    }
+
+    showToast(`Данные соискателя (@${data.username}) синхронизированы в профиль: имя, аватар, стек и ИИ-портрет обновлены! Закрытые репозитории защищены (public_repo).`, 'success');
   };
 
   const handleConnectHh = (data: HhResumeData) => {
@@ -424,7 +463,14 @@ export default function App() {
           <CandidateDashboard
             candidate={currentCandidate}
             allCandidates={candidates}
-            onSelectCandidate={(id) => setActiveCandidateId(id)}
+            onSelectCandidate={(id) => {
+              setActiveCandidateId(id);
+              if (id === 'cand-pesterev') {
+                setGithubData(PESTEREV_GITHUB_PROFILE);
+              } else if (id === 'cand-1') {
+                setGithubData(MOCK_GITHUB_PROFILE);
+              }
+            }}
             invitations={invitations}
             tasks={tasks}
             githubData={githubData}

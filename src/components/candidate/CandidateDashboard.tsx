@@ -467,9 +467,13 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
                 </span>
               )}
               {githubData && (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#0a0e1c] text-slate-300 border border-[#2b35ff]/40">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#0a0e1c] text-slate-300 border border-[#2b35ff]/40 shadow-sm" title="Синхронизировано через public_repo (приватные репозитории защищены)">
                   <Github className="w-3.5 h-3.5 text-white" />
-                  <span>@{githubData.username} ({githubData.commitsCountYear} comm.)</span>
+                  <span className="font-bold text-white">@{githubData.username}</span>
+                  <span className="text-slate-400">({githubData.commitsCountYear} открытых комм.)</span>
+                  <span className="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 text-[9px] font-mono border border-emerald-500/30">
+                    public_repo
+                  </span>
                 </span>
               )}
               {hhData && (
@@ -638,6 +642,19 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
 
                 {githubData ? (
                   <div className="space-y-4">
+                    {/* Alina / FSP Privacy Guarantee: private repos are NEVER scanned */}
+                    <div className="p-3 rounded-2xl bg-emerald-950/25 border border-emerald-500/30 flex items-start gap-2.5 text-xs">
+                      <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                      <div className="space-y-0.5">
+                        <span className="font-bold text-emerald-300 text-[11px] block">
+                          Контур безопасности 152-ФЗ (OAuth Scope: public_repo):
+                        </span>
+                        <p className="text-[10px] text-slate-300 leading-relaxed font-mono">
+                          Закрытые репозитории пользователей НЕ сканируются. Анализируются только открытые проекты и публичные коммиты профиля.
+                        </p>
+                      </div>
+                    </div>
+
                     {/* Metrics */}
                     <div className="grid grid-cols-3 gap-2 text-center">
                       <div className="p-2.5 bg-[#0d1326] rounded-xl border border-[#17203a]">

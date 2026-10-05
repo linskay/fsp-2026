@@ -274,6 +274,21 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
                 ) : null}
               </div>
 
+              {/* Privacy Scope Notice (Alina's requirement: private repos are never touched) */}
+              <div className="p-3.5 rounded-2xl bg-emerald-950/25 border border-emerald-500/35 space-y-1">
+                <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs">
+                  <ShieldCheck className="w-4 h-4 shrink-0" />
+                  <span>Гарантия приватности кода (152-ФЗ & GitHub Scope):</span>
+                </div>
+                <p className="text-[11px] text-slate-300 leading-relaxed">
+                  Запрашивается исключительно минимальный scope: <code className="font-mono text-emerald-300 bg-emerald-900/40 px-1 py-0.5 rounded font-bold">read:user, user:email, public_repo</code>.
+                  <span className="text-white block mt-0.5 font-medium">
+                    🔒 Приватные репозитории и закрытый код пользователей НЕ сканируются и НЕ запрашиваются.
+                  </span>
+                  Система анализирует исключительно открытые публичные коммиты и репозитории из открытого профиля.
+                </p>
+              </div>
+
               {!githubData && (
                 <div className="p-3.5 rounded-2xl bg-[#0b1021] border border-[#192340] space-y-3">
                   <span className="text-[11px] font-bold text-slate-300 block">
@@ -300,13 +315,24 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
                     </button>
                   </div>
                   <p className="text-[10px] text-slate-400 font-mono">
-                    * Spring Security OAuth2 Client запросит публичный профиль, репозитории и проверит коммиты без раскрытия приватных данных (152-ФЗ).
+                    * Spring Security OAuth2 Client запросит открытый профиль и публичные коммиты без раскрытия приватных данных (152-ФЗ).
                   </p>
                 </div>
               )}
 
               {githubData ? (
                 <div className="p-4 rounded-2xl bg-[#0b1021] border border-[#192340] space-y-4">
+                  {/* Privacy Status Pill */}
+                  <div className="p-2.5 rounded-xl bg-emerald-950/30 border border-emerald-500/30 flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2 text-emerald-400">
+                      <ShieldCheck className="w-4 h-4 shrink-0" />
+                      <span className="font-bold text-[11px]">Безопасный контур: scope: public_repo</span>
+                    </div>
+                    <span className="text-[10px] text-slate-400 font-mono">
+                      Приватный код скрыт
+                    </span>
+                  </div>
+
                   <div className="flex items-center justify-between pb-3 border-b border-[#141b2e]">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-[#141b2e] border border-[#2b35ff]/30 overflow-hidden flex items-center justify-center">
@@ -324,7 +350,7 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
                     </div>
                     <div className="text-right">
                       <div className="text-xs font-bold text-[#00f0ff]">{githubData.commitsCountYear} коммитов</div>
-                      <div className="text-[10px] text-slate-400">за последние 12 месяцев</div>
+                      <div className="text-[10px] text-slate-400">в открытых репозиториях</div>
                     </div>
                   </div>
 
@@ -343,6 +369,9 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
                               </span>
                               <span className="px-1.5 py-0.2 rounded text-[10px] bg-[#2b35ff]/20 text-[#00f0ff] border border-[#2b35ff]/30">
                                 {repo.language}
+                              </span>
+                              <span className="px-1.5 py-0.2 rounded text-[9px] bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-mono">
+                                public
                               </span>
                             </div>
                             <p className="text-[11px] text-slate-400 leading-snug">{repo.description}</p>

@@ -1275,6 +1275,130 @@ function maxFlow(n, source, sink, edges) {
 
 export const INITIAL_CANDIDATES: CandidateProfile[] = [
   {
+    id: 'cand-pesterev',
+    email: 'ivan.pesterev@fsp-athlete.ru',
+    fullName: 'Иван Пестерев',
+    city: 'Москва / Санкт-Петербург',
+    avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&auto=format&fit=crop&q=80',
+    title: 'Lead Fullstack Engineer & Software Architect',
+    specialization: 'fullstack',
+    targetGrade: 'senior',
+    currentGradeAssigned: 'senior',
+    fspId: 'FSP-RU-2026-0842',
+    fspRank: 'Кандидат в мастера спорта (КМС)',
+    fspRating: 2540,
+    fspBadges: [
+      'ФСП Атлет 2026',
+      'GitHub Verified @ipesterev',
+      '842 Public Commits',
+      'Fullstack Core Architect',
+      'Keycloak Verified'
+    ],
+    isVerified: true,
+    verifiedAt: '2026-01-15T12:00:00Z',
+    keycloakSub: 'fsp_sso_kc_ipesterev',
+    achievements: [
+      {
+        id: 'ach-pesterev-1',
+        title: 'Архитектор ядра платформы ФСП Career Arena 2026',
+        year: 2026,
+        badge: 'Кубок Инноваций ФСП',
+        description: 'Проектирование безопасного обратного найма и Judge0 песочницы с защитой 152-ФЗ.',
+        event: 'Федерация спортивного программирования России'
+      },
+      {
+        id: 'ach-pesterev-2',
+        title: '2 место — Кубок ФСП по спортивной веб-разработке',
+        year: 2025,
+        badge: 'Серебряная медаль ФСП',
+        description: 'Разработка распределенного интерфейса реального времени и оптимизация рендеринга.',
+        event: 'Всероссийский турнир ФСП'
+      }
+    ],
+    skills: ['TypeScript', 'React 19', 'Python 3.12', 'FastAPI', 'Java 21', 'Spring Boot 3', 'Docker', 'PostgreSQL', 'TailwindCSS', 'Highload'],
+    experienceYears: 7,
+    about: 'Ведущий Fullstack-разработчик и системный архитектор. Специализируюсь на реактивных веб-приложениях, распределенных бэкендах (Java/Python/Go) и интеграции защищенных контуров (152-ФЗ, OAuth2, Keycloak). Подтверждено 842 публичных коммита на GitHub (приватные репозитории защищены политикой конфиденциальности).',
+    githubUrl: 'https://github.com/ipesterev',
+    fspProfileUrl: 'https://fsp-russia.com/athletes/ipesterev',
+    leetcodeStats: {
+      username: 'ipesterev',
+      ranking: 18500,
+      totalSolved: 642,
+      totalQuestions: 3180,
+      easySolved: 210,
+      totalEasy: 830,
+      mediumSolved: 342,
+      totalMedium: 1710,
+      hardSolved: 90,
+      totalHard: 640,
+      acceptanceRate: 74.8,
+      contestRating: 2360,
+      contestGlobalRanking: 520,
+      contestTopPercentage: 1.2,
+      badge: 'Knight',
+      syncedWithGithub: true,
+      syncedGithubRepo: 'ipesterev/fsp-2026-career-arena',
+      lastSyncedAt: 'Сегодня, 17:25',
+      recentSubmissions: [
+        {
+          id: 'sub-lc-p-1',
+          title: 'Maximum Flow using Dinic Algorithm',
+          titleSlug: 'dinic-max-flow',
+          difficulty: 'Hard',
+          language: 'Java 21',
+          runtimeBeatsPercent: 98.4,
+          memoryBeatsPercent: 95.1,
+          status: 'Accepted',
+          timestamp: '1 час назад'
+        },
+        {
+          id: 'sub-lc-p-2',
+          title: 'LRU Cache Design with Thread-Safety',
+          titleSlug: 'lru-cache',
+          difficulty: 'Medium',
+          language: 'TypeScript',
+          runtimeBeatsPercent: 99.1,
+          memoryBeatsPercent: 97.0,
+          status: 'Accepted',
+          timestamp: 'Вчера'
+        }
+      ]
+    },
+    aiSummary: {
+      summaryText: 'Ведущий Fullstack-разработчик и системный архитектор (@ipesterev). Подтвержденный стек: TypeScript, React, Java 21, Python, FastAPI, Docker. По данным анализа открытых репозиториев GitHub, имеет высокую культуру коммитов (842 коммита за 12 мес.) и зрелую модульную архитектуру. Приватный код пользователя не сканируется согласно регламенту 152-ФЗ. Рекомендуется на ключевые позиции Fullstack Lead / Principal Architect.',
+      keyStrengths: [
+        'Высокая подтвержденная активность (842 публичных коммита на GitHub)',
+        'Кросс-функциональный стек: TypeScript, Java 21, Python 3.12, Spring Boot 3',
+        'Чистая модульная архитектура и покрытие тестами',
+        'Строгое соблюдение стандартов информационной безопасности (152-ФЗ: без доступа к private repo)'
+      ],
+      recommendedProjects: [
+        'Высоконагруженные платформы обратного найма',
+        'Корпоративные FinTech и GovTech экосистемы',
+        'Микросервисные асинхронные ядра'
+      ],
+      codeCleanlinessScore: 98,
+      averageSolveTimeMinutes: 11,
+      modelUsed: 'YandexGPT Pro',
+      generatedAt: new Date().toISOString()
+    },
+    solvedTasksCount: 368,
+    totalTasksAttempted: 380,
+    testScorePercent: 98.7,
+    avgExecutionTimeMs: 8.4,
+    memoryEfficiencyScore: 97,
+    lastTestingDate: '2026-03-15T10:00:00Z',
+    canRetakeAfterDate: '2026-06-15T10:00:00Z',
+    phoneMasked: '+7 (999) •••-••-88',
+    phoneReal: '+7 (999) 123-45-88',
+    telegramMasked: '@i•••••••v',
+    telegramReal: '@ipesterev_dev',
+    salaryExpectationMin: 400000,
+    salaryExpectationMax: 520000,
+    isLookingForJob: true,
+    preferredFormat: 'remote'
+  },
+  {
     id: 'cand-1',
     email: 'alex.belov.fsp@arena.pro',
     fullName: 'Александр Белов',

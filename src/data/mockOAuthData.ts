@@ -1,5 +1,41 @@
 import { GitHubProfileData, HhResumeData, HhEmployerVacancy } from '../types';
 
+export const PESTEREV_GITHUB_PROFILE: GitHubProfileData = {
+  username: 'ipesterev',
+  avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80',
+  bio: 'Fullstack Engineer & Software Architect • React, TypeScript, Java, Python • ФСП Атлет',
+  reposCount: 34,
+  commitsCountYear: 842,
+  mainLanguage: 'TypeScript / Java / Python',
+  connectedAt: new Date().toISOString(),
+  topRepos: [
+    {
+      name: 'fsp-2026-career-arena',
+      stars: 48,
+      language: 'TypeScript',
+      description: 'Платформа обратного найма и соревновательного программирования ФСП РФ.',
+      url: 'https://github.com/ipesterev/fsp-2026-career-arena',
+      updatedAt: 'Сегодня'
+    },
+    {
+      name: 'enterprise-microservices-core',
+      stars: 62,
+      language: 'Java',
+      description: 'Высоконагруженное ядро микросервисов с интеграцией Spring Security, Kafka и PostgreSQL.',
+      url: 'https://github.com/ipesterev/enterprise-microservices-core',
+      updatedAt: 'Вчера'
+    },
+    {
+      name: 'async-pipeline-optimizer',
+      stars: 29,
+      language: 'Python',
+      description: 'Асинхронный пайплайн обработки потоковых данных с контролем памяти и задержек.',
+      url: 'https://github.com/ipesterev/async-pipeline-optimizer',
+      updatedAt: '3 дня назад'
+    }
+  ]
+};
+
 export const MOCK_GITHUB_PROFILE: GitHubProfileData = {
   username: 'alex-belov-fsp',
   avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
