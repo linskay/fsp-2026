@@ -1,0 +1,66 @@
+version: '3.8'
+
+# Production Docker Compose using pre-built GitHub Packages (ghcr.io)
+# Launch anywhere in 1 command: docker compose -f docker-compose.prod.yml up -d
+
+services:
+  # 1. PostgreSQL 16 Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: fsp-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: fsp_career_db
+      POSTGRES_USER: fsp_admin
+      POSTGRES_PASSWORD: fsp_secure_password_2026
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fsp_admin -d fsp_career_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - fsp-network
+
+  # 2. Spring Boot 3 / Java 21 REST API (GitHub Package)
+  backend-api:
+    image: ghcr.io/linskay/fsp-2026/backend:latest
+    container_name: fsp-backend-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/fsp_career_db
+      SPRING_DATASOURCE_USERNAME: fsp_admin
+      SPRING_DATASOURCE_PASSWORD: fsp_secure_password_2026
+      SPRING_PROFILES_ACTIVE: prod
+      SERVER_PORT: 8080
+      JWT_SECRET: fsp_career_arena_ultra_secure_jwt_secret_key_2026_at_least_256_bits_long!
+    ports:
+      - "8080:8080"
+    networks:
+      - fsp-network
+
+  # 3. React SPA / Nginx Reverse Proxy (GitHub Package)
+  frontend:
+    image: ghcr.io/linskay/fsp-2026/frontend:latest
+    container_name: fsp-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend-api
+    ports:
+      - "3000:3000"
+    networks:
+      - fsp-network
+
+networks:
+  fsp-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local

@@ -4,6 +4,44 @@
 
 ---
 
+## ⚡ Быстрый старт на любом устройстве в 1 команду (GitHub Packages / Docker)
+
+Все контейнеры упакованы и автоматически публикуются в **GitHub Container Registry (GHCR / GitHub Packages)**:
+- `ghcr.io/linskay/fsp-2026/backend:latest` (Spring Boot 3 / Java 21 LTS)
+- `ghcr.io/linskay/fsp-2026/frontend:latest` (React SPA + Nginx)
+
+Вам **не нужно устанавливать** Java, Maven или Node.js — достаточно установленного Docker.
+
+### 🐧 Linux / 🍏 macOS:
+```bash
+git clone https://github.com/linskay/fsp-2026.git
+cd fsp-2026
+./start.sh
+```
+
+### 🪟 Windows:
+```cmd
+git clone https://github.com/linskay/fsp-2026.git
+cd fsp-2026
+start.bat
+```
+
+### 🐳 Или напрямую через Docker Compose из готовых GitHub пакетов:
+```bash
+docker compose -f docker-compose.prod.yml up -d
+```
+
+---
+
+## 🌐 Доступные адреса после запуска:
+- 💻 **Главный экран & UI платформы (Frontend):** [http://localhost:3000](http://localhost:3000)
+- ⚙️ **Backend REST API (Spring Boot 3):** [http://localhost:8080](http://localhost:8080)
+- 📚 **Интерактивный Swagger UI:** [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+- 📋 **OpenAPI v3 JSON спецификация:** [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
+- 🗄 **База данных PostgreSQL 16:** `localhost:5432` (`fsp_career_db`)
+
+---
+
 ## 🏗 Архитектура и Стек технологий
 
 ### ☕ Backend (Java 21 / Spring Boot 3)
@@ -15,6 +53,7 @@
   - `Flyway DB`: версионированные миграции схемы PostgreSQL (`V1__init_schema.sql`, `V2__seed_data.sql`).
   - `Springdoc OpenAPI (Swagger UI 3)`: интерактивная документация по адресу `/swagger-ui.html`.
   - `WebClient (Spring WebFlux)`: интеграция с LeetCode GraphQL API и Judge0 API песочницы.
+- **Глобальная обработка ошибок (`GlobalExceptionHandler`):** Единый формат `ErrorResponse` для валидации (`@Valid`, `@NotNull`, `@Min`, `@Max`) и бизнес-ошибок.
 - **Интеграция с LeetCode GraphQL**: автоматический парсер условий, ограничений, тест-кейсов и стартовых сниппетов (Java, Python, C++, Go, JS).
 - **Judge0 Code Sandbox**: безопасное изолированное исполнение и тестирование решений кандидатов на скрытых тест-кейсах.
 - **LLM AI-Summary**: модуль автоматической генерации профиля кандидата (YandexGPT / GigaChat / OpenAI).
@@ -22,33 +61,25 @@
 
 ### ⚛️ Frontend
 - **React 19**, **TypeScript**, **Tailwind CSS 4**
+- **Главный экран (Landing Page):** Двойная точка входа для кандидатов и работодателей в стиле Sport-Tech ФСП РФ.
 - **Monaco Editor (VS Code IDE)** для алгоритмического тестирования в песочнице.
 - **Lucide Icons**, **Chart.js / SVG Dashboards** в киберспортивном стиле ФСП РФ (`fsp-russia.ru`).
 
 ### 🗄 База данных & Инфраструктура
 - **PostgreSQL 16**
+- **GitHub Packages (GHCR - GitHub Container Registry)**
+- **GitHub Actions CI/CD (`.github/workflows/docker-publish.yml`)**
 - **Docker** & **Docker Compose**
 
 ---
 
-## 🚀 Быстрый запуск
-
-### 1. Запуск всей системы через Docker Compose
-```bash
-docker-compose up --build
-```
-После запуска доступны:
-- **Frontend веб-приложение:** `http://localhost:3000`
-- **Backend API (Spring Boot):** `http://localhost:8080`
-- **Swagger UI документация:** `http://localhost:8080/swagger-ui.html`
-- **OpenAPI v3 Docs:** `http://localhost:8080/v3/api-docs`
-
----
-
-## 📁 Структура проекта
+## 📁 Структура репозитория
 
 ```
 .
+├── .github/
+│   └── workflows/
+│       └── docker-publish.yml           # Автоматическая сборка и публикация пакетов в GHCR
 ├── backend/                             # Java 21 / Spring Boot 3 Backend
 │   ├── pom.xml                          # Maven зависимости (Spring Boot 3, JPA, Security, Flyway, etc.)
 │   ├── Dockerfile                       # Multi-stage Dockerfile под Java 21 Alpine
@@ -58,32 +89,30 @@ docker-compose up --build
 │           │   ├── FspCareerArenaApplication.java
 │           │   ├── config/              # SecurityConfig, OpenApiConfig, WebClientConfig
 │           │   ├── controller/          # REST контроллеры (Candidates, Vacancies, LeetCode, Sandbox, AI)
-│           │   ├── dto/                 # DTO и запросы валидации (CreateVacancy, CodeExecution, etc.)
-│           │   ├── entity/              # JPA Entities (User, CandidateProfile, Vacancy, Task, etc.)
-│           │   │   └── enums/           # FspRank, Grade, Specialization, SubmissionVerdict
-│           │   ├── repository/          # Spring Data JPA репозитории
-│           │   └── service/             # Бизнес-логика (LeetCode GraphQL, Judge0 Sandbox, AI-Summary)
+│           │   ├── dto/                 # DTO с валидацией (@NotNull, @Min, @Max, @Schema)
+│           │   ├── entity/              # JPA сущности (User, Candidate, Vacancy, Task, etc.)
+│           │   ├── exception/           # GlobalExceptionHandler & ErrorResponse
+│           │   ├── repository/          # Spring Data JPA интерфейсы
+│           │   └── service/             # Бизнес-логика, LeetCode parser, Judge0, AI-Summary
 │           └── resources/
-│               ├── application.yml      # Конфигурация приложения
-│               └── db/migration/        # Flyway SQL миграции
-│                   ├── V1__init_schema.sql
-│                   └── V2__seed_data.sql
-│
-├── src/                                 # Frontend SPA (React + TypeScript)
+│               ├── application.yml      # Конфигурация Spring Boot
+│               └── db/migration/        # Flyway миграции (V1 init, V2 seed)
+├── src/                                 # Frontend (React 19 + TypeScript + Tailwind)
 │   ├── components/
-│   │   ├── arena/                       # Monaco Code Sandbox & LeetCode Import
-│   │   ├── auth/                        # Spring Security OAuth2 Modal (GitHub, Yandex, HH)
-│   │   ├── candidate/                   # Киберспортивный профиль ФСП, ELO, AI-Summary
-│   │   ├── employer/                    # Управление вакансиями и импорт из hh.ru API
-│   │   ├── architecture/                # Архитектурный хаб Spring Boot / PostgreSQL / Docker
-│   │   └── swagger/                     # Встроенный Swagger UI Viewer
-│   └── ...
-├── docker-compose.yml                   # Мультиконтейнерная оркестрация (Postgres + Spring Boot + Frontend)
-├── Dockerfile.frontend                  # Nginx + React build
+│   │   ├── landing/                     # Главный экран (Sport-Tech Landing Page)
+│   │   ├── candidate/                   # Дашборд кандидата & AI Summary
+│   │   ├── employer/                    # Дашборд работодателя & создание вакансий
+│   │   ├── arena/                       # Monaco IDE песочница & LeetCode импортер
+│   │   ├── swagger/                     # Интерактивный Swagger API UI
+│   │   ├── architecture/                # Архитектурная схема
+│   │   └── roadmap/                     # Презентация и роадмап
+│   ├── types/                           # TypeScript интерфейсы
+│   └── data/                            # Начальные данные
+├── docker-compose.yml                   # Локальная сборка Docker
+├── docker-compose.prod.yml              # Запуск из готовых GitHub Packages (ghcr.io)
+├── Dockerfile.frontend                  # Multi-stage Dockerfile для Frontend Nginx
+├── start.sh                             # Скрипт быстрого запуска для Linux/macOS
+├── start.bat                            # Скрипт быстрого запуска для Windows
+├── Makefile                             # Команды make prod / make up / make down
 └── README.md
 ```
-
----
-
-## 🔐 152-ФЗ и согласие на обработку персональных данных
-Платформа строго соблюдает Федеральный закон № 152-ФЗ «О персональных данных». Регистрация кандидатов и работодателей сопровождается согласием с прямой ссылкой на официальный документ ФСП РФ: [Положение об обработке ПДН](https://fsp-russia.ru/files/Положение%20обработку%20пдн%20(1).pdf).
