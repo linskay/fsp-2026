@@ -69,13 +69,13 @@ export const FspLogo: React.FC<FspLogoProps> = ({
       </div>
 
       {showText && (
-        <div className="flex flex-col text-left">
+        <div className="flex flex-col text-left min-w-0">
           <div className="flex items-center gap-2">
-            <span className={`font-black tracking-wider text-white font-['JetBrains_Mono'] ${currentSize.text} leading-tight`}>
+            <span className={`font-black tracking-wider text-white font-['JetBrains_Mono'] ${currentSize.text} leading-tight whitespace-nowrap`}>
               ФСП <span className="text-[#00f0ff]">CAREER</span> ARENA
             </span>
           </div>
-          <span className={`text-slate-400 font-medium tracking-tight font-['JetBrains_Mono'] ${currentSize.sub} leading-tight mt-0.5`}>
+          <span className={`hidden sm:block text-slate-400 font-medium tracking-tight font-['JetBrains_Mono'] ${currentSize.sub} leading-tight mt-0.5 whitespace-nowrap`}>
             Федерация спортивного программирования России
           </span>
         </div>
@@ -105,16 +105,16 @@ export const FspFooterPartners: React.FC = () => {
           </span>
         </div>
 
-        {/* Center: 152-FZ Legal compliance direct link to PDF */}
+        {/* Center: 152-FZ Legal compliance direct link without filename or .pdf */}
         <div className="text-center text-[11px] text-slate-400">
           <a
             href="https://fsp-russia.ru/files/Положение%20обработку%20пдн%20(1).pdf"
             target="_blank"
             rel="noopener noreferrer"
             className="text-slate-300 hover:text-[#00f0ff] hover:underline transition-colors inline-flex items-center gap-1.5 font-medium"
-            title="Официальное Положение об обработке персональных данных ФСП РФ"
+            title="Официальное Положение об обработке персональных данных"
           >
-            <span>Соблюдение 152-ФЗ РФ — Положение об обработке ПДн (.pdf)</span>
+            <span>Соблюдение 152-ФЗ РФ — Положение об обработке персональных данных</span>
             <svg className="w-3.5 h-3.5 text-[#00f0ff] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
             </svg>

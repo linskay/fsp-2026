@@ -145,83 +145,9 @@ public class Solution {
       />
 
       {/* ========================================================================= */}
-      {/* 2.1 ВНУТРЕННИЙ МИНИ-ХЕДЕР НАВИГАЦИИ ПО ЛЕНДИНГУ */}
-      {/* ========================================================================= */}
-      <div className="border-b border-[#141d38]/80 bg-[#070b1a]/90 backdrop-blur-md sticky top-14 sm:top-16 z-40">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-1.5 sm:py-2 flex items-center justify-between gap-2 sm:gap-4">
-          
-          {/* Quick Section Nav Links */}
-          <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto no-scrollbar text-xs font-bold text-slate-400 py-0.5">
-            <button 
-              onClick={() => scrollToSection('hero-section')}
-              className="px-2.5 py-1 rounded-lg hover:text-[#00f0ff] hover:bg-[#101833] transition-colors whitespace-nowrap text-[11px] sm:text-xs"
-            >
-              О платформе
-            </button>
-            <button 
-              onClick={() => {
-                setHeroRole('candidate');
-                scrollToSection('hero-section');
-              }}
-              className="px-2.5 py-1 rounded-lg hover:text-[#00f0ff] hover:bg-[#101833] transition-colors whitespace-nowrap text-[11px] sm:text-xs"
-            >
-              Для кандидатов
-            </button>
-            <button 
-              onClick={() => {
-                setHeroRole('employer');
-                scrollToSection('hero-section');
-              }}
-              className="px-2.5 py-1 rounded-lg hover:text-[#ff2b42] hover:bg-[#101833] transition-colors whitespace-nowrap text-[11px] sm:text-xs"
-            >
-              Для работодателей
-            </button>
-            <button 
-              onClick={() => scrollToSection('bento-grid')}
-              className="px-2.5 py-1 rounded-lg hover:text-yellow-400 hover:bg-[#101833] transition-colors whitespace-nowrap text-[11px] sm:text-xs"
-            >
-              Преимущества
-            </button>
-            <button 
-              onClick={() => scrollToSection('calculator-section')}
-              className="px-2.5 py-1 rounded-lg hover:text-emerald-400 hover:bg-[#101833] transition-colors whitespace-nowrap text-[11px] sm:text-xs"
-            >
-              Калькулятор ELO
-            </button>
-            <button 
-              onClick={() => scrollToSection('live-profile-demo')}
-              className="px-2.5 py-1 rounded-lg hover:text-purple-400 hover:bg-[#101833] transition-colors whitespace-nowrap text-[11px] sm:text-xs"
-            >
-              Цифровой профиль
-            </button>
-          </div>
-
-          {/* Action Triggers: [Войти] & [Регистрация] */}
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            <button
-              onClick={() => onOpenOAuth()}
-              className="px-2.5 sm:px-3 py-1 rounded-lg sm:rounded-xl bg-[#121b36] hover:bg-[#1a274e] border border-[#2b35ff]/40 text-[11px] sm:text-xs font-bold text-slate-200 transition-all cursor-pointer flex items-center gap-1"
-            >
-              <Lock className="w-3 h-3 text-[#00f0ff]" />
-              <span>Войти</span>
-            </button>
-            <button
-              onClick={() => {
-                onOpenOAuth('github');
-              }}
-              className="px-2.5 sm:px-3 py-1 rounded-lg sm:rounded-xl bg-gradient-to-r from-[#2b35ff] to-[#00f0ff] text-white text-[11px] sm:text-xs font-bold shadow-md shadow-[#2b35ff]/30 hover:shadow-[#00f0ff]/40 transition-all cursor-pointer"
-            >
-              Регистрация
-            </button>
-          </div>
-
-        </div>
-      </div>
-
-      {/* ========================================================================= */}
       {/* 2.2 ИНТЕРАКТИВНАЯ HERO-СЕКЦИЯ (ПЕРВЫЙ ЭКРАН С «ВАУ-ЭФФЕКТОМ») */}
       {/* ========================================================================= */}
-      <section id="hero-section" className="relative z-10 pt-4 sm:pt-8 lg:pt-12 pb-10 sm:pb-16 lg:pb-24 px-3 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <section id="hero-section" className="relative z-10 pt-6 sm:pt-10 lg:pt-16 pb-10 sm:pb-16 lg:pb-24 px-3 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         
         {/* Top Official Badge */}
         <div className="flex flex-wrap items-center justify-center gap-2 mb-3 sm:mb-5">
