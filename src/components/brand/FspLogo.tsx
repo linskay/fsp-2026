@@ -105,16 +105,16 @@ export const FspFooterPartners: React.FC = () => {
           </span>
         </div>
 
-        {/* Center: 152-FZ Legal compliance direct link without filename or .pdf */}
-        <div className="text-center text-[11px] text-slate-400">
+        {/* Center: Official legal compliance direct link */}
+        <div className="text-center text-[11px]">
           <a
             href="https://fsp-russia.ru/files/Положение%20обработку%20пдн%20(1).pdf"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-slate-300 hover:text-[#00f0ff] hover:underline transition-colors inline-flex items-center gap-1.5 font-medium"
+            className="text-slate-400 hover:text-[#00f0ff] hover:underline transition-colors inline-flex items-center gap-1.5 font-medium"
             title="Официальное Положение об обработке персональных данных"
           >
-            <span>Соблюдение 152-ФЗ РФ — Положение об обработке персональных данных</span>
+            <span>Положение об обработке персональных данных</span>
             <svg className="w-3.5 h-3.5 text-[#00f0ff] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
             </svg>
