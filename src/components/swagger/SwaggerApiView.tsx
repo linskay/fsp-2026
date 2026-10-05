@@ -230,6 +230,32 @@ export const SwaggerApiView: React.FC = () => {
         },
         audit152fzLogId: 'audit-log-2026-99128'
       }
+    },
+    {
+      method: 'POST',
+      path: '/api/v1/errors/sample-validation-failure',
+      summary: 'GlobalExceptionHandler: Единый формат ошибок и DTO валидации',
+      tags: ['Global Exception Handler (400 / 404 / 502)'],
+      description: 'Демонстрация унифицированного ответа об ошибке при нарушении ограничений Jakarta Validation (@NotNull, @Min, @Max, @Size) через @RestControllerAdvice.',
+      security: 'Public / All Endpoints',
+      requestBody: {
+        employerId: null,
+        title: '',
+        salaryFrom: 500000,
+        salaryTo: 300000
+      },
+      responseBody: {
+        status: 400,
+        error: 'Bad Request',
+        message: 'Ошибка валидации входных данных запроса',
+        path: '/api/v1/vacancies',
+        timestamp: '2026-10-05T08:32:00Z',
+        validationErrors: {
+          employerId: 'ID работодателя обязателен',
+          title: 'Название вакансии не может быть пустым',
+          salaryFrom: 'Минимальная зарплата (от) не может превышать максимальную (до)'
+        }
+      }
     }
   ];
 
