@@ -37,9 +37,11 @@ public class SecurityConfig {
                     "/api/v1/auth/**",
                     "/api/v1/public/**",
                     "/api/v1/tasks/**",
-                    "/api/v1/sandbox/execute",
-                    "/api/v1/candidates/search",
-                    "/api/v1/vacancies/search",
+                    "/api/v1/sandbox/**",
+                    "/api/v1/candidates/**",
+                    "/api/v1/vacancies/**",
+                    "/api/v1/leetcode/**",
+                    "/api/v1/ai-summary/**",
                     "/oauth2/**",
                     "/login/**"
                 ).permitAll()

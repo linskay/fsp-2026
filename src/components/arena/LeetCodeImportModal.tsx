@@ -15,6 +15,7 @@ import {
   Check
 } from 'lucide-react';
 import { AlgorithmTask } from '../../types';
+import { api } from '../../services/api';
 
 interface LeetCodeImportModalProps {
   isOpen: boolean;
@@ -87,10 +88,19 @@ export const LeetCodeImportModal: React.FC<LeetCodeImportModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handleImportPreset = (preset: typeof LEETCODE_PRESET_PROBLEMS[0]) => {
+  const handleImportPreset = async (preset: typeof LEETCODE_PRESET_PROBLEMS[0]) => {
     setIsLoading(true);
     setSelectedPresetSlug(preset.slug);
     setGraphQlLog(`Отправка GraphQL запроса к https://leetcode.com/graphql (operation: questionData)...`);
+
+    // Try backend LeetCode API first
+    const backendTask = await api.fetchLeetCodeTask(preset.slug);
+    if (backendTask) {
+      onImportTask(backendTask);
+      setIsLoading(false);
+      onClose();
+      return;
+    }
 
     setTimeout(() => {
       setGraphQlLog(`Парсинг схемы: titleSlug "${preset.slug}", codeSnippets, testCases, constraints...`);
@@ -282,6 +292,22 @@ public:
     }, 1400);
   };
 
+  const handleImportCustomSlug = async () => {
+    if (!customSlug.trim()) return;
+    setIsLoading(true);
+    setGraphQlLog(`Запрос к LeetCode API для слага "${customSlug.trim()}"...`);
+
+    const backendTask = await api.fetchLeetCodeTask(customSlug.trim());
+    if (backendTask) {
+      onImportTask(backendTask);
+      setIsLoading(false);
+      onClose();
+      return;
+    }
+
+    handleImportPreset(LEETCODE_PRESET_PROBLEMS[0]);
+  };
+
   const filteredPresets = LEETCODE_PRESET_PROBLEMS.filter(p =>
     p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     p.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -335,7 +361,7 @@ public:
               />
               <button
                 disabled={!customSlug.trim() || isLoading}
-                onClick={() => handleImportPreset(LEETCODE_PRESET_PROBLEMS[0])}
+                onClick={handleImportCustomSlug}
                 className="px-4 py-2.5 bg-[#2b35ff] hover:bg-[#3d49ff] text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-[#2b35ff]/30 flex items-center gap-1.5 disabled:opacity-50 shrink-0"
               >
                 <Download className="w-4 h-4" />

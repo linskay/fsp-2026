@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { api } from './services/api';
 import { 
   INITIAL_CANDIDATES, 
   INITIAL_EMPLOYERS, 
@@ -67,6 +68,32 @@ export default function App() {
       setToast(prev => prev?.message === message ? null : prev);
     }, 5000);
   };
+
+  // Sync with Spring Boot 3 Backend on initialization
+  useEffect(() => {
+    async function loadBackendData() {
+      try {
+        const isHealthy = await api.checkHealth();
+        if (isHealthy) {
+          const [backendCandidates, backendVacancies] = await Promise.all([
+            api.getCandidates(),
+            api.getVacancies()
+          ]);
+          if (backendCandidates && backendCandidates.length > 0) {
+            setCandidates(backendCandidates);
+            setActiveCandidateId(backendCandidates[0].id);
+          }
+          if (backendVacancies && backendVacancies.length > 0) {
+            setVacancies(backendVacancies);
+          }
+          showToast('Подключение к Spring Boot 3 Backend API успешно установлено! Данные синхронизированы с PostgreSQL.', 'success');
+        }
+      } catch {
+        // Fallback to local state if backend is offline
+      }
+    }
+    loadBackendData();
+  }, []);
 
   const handleConnectGitHub = (data: GitHubProfileData) => {
     setGithubData(data);
@@ -244,16 +271,10 @@ export default function App() {
     showToast(`Оффер с окладом ${offerData.proposedSalary.toLocaleString('ru-RU')} ₽ успешно отправлен соискателю ${offerData.candidateName}!`, 'success');
   };
 
-  const handleAddVacancy = (newVacData: Omit<Vacancy, 'id' | 'createdAt' | 'invitationsCount'>) => {
-    const newVac: Vacancy = {
-      ...newVacData,
-      id: 'vac-' + Date.now(),
-      createdAt: new Date().toISOString(),
-      invitationsCount: 0
-    };
-
+  const handleAddVacancy = async (newVacData: Omit<Vacancy, 'id' | 'createdAt' | 'invitationsCount'>) => {
+    const newVac = await api.createVacancy(newVacData);
     setVacancies(prev => [newVac, ...prev]);
-    showToast(`Вакансия «${newVac.title}» с вилкой ${newVac.salaryMin.toLocaleString('ru-RU')} – ${newVac.salaryMax.toLocaleString('ru-RU')} ₽ успешно опубликована!`, 'success');
+    showToast(`Вакансия «${newVac.title}» с вилкой ${newVac.salaryMin.toLocaleString('ru-RU')} – ${newVac.salaryMax.toLocaleString('ru-RU')} ₽ успешно опубликована в системе!`, 'success');
   };
 
   const handleTaskSolved = (submission: SubmissionResult) => {
