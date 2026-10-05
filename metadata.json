@@ -1,0 +1,7 @@
+{
+  "name": "FSP Career Arena",
+  "description": "Цифровая платформа-агрегатор ИТ-вакансий с обратной механикой найма и верифицированным профилем достижений ФСП (Федерация Спортивного Программирования)",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
