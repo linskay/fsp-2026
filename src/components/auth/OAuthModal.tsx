@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { GitHubProfileData, HhResumeData, CandidateProfile } from '../../types';
 import { MOCK_GITHUB_PROFILE, MOCK_HH_RESUME } from '../../data/mockOAuthData';
+import { api } from '../../services/api';
 
 interface OAuthModalProps {
   isOpen: boolean;
@@ -64,7 +65,8 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
       setSyncStep('Извлечение репозиториев, коммитов и активности...');
     }, 1400);
 
-    setTimeout(() => {
+    setTimeout(async () => {
+      await api.syncGithub(MOCK_GITHUB_PROFILE.username);
       onConnectGitHub(MOCK_GITHUB_PROFILE);
       setLoadingProvider(null);
       setSyncStep('');
@@ -83,7 +85,8 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
       setSyncStep('Автопарсинг опыта работы, навыков и зарплатных ожиданий...');
     }, 1500);
 
-    setTimeout(() => {
+    setTimeout(async () => {
+      await api.syncHh(MOCK_HH_RESUME.resumeId);
       onConnectHh(MOCK_HH_RESUME);
       setLoadingProvider(null);
       setSyncStep('');

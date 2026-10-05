@@ -18,6 +18,7 @@ import {
   Zap 
 } from 'lucide-react';
 import { CandidateAiSummary, CandidateProfile } from '../../types';
+import { api } from '../../services/api';
 
 interface CandidateAiSummaryModalProps {
   isOpen: boolean;
@@ -40,8 +41,16 @@ export const CandidateAiSummaryModal: React.FC<CandidateAiSummaryModalProps> = (
 
   if (!isOpen) return null;
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     setIsGenerating(true);
+
+    // Try backend AI service first
+    const backendSummary = await api.getAiSummary(candidate.id);
+    if (backendSummary) {
+      setGeneratedSummary(backendSummary);
+      setIsGenerating(false);
+      return;
+    }
 
     setTimeout(() => {
       let text = '';
