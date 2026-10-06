@@ -36,6 +36,34 @@ export const PESTEREV_GITHUB_PROFILE: GitHubProfileData = {
   ]
 };
 
+export const ALINA_GITHUB_PROFILE: GitHubProfileData = {
+  username: 'alina-dev',
+  avatarUrl: '/avatars/user_alina.png',
+  bio: 'Frontend Engineer & Competitive Programmer • LeetCode Knight 2040 • React, TS, Python',
+  reposCount: 22,
+  commitsCountYear: 520,
+  mainLanguage: 'TypeScript / Python',
+  connectedAt: new Date().toISOString(),
+  topRepos: [
+    {
+      name: 'alina-leetcode-vault',
+      stars: 35,
+      language: 'TypeScript',
+      description: 'Решения 400 задач LeetCode с тестами и доказательством вычислительной сложности O(N).',
+      url: 'https://github.com/alina-dev/alina-leetcode-vault',
+      updatedAt: 'Сегодня'
+    },
+    {
+      name: 'interactive-algorithms-visualizer',
+      stars: 84,
+      language: 'TypeScript',
+      description: 'Интерактивный визуализатор алгоритмов на графах (BFS, DFS, Дейкстра, Диниц) на React & Canvas.',
+      url: 'https://github.com/alina-dev/interactive-algorithms-visualizer',
+      updatedAt: '3 дня назад'
+    }
+  ]
+};
+
 export const MOCK_GITHUB_PROFILE: GitHubProfileData = {
   username: 'alex-belov-fsp',
   avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
@@ -108,6 +136,28 @@ export const PESTEREV_HH_RESUME: HhResumeData = {
       description: 'Поддержка микросервисов, исправление багов, написание юнит-тестов (JUnit, Mockito), оптимизация запросов SQL.'
     }
   ]
+};
+
+export const ALINA_HH_RESUME: HhResumeData = {
+  resumeId: 'alina-hh-resume-0042',
+  title: 'Frontend / Algorithm Developer',
+  experienceYears: 0,
+  desiredSalary: 85000,
+  skills: [
+    'TypeScript',
+    'React',
+    'JavaScript',
+    'Algorithms & Data Structures',
+    'Python',
+    'TailwindCSS',
+    'Git',
+    'REST API'
+  ],
+  confirmedSkills: [],
+  about: 'Начинающий разработчик без опыта коммерческой работы (0 лет опыта в резюме). Активно решаю алгоритмические задачи: 400 подтвержденных задач на LeetCode (ранг Knight, Top 4.2%). Ищу работу в сильной инженерной команде. Формат: Удаленно.',
+  education: 'МГТУ им. Н.Э. Баумана / Программная инженерия',
+  connectedAt: new Date().toISOString(),
+  workHistory: []
 };
 
 export const MOCK_HH_RESUME: HhResumeData = {

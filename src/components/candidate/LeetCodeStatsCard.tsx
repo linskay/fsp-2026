@@ -96,13 +96,74 @@ export const DEFAULT_LEETCODE_STATS: LeetCodeProfileStats = {
 };
 
 export const LeetCodeStatsCard: React.FC<LeetCodeStatsCardProps> = ({
-  stats = DEFAULT_LEETCODE_STATS,
+  stats,
   githubUsername,
   candidateName,
   onRefresh,
   onUpdateStats,
   compact = false
 }) => {
+  if (!stats) {
+    return (
+      <div className="bg-[#090d1a] border border-[#1d2745] hover:border-amber-500/30 rounded-3xl p-6 space-y-4 shadow-xl relative overflow-hidden font-['JetBrains_Mono']">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center font-black text-slate-400 text-lg">
+              LC
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-base font-bold text-white">
+                  LeetCode: профиль не подключен
+                </h3>
+                <span className="px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 text-[10px] font-bold border border-slate-700">
+                  0 задач (честный старт)
+                </span>
+              </div>
+              <p className="text-xs text-slate-400 pt-0.5">
+                Спортивный рейтинг и разряд формируются в Арене ФСП (Judge0 sandbox) или при импорте профиля.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                if (onUpdateStats) {
+                  onUpdateStats({
+                    username: 'alina_dev',
+                    ranking: 28400,
+                    totalSolved: 400,
+                    totalQuestions: 3180,
+                    easySolved: 180,
+                    totalEasy: 830,
+                    mediumSolved: 180,
+                    totalMedium: 1710,
+                    hardSolved: 40,
+                    totalHard: 640,
+                    acceptanceRate: 68.4,
+                    contestRating: 2040,
+                    contestGlobalRanking: 3200,
+                    contestTopPercentage: 4.2,
+                    badge: 'Knight',
+                    syncedWithGithub: true,
+                    syncedGithubRepo: 'alina-dev/alina-leetcode-vault',
+                    lastSyncedAt: 'Сегодня, 11:40',
+                    recentSubmissions: []
+                  });
+                }
+              }}
+              className="px-4 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <span>Подключить LeetCode (400 задач Алины)</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncNotice, setSyncNotice] = useState<string | null>(null);
   const [isCustomizing, setIsCustomizing] = useState(false);
@@ -307,7 +368,7 @@ export const LeetCodeStatsCard: React.FC<LeetCodeStatsCardProps> = ({
             <span className="text-[10px] text-slate-400 font-medium">Быстрые пресеты кандидатов:</span>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {[
-                { username: 'pesterev_code', easy: 240, med: 480, hard: 170, rating: 2560, badge: 'Guardian', ranking: 8400, label: 'Иван Пестерев (890)' },
+                { username: 'alina_dev', easy: 180, med: 180, hard: 40, rating: 2040, badge: 'Knight', ranking: 28400, label: 'Алина (400 задач)' },
                 { username: 'alex_belov_fsp', easy: 215, med: 385, hard: 142, rating: 2480, badge: 'Guardian', ranking: 14200, label: 'Александр Белов (742)' },
                 { username: 'daria_dev', easy: 160, med: 220, hard: 50, rating: 2050, badge: 'Knight', ranking: 38900, label: 'Дарья Морозова (430)' },
                 { username: 'msokolov_algo', easy: 220, med: 440, hard: 150, rating: 2510, badge: 'Guardian', ranking: 9100, label: 'Михаил Соколов (810)' },

@@ -21,13 +21,16 @@ import {
   UserRole, 
   Vacancy,
   GitHubProfileData,
-  HhResumeData
+  HhResumeData,
+  FspRank
 } from './types';
 import { 
   MOCK_GITHUB_PROFILE, 
   PESTEREV_GITHUB_PROFILE, 
+  ALINA_GITHUB_PROFILE,
   MOCK_HH_RESUME, 
   PESTEREV_HH_RESUME, 
+  ALINA_HH_RESUME,
   DARIA_HH_RESUME, 
   SOKOLOV_HH_RESUME 
 } from './data/mockOAuthData';
@@ -369,24 +372,61 @@ export default function App() {
   };
 
   const handleTaskSolved = (submission: SubmissionResult) => {
-    // Update candidate ELO and solved count
+    const calculateRankByElo = (elo: number): FspRank => {
+      if (elo >= 2700) return 'Мастер спорта РФ';
+      if (elo >= 2400) return 'Кандидат в мастера спорта (КМС)';
+      if (elo >= 2000) return '1-й спортивный разряд';
+      if (elo >= 1700) return '2-й спортивный разряд';
+      if (elo >= 1400) return '3-й спортивный разряд';
+      return 'Начинающий спортсмен (Junior)';
+    };
+
     setCandidates(prev =>
       prev.map(c => {
         if (c.id === activeCandidateId) {
+          const newElo = c.fspRating + submission.fspRatingEarned;
+          const newRank = calculateRankByElo(newElo);
+          const isRankUp = newRank !== c.fspRank;
+
+          if (isRankUp) {
+            try {
+              confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+              });
+            } catch (e) {}
+            showToast(`🏆 Поздравляем! Вам присвоен ${newRank} (${newElo} ELO)!`, 'fsp');
+          } else {
+            showToast(`Тест принят! Получено +${submission.fspRatingEarned} ELO очков (${newElo} ELO).`, 'fsp');
+          }
+
+          const newAchievements = [...c.achievements];
+          if (c.solvedTasksCount === 0) {
+            newAchievements.unshift({
+              id: 'ach-arena-' + Date.now(),
+              title: `Первая победа в Арене ФСП (${submission.taskTitle})`,
+              year: 2026,
+              badge: 'Дебют в Арене ФСП',
+              description: `Успешное прохождение тестового набора в Judge0 Sandbox за ${submission.executionTimeMs} мс.`,
+              event: 'Алгоритмическая Арена ФСП'
+            });
+          }
+
           return {
             ...c,
-            fspRating: c.fspRating + submission.fspRatingEarned,
+            fspRating: newElo,
+            fspRank: newRank,
             solvedTasksCount: Math.min(c.solvedTasksCount + 1, tasks.length),
             totalTasksAttempted: Math.max(c.totalTasksAttempted, tasks.length),
             currentGradeAssigned: submission.gradeCalculated,
+            achievements: newAchievements,
             lastTestingDate: new Date().toISOString()
           };
         }
         return c;
       })
     );
-
-    showToast(`Тест принят! Получено +${submission.fspRatingEarned} ELO очков. Присвоен верифицированный грейд ${submission.gradeCalculated.toUpperCase()}.`, 'fsp');
   };
 
   const handleUpdateCandidate = (updated: Partial<CandidateProfile>) => {
@@ -500,6 +540,10 @@ export default function App() {
                 setGithubData(PESTEREV_GITHUB_PROFILE);
                 setHhData(PESTEREV_HH_RESUME);
                 setYandexEmail('ivan.pesterev@yandex.ru');
+              } else if (id === 'cand-alina') {
+                setGithubData(ALINA_GITHUB_PROFILE);
+                setHhData(ALINA_HH_RESUME);
+                setYandexEmail('alina.dev@yandex.ru');
               } else if (id === 'cand-1') {
                 setGithubData(MOCK_GITHUB_PROFILE);
                 setHhData(MOCK_HH_RESUME);

@@ -27,8 +27,10 @@ import { GitHubProfileData, HhResumeData, CandidateProfile, GitHubRepo } from '.
 import { 
   MOCK_GITHUB_PROFILE, 
   PESTEREV_GITHUB_PROFILE,
+  ALINA_GITHUB_PROFILE,
   MOCK_HH_RESUME, 
   PESTEREV_HH_RESUME, 
+  ALINA_HH_RESUME,
   DARIA_HH_RESUME, 
   SOKOLOV_HH_RESUME,
   PESTEREV_HH_CONFIRMED_SKILLS,
@@ -211,6 +213,7 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
     setSelectedHhPreset(presetKey);
     let chosenResume: HhResumeData;
     if (presetKey === 'pesterev') chosenResume = PESTEREV_HH_RESUME;
+    else if (presetKey === 'alina') chosenResume = ALINA_HH_RESUME;
     else if (presetKey === 'belov') chosenResume = MOCK_HH_RESUME;
     else if (presetKey === 'daria') chosenResume = DARIA_HH_RESUME;
     else if (presetKey === 'sokolov') chosenResume = SOKOLOV_HH_RESUME;
@@ -824,6 +827,14 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
                             salary: '120 000 ₽',
                             exp: '5 лет 1 мес',
                             skillsCount: '0 тестов hh.ru'
+                          },
+                          {
+                            id: 'alina',
+                            name: 'Алина (LeetCode 400)',
+                            title: 'Frontend / Algorithm Developer',
+                            salary: '85 000 ₽',
+                            exp: '0 лет (обнулено)',
+                            skillsCount: '400 задач LeetCode'
                           },
                           {
                             id: 'belov',

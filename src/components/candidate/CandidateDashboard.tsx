@@ -258,7 +258,7 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
                   {Math.min(candidate.solvedTasksCount, tasks.length)} / {tasks.length}
                 </span>
                 <span className="text-[10px] text-amber-400 font-medium block">
-                  LeetCode: {candidate.leetcodeStats?.totalSolved ?? 642} решено
+                  LeetCode: {candidate.leetcodeStats ? `${candidate.leetcodeStats.totalSolved} решено` : 'Не подключен (0 решено)'}
                 </span>
               </div>
             </div>

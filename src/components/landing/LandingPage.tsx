@@ -58,18 +58,28 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 }) => {
   const displayCandidate = candidate || INITIAL_CANDIDATES[0];
   const isIvan = displayCandidate.id === 'cand-pesterev' || displayCandidate.fullName.includes('Пестерев');
-  const rankShort = displayCandidate.fspRank.includes('КМС') || displayCandidate.fspRank.includes('Кандидат') ? 'КМС РФ' : 'МС РФ';
+  const rankShort = displayCandidate.fspRank.includes('КМС') || displayCandidate.fspRank.includes('Кандидат') 
+    ? 'КМС РФ' 
+    : displayCandidate.fspRank.includes('1-й') 
+    ? '1-й разряд'
+    : displayCandidate.fspRank.includes('2-й')
+    ? '2-й разряд'
+    : displayCandidate.fspRank.includes('3-й')
+    ? '3-й разряд'
+    : displayCandidate.fspRank.includes('Junior') || displayCandidate.fspRank.includes('Начинающий')
+    ? 'Junior'
+    : 'МС РФ';
   const desiredSalaryStr = hhData 
     ? `${hhData.desiredSalary.toLocaleString('ru-RU')} ₽` 
     : (displayCandidate.salaryExpectationMin ? `${displayCandidate.salaryExpectationMin.toLocaleString('ru-RU')} ₽` : '120 000 ₽');
-  const commitsCount = githubData?.commitsCountYear || (isIvan ? 842 : 1842);
-  const lcSolved = displayCandidate.leetcodeStats?.totalSolved || (isIvan ? 642 : 742);
-  const lcBadge = displayCandidate.leetcodeStats?.badge || 'Knight';
-  const lcHard = displayCandidate.leetcodeStats?.hardSolved || (isIvan ? 90 : 142);
+  const commitsCount = githubData?.commitsCountYear || (isIvan ? 842 : 520);
+  const lcSolved = displayCandidate.leetcodeStats ? displayCandidate.leetcodeStats.totalSolved : 0;
+  const lcBadge = displayCandidate.leetcodeStats?.badge || 'Без LC';
+  const lcHard = displayCandidate.leetcodeStats?.hardSolved || 0;
   const topPercentageStr = displayCandidate.leetcodeStats?.contestTopPercentage 
     ? `ТОП-${displayCandidate.leetcodeStats.contestTopPercentage}% В РФ` 
-    : 'ТОП-0.5% В РФ';
-  const githubLogin = displayCandidate.githubUrl ? displayCandidate.githubUrl.split('/').pop() : (isIvan ? 'ipesterev' : 'alex-belov-fsp');
+    : (displayCandidate.fspRating >= 2400 ? 'ТОП-1.2% В РФ' : 'Дивизион ФСП');
+  const githubLogin = displayCandidate.githubUrl ? displayCandidate.githubUrl.split('/').pop() : (isIvan ? 'ipesterev' : 'alina-dev');
 
   // Hero Interactive Role Switcher: 'candidate' | 'employer'
   const [heroRole, setHeroRole] = useState<'candidate' | 'employer'>('candidate');
@@ -754,7 +764,7 @@ public class Solution {
 
               <p className="text-xs sm:text-sm text-slate-200 leading-relaxed italic bg-[#060917]/70 p-4 rounded-xl border border-purple-500/20">
                 «{displayCandidate.aiSummary?.summaryText || (isIvan 
-                  ? 'Java-разработчик (@ipesterev) с 5 годами опыта и спортивным рейтингом 2540 ELO. Стек: Java, Spring Boot, PostgreSQL, Docker, REST API. Профиль верифицирован через hh.ru (120 000 ₽ на руки, удаленно, постоянная занятость).'
+                  ? `Java-разработчик (@ipesterev) с 5 годами опыта и спортивным рейтингом ${displayCandidate.fspRating} ELO. Стек: Java, Spring Boot, PostgreSQL, Docker, REST API. Профиль верифицирован через hh.ru (120 000 ₽ на руки, удаленно).`
                   : 'Высококлассный системный архитектор с безупречным алгоритмическим бэкграундом. Решает задачи уровня Hard за среднее время 18 минут.')}»
               </p>
 

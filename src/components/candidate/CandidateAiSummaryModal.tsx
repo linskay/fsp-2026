@@ -71,7 +71,7 @@ export const CandidateAiSummaryModal: React.FC<CandidateAiSummaryModalProps> = (
           'Распределенные хранилища данных и протоколы консенсуса (Raft/Paxos)'
         ];
       } else if (selectedFocus === 'algo') {
-        text = `Элитный алгоритмист и системный программист со спортивным рангом «${candidate.fspRank}». Демонстрирует высшую скорость решения сложных графовых алгоритмов (Dinic, Max-Flow, Segment Trees) с асимптотической оптимизацией O(N). Решил ${candidate.solvedTasksCount} олимпиадных задач Арены ФСП (${candidate.leetcodeStats?.totalSolved || 642} задач на LeetCode) с точностью ${candidate.testScorePercent}%. Идеальный кандидат на позицию Algorithmic Research Engineer или Low-Latency Core Architect.`;
+        text = `Элитный алгоритмист и системный программист со спортивным рангом «${candidate.fspRank}». Демонстрирует высшую скорость решения сложных алгоритмов с асимптотической оптимизацией O(N). Решил ${candidate.solvedTasksCount} олимпиадных задач Арены ФСП${candidate.leetcodeStats ? ` (${candidate.leetcodeStats.totalSolved} задач на LeetCode)` : ''} с точностью ${candidate.testScorePercent}%. Идеальный кандидат на позицию Algorithmic Research Engineer или Low-Latency Core Architect.`;
         strengths = [
           `Официальный статус: ${candidate.fspRank}`,
           `Точность тестов: ${candidate.testScorePercent}% на скрытых олимпиадных тест-кейсах`,
