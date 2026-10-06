@@ -45,6 +45,7 @@ import { LandingPage } from './components/landing/LandingPage';
 import { NotFoundPage } from './components/common/NotFoundPage';
 import { OAuthModal } from './components/auth/OAuthModal';
 import { FspFooterPartners } from './components/brand/FspLogo';
+import { calculateDynamicStats } from './utils/ratingEngine';
 import { Sparkles, Trophy, Bell, CheckCircle2, ShieldCheck, ArrowRight, X } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -196,25 +197,29 @@ export default function App() {
         if (c.id === activeCandidateId) {
           const updatedSkills = Array.from(new Set([...c.skills, ...data.skills]));
           const updatedConfirmedSkills = data.confirmedSkills && data.confirmedSkills.length > 0 ? data.confirmedSkills : c.hhConfirmedSkills;
+          
+          const dynamic = calculateDynamicStats({
+            solvedArenaTasksCount: c.solvedTasksCount,
+            leetcodeStats: c.leetcodeStats,
+            experienceYears: data.experienceYears,
+            title: data.title,
+            desiredSalary: data.desiredSalary,
+            skills: updatedSkills
+          });
+
           return {
             ...c,
             title: data.title,
             experienceYears: data.experienceYears,
-            salaryExpectationMin: Math.round(data.desiredSalary * 0.9),
-            salaryExpectationMax: Math.round(data.desiredSalary * 1.15),
+            salaryExpectationMin: dynamic.salaryMin,
+            salaryExpectationMax: dynamic.salaryMax,
             skills: updatedSkills,
             hhConfirmedSkills: updatedConfirmedSkills,
             about: data.about || c.about,
-            aiSummary: c.aiSummary ? {
-              ...c.aiSummary,
-              summaryText: `Верифицированный ${c.currentGradeAssigned.toUpperCase()} инженер (${data.title}). Опыт: ${data.experienceYears} лет. Подтвержденные тесты hh.ru (${updatedConfirmedSkills?.length || 0}) и рейтинг ФСП ${c.fspRating} ELO (${c.fspRank}). Резюме hh.ru #${data.resumeId}.`,
-              keyStrengths: [
-                `hh.ru: ${updatedConfirmedSkills?.length || 0} подтвержденных сертификата`,
-                `Ожидаемый оклад: ${data.desiredSalary.toLocaleString('ru-RU')} ₽`,
-                `Стек: ${updatedSkills.slice(0, 4).join(', ')}`,
-                `Опыт в разработке: ${data.experienceYears} лет`
-              ]
-            } : undefined
+            fspRating: dynamic.elo,
+            fspRank: dynamic.rank,
+            currentGradeAssigned: dynamic.grade,
+            aiSummary: dynamic.aiSummary
           };
         }
         return c;
@@ -372,22 +377,22 @@ export default function App() {
   };
 
   const handleTaskSolved = (submission: SubmissionResult) => {
-    const calculateRankByElo = (elo: number): FspRank => {
-      if (elo >= 2700) return 'Мастер спорта РФ';
-      if (elo >= 2400) return 'Кандидат в мастера спорта (КМС)';
-      if (elo >= 2000) return '1-й спортивный разряд';
-      if (elo >= 1700) return '2-й спортивный разряд';
-      if (elo >= 1400) return '3-й спортивный разряд';
-      return 'Начинающий спортсмен (Junior)';
-    };
-
     setCandidates(prev =>
       prev.map(c => {
         if (c.id === activeCandidateId) {
+          const newSolvedCount = Math.min(c.solvedTasksCount + 1, tasks.length);
           const newElo = c.fspRating + submission.fspRatingEarned;
-          const newRank = calculateRankByElo(newElo);
-          const isRankUp = newRank !== c.fspRank;
 
+          const dynamic = calculateDynamicStats({
+            solvedArenaTasksCount: newSolvedCount,
+            arenaEloEarned: (newElo - (c.leetcodeStats ? (c.leetcodeStats.totalSolved >= 400 ? 2040 : 1200) : 1200)),
+            leetcodeStats: c.leetcodeStats,
+            experienceYears: c.experienceYears,
+            title: c.title,
+            skills: c.skills
+          });
+
+          const isRankUp = dynamic.rank !== c.fspRank;
           if (isRankUp) {
             try {
               confetti({
@@ -396,9 +401,9 @@ export default function App() {
                 origin: { y: 0.6 }
               });
             } catch (e) {}
-            showToast(`🏆 Поздравляем! Вам присвоен ${newRank} (${newElo} ELO)!`, 'fsp');
+            showToast(`🏆 Поздравляем! Вам присвоен ${dynamic.rank} (${dynamic.elo} ELO)!`, 'fsp');
           } else {
-            showToast(`Тест принят! Получено +${submission.fspRatingEarned} ELO очков (${newElo} ELO).`, 'fsp');
+            showToast(`Тест принят! Получено +${submission.fspRatingEarned} ELO очков (${dynamic.elo} ELO).`, 'fsp');
           }
 
           const newAchievements = [...c.achievements];
@@ -415,11 +420,12 @@ export default function App() {
 
           return {
             ...c,
-            fspRating: newElo,
-            fspRank: newRank,
-            solvedTasksCount: Math.min(c.solvedTasksCount + 1, tasks.length),
+            fspRating: dynamic.elo,
+            fspRank: dynamic.rank,
+            solvedTasksCount: newSolvedCount,
             totalTasksAttempted: Math.max(c.totalTasksAttempted, tasks.length),
-            currentGradeAssigned: submission.gradeCalculated,
+            currentGradeAssigned: dynamic.grade,
+            aiSummary: dynamic.aiSummary,
             achievements: newAchievements,
             lastTestingDate: new Date().toISOString()
           };
@@ -431,9 +437,32 @@ export default function App() {
 
   const handleUpdateCandidate = (updated: Partial<CandidateProfile>) => {
     setCandidates(prev =>
-      prev.map(c => c.id === activeCandidateId ? { ...c, ...updated } : c)
+      prev.map(c => {
+        if (c.id === activeCandidateId) {
+          const merged = { ...c, ...updated };
+          const dynamic = calculateDynamicStats({
+            solvedArenaTasksCount: merged.solvedTasksCount,
+            leetcodeStats: merged.leetcodeStats,
+            experienceYears: merged.experienceYears,
+            title: merged.title,
+            desiredSalary: merged.salaryExpectationMin ? Math.round(merged.salaryExpectationMin / 0.9) : undefined,
+            skills: merged.skills
+          });
+
+          return {
+            ...merged,
+            fspRating: dynamic.elo,
+            fspRank: dynamic.rank,
+            currentGradeAssigned: dynamic.grade,
+            aiSummary: dynamic.aiSummary,
+            salaryExpectationMin: dynamic.salaryMin,
+            salaryExpectationMax: dynamic.salaryMax
+          };
+        }
+        return c;
+      })
     );
-    showToast('Профиль соискателя обновлен и синхронизирован с реестром ФСП.', 'success');
+    showToast('Профиль соискателя обновлен: рейтинг, разряд, грейд и ИИ-портрет пересчитаны!', 'success');
   };
 
   // Demo Walkthrough helper
