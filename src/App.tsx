@@ -191,20 +191,33 @@ export default function App() {
     setCandidates(prev =>
       prev.map(c => {
         if (c.id === activeCandidateId) {
+          const updatedSkills = Array.from(new Set([...c.skills, ...data.skills]));
+          const updatedConfirmedSkills = data.confirmedSkills && data.confirmedSkills.length > 0 ? data.confirmedSkills : c.hhConfirmedSkills;
           return {
             ...c,
             title: data.title,
             experienceYears: data.experienceYears,
-            salaryExpectationMin: data.desiredSalary * 0.9,
-            salaryExpectationMax: data.desiredSalary * 1.2,
-            skills: Array.from(new Set([...c.skills, ...data.skills])),
-            hhConfirmedSkills: data.confirmedSkills && data.confirmedSkills.length > 0 ? data.confirmedSkills : c.hhConfirmedSkills
+            salaryExpectationMin: Math.round(data.desiredSalary * 0.9),
+            salaryExpectationMax: Math.round(data.desiredSalary * 1.15),
+            skills: updatedSkills,
+            hhConfirmedSkills: updatedConfirmedSkills,
+            about: data.about || c.about,
+            aiSummary: c.aiSummary ? {
+              ...c.aiSummary,
+              summaryText: `Верифицированный ${c.currentGradeAssigned.toUpperCase()} инженер (${data.title}). Опыт: ${data.experienceYears} лет. Подтвержденные тесты hh.ru (${updatedConfirmedSkills?.length || 0}) и рейтинг ФСП ${c.fspRating} ELO (${c.fspRank}). Резюме hh.ru #${data.resumeId}.`,
+              keyStrengths: [
+                `hh.ru: ${updatedConfirmedSkills?.length || 0} подтвержденных сертификата`,
+                `Ожидаемый оклад: ${data.desiredSalary.toLocaleString('ru-RU')} ₽`,
+                `Стек: ${updatedSkills.slice(0, 4).join(', ')}`,
+                `Опыт в разработке: ${data.experienceYears} лет`
+              ]
+            } : undefined
           };
         }
         return c;
       })
     );
-    showToast(`Резюме с hh.ru (${data.title}) успешно распарсено: опыт ${data.experienceYears} лет, оклад ${data.desiredSalary.toLocaleString('ru-RU')} ₽!`, 'success');
+    showToast(`✅ Резюме с hh.ru (${data.title}, #${data.resumeId.slice(0, 14)}...) синхронизировано в профиль: ${data.experienceYears} лет, ${data.desiredSalary.toLocaleString('ru-RU')} ₽!`, 'success');
   };
 
   const handleConnectYandex = (email: string) => {

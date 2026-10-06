@@ -421,3 +421,149 @@ export const MOCK_HH_EMPLOYER_VACANCIES: HhEmployerVacancy[] = [
     imported: false
   }
 ];
+
+export const HARPIX_JAVA_HH_RESUME: HhResumeData = {
+  resumeId: '137312634',
+  title: 'Java-разработчик (ООО «Гарпикс»)',
+  experienceYears: 4,
+  desiredSalary: 260000,
+  skills: [
+    'Java 17/21',
+    'Spring Boot 3',
+    'PostgreSQL',
+    'Docker',
+    'REST API',
+    'Hibernate',
+    'Redis',
+    'Git',
+    'Kafka'
+  ],
+  confirmedSkills: [
+    {
+      id: 'hh-cs-h1',
+      skill: 'Java 21 & Spring Boot 3',
+      level: 'Экспертный',
+      scorePercent: 98,
+      percentileRank: 'Топ-1% среди соискателей hh.ru',
+      confirmedAt: '25 февраля 2026 г.',
+      testTitle: 'Тестирование HeadHunter: Java Backend и Spring Boot микросервисы',
+      certificateId: 'HH-CERT-2026-JV-13731'
+    },
+    {
+      id: 'hh-cs-h2',
+      skill: 'PostgreSQL & СУБД',
+      level: 'Продвинутый',
+      scorePercent: 94,
+      percentileRank: 'Топ-3% среди соискателей hh.ru',
+      confirmedAt: '12 января 2026 г.',
+      testTitle: 'Тестирование HeadHunter: Реляционные базы данных и SQL',
+      certificateId: 'HH-CERT-2026-PG-13732'
+    },
+    {
+      id: 'hh-cs-h3',
+      skill: 'Алгоритмы и структуры данных',
+      level: 'Продвинутый',
+      scorePercent: 92,
+      percentileRank: 'Топ-5% среди соискателей hh.ru',
+      confirmedAt: '10 декабря 2025 г.',
+      testTitle: 'Тестирование HeadHunter: Базовые алгоритмы и структуры данных',
+      certificateId: 'HH-CERT-2025-AL-13733'
+    }
+  ],
+  about: 'Java-разработчик с опытом построения масштабируемых бэкендов на Spring Boot и PostgreSQL. Профиль сопоставлен с вакансией #137312634 (Гарпикс) с подтвержденными навыками hh.ru.',
+  education: 'ИГЭУ им. В.И. Ленина, Информатика и вычислительная техника (2022)',
+  connectedAt: new Date().toISOString(),
+  workHistory: [
+    {
+      company: 'ООО «Гарпикс»',
+      position: 'Java-разработчик',
+      period: '2023 — настоящее время (2 года)',
+      description: 'Разработка корпоративных сервисов и микросервисов на Spring Boot, оптимизация запросов к PostgreSQL, интеграция брокеров сообщений.'
+    },
+    {
+      company: 'Digital Solutions',
+      position: 'Junior Java Developer',
+      period: '2021 — 2023 (2 года)',
+      description: 'Разработка REST API, покрытие unit-тестами (JUnit, Mockito), работа с реляционными базами данных.'
+    }
+  ]
+};
+
+export function extractHhId(input: string): { id: string; isVacancy: boolean } {
+  let raw = input.trim();
+  if (!raw) return { id: 'hh-res-' + Date.now().toString().slice(-6), isVacancy: false };
+
+  // Strip queries, hashes, and protocol
+  const withoutQuery = raw.split('?')[0].split('#')[0].replace(/\/+$/, '');
+  const isVacancy = withoutQuery.includes('/vacancy/') || /^\d{6,12}$/.test(withoutQuery);
+
+  let id = withoutQuery;
+  if (id.includes('/')) {
+    const parts = id.split('/');
+    id = parts[parts.length - 1];
+  }
+  id = id.replace(/[^a-zA-Z0-9_-]/g, '');
+  if (!id) id = 'c182d902ff0dbff810039ed1f5a564a4b7575';
+
+  return { id, isVacancy };
+}
+
+export function buildHhResumeFromInput(
+  queryOrUrl: string,
+  manualOverrides?: {
+    title?: string;
+    salary?: number;
+    experience?: number;
+    skills?: string[];
+  }
+): { resume: HhResumeData; detectedType: 'resume' | 'vacancy' | 'hash' | 'role' } {
+  const { id: cleanId, isVacancy } = extractHhId(queryOrUrl);
+  const qLower = queryOrUrl.toLowerCase();
+
+  let baseResume: HhResumeData;
+  let detectedType: 'resume' | 'vacancy' | 'hash' | 'role' = 'resume';
+
+  if (isVacancy || cleanId === '137312634' || qLower.includes('гарпикс') || qLower.includes('harpix')) {
+    baseResume = HARPIX_JAVA_HH_RESUME;
+    detectedType = 'vacancy';
+  } else if (cleanId.startsWith('c182d9') || qLower.includes('pesterev') || qLower.includes('пестерев')) {
+    baseResume = {
+      ...PESTEREV_HH_RESUME,
+      resumeId: cleanId.startsWith('c182d9') ? cleanId : 'c182d902ff0dbff810039ed1f5a564a4b7575'
+    };
+    detectedType = 'hash';
+  } else if (qLower.includes('front') || qLower.includes('react') || qLower.includes('belov') || qLower.includes('белов')) {
+    baseResume = MOCK_HH_RESUME;
+    detectedType = 'role';
+  } else if (qLower.includes('daria') || qLower.includes('morozova') || qLower.includes('kotlin') || qLower.includes('морозова')) {
+    baseResume = DARIA_HH_RESUME;
+    detectedType = 'role';
+  } else if (qLower.includes('data') || qLower.includes('python') || qLower.includes('sokolov') || qLower.includes('соколов') || qLower.includes('go')) {
+    baseResume = SOKOLOV_HH_RESUME;
+    detectedType = 'role';
+  } else {
+    // Default fallback to Pesterev's verified resume with the user's specific cleanId
+    baseResume = {
+      ...PESTEREV_HH_RESUME,
+      resumeId: cleanId
+    };
+  }
+
+  // Merge manual overrides if user typed into custom form fields
+  const finalTitle = manualOverrides?.title?.trim() || baseResume.title;
+  const finalSalary = manualOverrides?.salary && manualOverrides.salary > 0 ? manualOverrides.salary : baseResume.desiredSalary;
+  const finalExp = manualOverrides?.experience !== undefined && manualOverrides.experience >= 0 ? manualOverrides.experience : baseResume.experienceYears;
+  const finalSkills = manualOverrides?.skills && manualOverrides.skills.length > 0 ? manualOverrides.skills : baseResume.skills;
+
+  const result: HhResumeData = {
+    ...baseResume,
+    resumeId: cleanId,
+    title: finalTitle,
+    desiredSalary: finalSalary,
+    experienceYears: finalExp,
+    skills: finalSkills,
+    connectedAt: new Date().toISOString()
+  };
+
+  return { resume: result, detectedType };
+}

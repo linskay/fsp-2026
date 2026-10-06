@@ -266,14 +266,45 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
 
           {/* Right Column (7 cols): Role info, Bio, Stack, 152-FZ & Actions */}
           <div className="lg:col-span-7 space-y-5 lg:border-l lg:border-[#162038] lg:pl-8">
-            <div className="space-y-2">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <h2 className="text-base sm:text-lg font-bold text-[#00f0ff]">
-                  {candidate.title}
-                </h2>
-                <span className="text-xs text-slate-400 font-medium">
-                  {candidate.city} (РФ) • {candidate.preferredFormat === 'remote' ? 'Удаленно' : 'Гибрид'}
-                </span>
+            <div className="space-y-2.5">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div className="space-y-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h2 className="text-base sm:text-xl font-bold text-[#00f0ff]">
+                      {candidate.title}
+                    </h2>
+                    {hhData && (
+                      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-[#ff2b42]/15 text-[#ff7585] text-[10px] font-bold border border-[#ff2b42]/30" title={`Резюме hh.ru #${hhData.resumeId}`}>
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                        hh.ru #{hhData.resumeId.slice(0, 12)}{hhData.resumeId.length > 12 ? '...' : ''}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2.5 text-xs">
+                    <span className="text-emerald-400 font-bold font-mono text-sm">
+                      {candidate.salaryExpectationMin.toLocaleString('ru-RU')} – {candidate.salaryExpectationMax.toLocaleString('ru-RU')} ₽
+                    </span>
+                    <span className="text-slate-500">•</span>
+                    <span className="text-slate-300 font-medium">
+                      Опыт: <strong className="text-white">{candidate.experienceYears} {candidate.experienceYears === 1 ? 'год' : candidate.experienceYears < 5 ? 'года' : 'лет'}</strong>
+                    </span>
+                    <span className="text-slate-500">•</span>
+                    <span className="text-slate-400">
+                      {candidate.city} (РФ) • {candidate.preferredFormat === 'remote' ? 'Удаленно' : 'Гибрид'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={onOpenOAuthModal}
+                    className="px-3 py-1.5 rounded-xl bg-[#ff2b42]/20 hover:bg-[#ff2b42]/35 text-[#ff7585] hover:text-white border border-[#ff2b42]/40 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+                    title="Управление импортом резюме с hh.ru"
+                  >
+                    <span className="w-3.5 h-3.5 rounded-full bg-[#ff2b42] text-white text-[8px] font-black flex items-center justify-center">hh</span>
+                    <span>{hhData ? 'Резюме hh.ru' : 'Импорт hh.ru'}</span>
+                  </button>
+                </div>
               </div>
 
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
@@ -833,16 +864,38 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
                       <h4 className="text-sm font-bold text-white">
                         Импортированное резюме из hh.ru
                       </h4>
-                      <p className="text-[11px] text-slate-400">
-                        {hhData ? `ID: ${hhData.resumeId}` : 'Не загружено'}
-                      </p>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-[11px] text-slate-400">
+                          {hhData ? `ID: ${hhData.resumeId}` : 'Не загружено'}
+                        </span>
+                        {hhData && (
+                          <a
+                            href={hhData.resumeId.length <= 10 && /^\d+$/.test(hhData.resumeId) ? `https://hh.ru/vacancy/${hhData.resumeId}` : `https://hh.ru/resume/${hhData.resumeId}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[10px] font-mono text-[#00f0ff] hover:underline flex items-center gap-0.5"
+                            title="Открыть на hh.ru"
+                          >
+                            <span>hh.ru</span>
+                            <ExternalLink className="w-2.5 h-2.5" />
+                          </a>
+                        )}
+                      </div>
                     </div>
                   </div>
 
                   {hhData ? (
-                    <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-500/30">
-                      Синхронизировано
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={onOpenOAuthModal}
+                        className="px-2.5 py-1 rounded-xl border border-[#ff2b42]/40 hover:bg-[#ff2b42]/10 text-[#ff7585] text-[11px] font-bold transition-all cursor-pointer"
+                      >
+                        Сменить / Настроить
+                      </button>
+                      <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-500/30">
+                        Синхронизировано
+                      </span>
+                    </div>
                   ) : (
                     <button
                       onClick={onOpenOAuthModal}

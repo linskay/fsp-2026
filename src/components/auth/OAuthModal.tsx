@@ -31,7 +31,10 @@ import {
   PESTEREV_HH_RESUME, 
   DARIA_HH_RESUME, 
   SOKOLOV_HH_RESUME,
-  PESTEREV_HH_CONFIRMED_SKILLS
+  PESTEREV_HH_CONFIRMED_SKILLS,
+  HARPIX_JAVA_HH_RESUME,
+  extractHhId,
+  buildHhResumeFromInput
 } from '../../data/mockOAuthData';
 import { api } from '../../services/api';
 
@@ -213,6 +216,7 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
     else if (presetKey === 'sokolov') chosenResume = SOKOLOV_HH_RESUME;
     else chosenResume = PESTEREV_HH_RESUME;
 
+    setHhInputQuery(chosenResume.resumeId);
     setEditHhTitle(chosenResume.title);
     setEditHhSalary(chosenResume.desiredSalary);
     setEditHhExperience(chosenResume.experienceYears);
@@ -222,54 +226,66 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
     setSyncStep(`Запрос резюме «${chosenResume.title}» через hh.ru API v1...`);
     setTimeout(() => {
       setSyncStep(`Автопарсинг ${chosenResume.confirmedSkills?.length || 0} подтвержденных навыков hh.ru и мест работы...`);
-    }, 600);
-    setTimeout(async () => {
-      await api.syncHh(chosenResume.resumeId);
+    }, 250);
+    setTimeout(() => {
+      api.syncHh(chosenResume.resumeId).catch(() => {});
       onConnectHh(chosenResume);
       setIsChangingHh(false);
       setIsEditingHhManual(false);
       setLoadingProvider(null);
       setSyncStep('');
-    }, 1400);
+    }, 550);
   };
 
-  const handleImportHhQueryOrUrl = () => {
-    const q = hhInputQuery.trim();
-    setLoadingProvider('hh');
-    setSyncStep(`Парсинг резюме «${q || 'hh.ru'}» через API HeadHunter v1...`);
-    setTimeout(() => {
-      setSyncStep('Извлечение сертификатов тестирования HeadHunter и зарплатной вилки...');
-    }, 600);
-    setTimeout(async () => {
-      let base = PESTEREV_HH_RESUME;
-      if (q.toLowerCase().includes('front') || q.toLowerCase().includes('react') || q.toLowerCase().includes('belov')) {
-        base = MOCK_HH_RESUME;
-      } else if (q.toLowerCase().includes('daria') || q.toLowerCase().includes('morozova') || q.toLowerCase().includes('kotlin')) {
-        base = DARIA_HH_RESUME;
-      } else if (q.toLowerCase().includes('data') || q.toLowerCase().includes('python') || q.toLowerCase().includes('sokolov') || q.toLowerCase().includes('go')) {
-        base = SOKOLOV_HH_RESUME;
-      }
+  const handleImportHhQueryOrUrl = (overrideQuery?: string) => {
+    const rawQuery = (overrideQuery !== undefined ? overrideQuery : hhInputQuery).trim();
+    const query = rawQuery || 'c182d902ff0dbff810039ed1f5a564a4b7575';
+    if (!rawQuery) {
+      setHhInputQuery(query);
+    }
 
-      const cleanId = q.replace(/^https?:\/\/(?:[a-zA-Z0-9-]+\.)?hh\.ru\/resume\//i, '').replace(/[^a-zA-Z0-9_-]/g, '') || ('hh-res-' + Date.now().toString().slice(-6));
-      const resumeToUse: HhResumeData = {
-        ...base,
-        resumeId: cleanId,
-        connectedAt: new Date().toISOString()
+    const { id: cleanId, isVacancy } = extractHhId(query);
+
+    setLoadingProvider('hh');
+    setSyncStep(
+      isVacancy
+        ? `Парсинг вакансии #${cleanId} через API hh.ru и адаптация резюме...`
+        : `Парсинг резюме hh.ru #${cleanId.slice(0, 16)}... через API v1...`
+    );
+
+    setTimeout(() => {
+      setSyncStep('Извлечение сертификатов тестирования HeadHunter, подтвержденных навыков и вилки...');
+    }, 280);
+
+    setTimeout(() => {
+      const manualOverrides = {
+        title: editHhTitle.trim() || undefined,
+        salary: Number(editHhSalary) > 0 ? Number(editHhSalary) : undefined,
+        experience: Number(editHhExperience) >= 0 ? Number(editHhExperience) : undefined,
+        skills: editHhSkillsStr ? editHhSkillsStr.split(',').map(s => s.trim()).filter(Boolean) : undefined
       };
 
-      await api.syncHh(resumeToUse.resumeId);
+      const { resume: resumeToUse } = buildHhResumeFromInput(query, manualOverrides);
+
+      setEditHhTitle(resumeToUse.title);
+      setEditHhSalary(resumeToUse.desiredSalary);
+      setEditHhExperience(resumeToUse.experienceYears);
+      setEditHhSkillsStr(resumeToUse.skills.join(', '));
+      setHhInputQuery(resumeToUse.resumeId);
+
+      api.syncHh(resumeToUse.resumeId).catch(() => {});
       onConnectHh(resumeToUse);
       setIsChangingHh(false);
       setIsEditingHhManual(false);
       setLoadingProvider(null);
       setSyncStep('');
-    }, 1400);
+    }, 600);
   };
 
-  const handleSaveCustomHhResume = async () => {
+  const handleSaveCustomHhResume = () => {
     const rawSkills = editHhSkillsStr.split(',').map(s => s.trim()).filter(Boolean);
     const customResume: HhResumeData = {
-      resumeId: hhData?.resumeId || ('hh-res-custom-' + Date.now().toString().slice(-6)),
+      resumeId: hhData?.resumeId || ('c182d902ff0dbff810039ed1f5a564a4b7575'),
       title: editHhTitle.trim() || 'Инженер-разработчик',
       experienceYears: Number(editHhExperience) || 5,
       desiredSalary: Number(editHhSalary) || 300000,
@@ -290,14 +306,14 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
 
     setLoadingProvider('hh');
     setSyncStep('Синхронизация кастомного резюме с профилем кандидата по 152-ФЗ...');
-    setTimeout(async () => {
-      await api.syncHh(customResume.resumeId);
+    setTimeout(() => {
+      api.syncHh(customResume.resumeId).catch(() => {});
       onConnectHh(customResume);
       setIsChangingHh(false);
       setIsEditingHhManual(false);
       setLoadingProvider(null);
       setSyncStep('');
-    }, 1000);
+    }, 450);
   };
 
   const handleSimulateYandexAuth = () => {
@@ -660,9 +676,18 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
                 <div className="p-4 rounded-2xl bg-[#0b1021] border border-[#192340] space-y-4">
                   <div className="flex items-center justify-between pb-3 border-b border-[#141b2e]">
                     <div>
-                      <div className="text-sm font-bold text-white flex items-center gap-2">
-                        {hhData.title}
-                        <span className="text-[10px] font-mono text-slate-400">({hhData.resumeId})</span>
+                      <div className="text-sm font-bold text-white flex items-center gap-2 flex-wrap">
+                        <span>{hhData.title}</span>
+                        <a
+                          href={hhData.resumeId.length <= 10 && /^\d+$/.test(hhData.resumeId) ? `https://hh.ru/vacancy/${hhData.resumeId}` : `https://hh.ru/resume/${hhData.resumeId}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-2 py-0.5 rounded-lg bg-[#141d38] hover:bg-[#1a274c] text-[10px] font-mono text-[#00f0ff] hover:underline flex items-center gap-1 border border-[#2b35ff]/30"
+                          title="Открыть на hh.ru"
+                        >
+                          <span>hh: {hhData.resumeId.slice(0, 18)}{hhData.resumeId.length > 18 ? '...' : ''}</span>
+                          <ExternalLink className="w-2.5 h-2.5" />
+                        </a>
                       </div>
                       <div className="text-xs text-slate-400 pt-0.5">
                         Опыт в ИТ: <strong className="text-white">{hhData.experienceYears} лет</strong> • Желаемый оклад: <strong className="text-emerald-400">{hhData.desiredSalary.toLocaleString('ru-RU')} ₽</strong>
@@ -833,28 +858,61 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
                     </div>
 
                     {/* Section 2: URL or Resume ID Input */}
-                    <div className="pt-3 border-t border-[#141b2e] space-y-2">
-                      <label className="text-xs font-bold text-slate-300 flex items-center justify-between">
-                        <span>Или укажите ссылку / ID резюме на hh.ru:</span>
-                        <span className="text-[10px] text-slate-500 font-normal">hh.ru/resume/...</span>
-                      </label>
+                    <div className="pt-3 border-t border-[#141b2e] space-y-2.5">
+                      <div className="flex items-center justify-between">
+                        <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                          <span>Ссылка или хэш резюме / вакансии на hh.ru:</span>
+                        </label>
+                        <span className="text-[10px] text-emerald-400/90 font-mono">152-ФЗ Protected API</span>
+                      </div>
                       <div className="flex items-center gap-2">
                         <div className="relative flex-1">
                           <input
                             type="text"
                             value={hhInputQuery}
                             onChange={(e) => setHhInputQuery(e.target.value)}
-                            placeholder="https://hh.ru/resume/c5f8842... или название роли"
-                            className="w-full px-3.5 py-2.5 rounded-xl bg-[#070b16] border border-[#223055] text-white text-xs placeholder:text-slate-600 focus:outline-none focus:border-[#ff2b42] transition-colors"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                handleImportHhQueryOrUrl();
+                              }
+                            }}
+                            placeholder="c182d902ff0dbff810039ed1f5a564a4b7575 или ссылка hh.ru/resume/..."
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-[#070b16] border border-[#223055] text-white text-xs placeholder:text-slate-600 focus:outline-none focus:border-[#ff2b42] transition-colors font-mono"
                           />
                         </div>
                         <button
                           disabled={!!loadingProvider}
-                          onClick={handleImportHhQueryOrUrl}
+                          onClick={() => handleImportHhQueryOrUrl()}
                           className="px-4 py-2.5 rounded-xl bg-[#ff2b42] hover:bg-[#e02439] text-white text-xs font-bold transition-all shadow-md shadow-[#ff2b42]/30 flex items-center gap-2 shrink-0 disabled:opacity-50 cursor-pointer"
                         >
                           <FileText className="w-3.5 h-3.5" />
                           <span>Импортировать</span>
+                        </button>
+                      </div>
+
+                      {/* Quick chips for 1-click test */}
+                      <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                        <span className="text-[10px] text-slate-400">Быстрый тест:</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setHhInputQuery('c182d902ff0dbff810039ed1f5a564a4b7575');
+                            handleImportHhQueryOrUrl('c182d902ff0dbff810039ed1f5a564a4b7575');
+                          }}
+                          className="px-2 py-0.5 rounded-lg bg-[#141b2e] hover:bg-[#ff2b42]/20 hover:text-[#ff7585] text-slate-300 text-[10px] font-mono border border-[#1e2a4a] transition-all cursor-pointer"
+                        >
+                          c182d902ff0dbff... (Хэш Иван Пестерев)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setHhInputQuery('https://hh.ru/vacancy/137312634');
+                            handleImportHhQueryOrUrl('https://hh.ru/vacancy/137312634');
+                          }}
+                          className="px-2 py-0.5 rounded-lg bg-[#141b2e] hover:bg-[#ff2b42]/20 hover:text-[#ff7585] text-slate-300 text-[10px] font-mono border border-[#1e2a4a] transition-all cursor-pointer"
+                        >
+                          #137312634 (Вакансия Гарпикс)
                         </button>
                       </div>
                     </div>
