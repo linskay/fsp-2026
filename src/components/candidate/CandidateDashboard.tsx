@@ -90,6 +90,7 @@ interface CandidateDashboardProps {
   githubData: GitHubProfileData | null;
   hhData: HhResumeData | null;
   yandexConnected: boolean;
+  yandexEmail?: string | null;
   onOpenOAuthModal: () => void;
   onAcceptInvitation: (invitationId: string) => void;
   onDeclineInvitation: (invitationId: string, reason: string) => void;
@@ -107,6 +108,7 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
   githubData,
   hhData,
   yandexConnected,
+  yandexEmail,
   onOpenOAuthModal,
   onAcceptInvitation,
   onDeclineInvitation,
@@ -544,7 +546,7 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
               {yandexConnected && (
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#0a0e1c] text-slate-300 border border-[#ffcc00]/40">
                   <span className="text-[10px] font-black text-[#ffcc00]">Я</span>
-                  <span>Яндекс ID</span>
+                  <span>Яндекс ID ({yandexEmail || 'ivan.pesterev@yandex.ru'})</span>
                 </span>
               )}
             </div>

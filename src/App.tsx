@@ -50,6 +50,7 @@ export default function App() {
   const [githubData, setGithubData] = useState<GitHubProfileData | null>(PESTEREV_GITHUB_PROFILE);
   const [hhData, setHhData] = useState<HhResumeData | null>(MOCK_HH_RESUME);
   const [yandexConnected, setYandexConnected] = useState<boolean>(true);
+  const [yandexEmail, setYandexEmail] = useState<string | null>('ivan.pesterev@yandex.ru');
   const [isOAuthModalOpen, setIsOAuthModalOpen] = useState<boolean>(false);
 
   // Active current user contexts
@@ -200,13 +201,17 @@ export default function App() {
 
   const handleConnectYandex = (email: string) => {
     setYandexConnected(true);
+    setYandexEmail(email);
     showToast(`Яндекс ID (${email}) успешно подтвержден через Passport OAuth2!`, 'success');
   };
 
   const handleDisconnectProvider = (provider: 'github' | 'hh' | 'yandex') => {
     if (provider === 'github') setGithubData(null);
     if (provider === 'hh') setHhData(null);
-    if (provider === 'yandex') setYandexConnected(false);
+    if (provider === 'yandex') {
+      setYandexConnected(false);
+      setYandexEmail(null);
+    }
     showToast(`Интеграция с ${provider.toUpperCase()} отключена.`, 'info');
   };
 
@@ -402,6 +407,7 @@ export default function App() {
           githubData={githubData}
           hhData={hhData}
           yandexConnected={yandexConnected}
+          yandexEmail={yandexEmail}
           onConnectGitHub={handleConnectGitHub}
           onConnectHh={handleConnectHh}
           onConnectYandex={handleConnectYandex}
@@ -468,8 +474,15 @@ export default function App() {
               setActiveCandidateId(id);
               if (id === 'cand-pesterev') {
                 setGithubData(PESTEREV_GITHUB_PROFILE);
+                setYandexEmail('ivan.pesterev@yandex.ru');
               } else if (id === 'cand-1') {
                 setGithubData(MOCK_GITHUB_PROFILE);
+                setYandexEmail('alexander.belov@yandex.ru');
+              } else {
+                const found = candidates.find(c => c.id === id);
+                if (found) {
+                  setYandexEmail(`${found.email.split('@')[0]}@yandex.ru`);
+                }
               }
             }}
             invitations={invitations}
@@ -477,6 +490,7 @@ export default function App() {
             githubData={githubData}
             hhData={hhData}
             yandexConnected={yandexConnected}
+            yandexEmail={yandexEmail}
             onOpenOAuthModal={() => setIsOAuthModalOpen(true)}
             onAcceptInvitation={handleAcceptInvitation}
             onDeclineInvitation={handleDeclineInvitation}
@@ -549,6 +563,7 @@ export default function App() {
         githubData={githubData}
         hhData={hhData}
         yandexConnected={yandexConnected}
+        yandexEmail={yandexEmail}
         onConnectGitHub={handleConnectGitHub}
         onConnectHh={handleConnectHh}
         onConnectYandex={handleConnectYandex}

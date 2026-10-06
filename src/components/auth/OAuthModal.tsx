@@ -29,6 +29,7 @@ interface OAuthModalProps {
   githubData: GitHubProfileData | null;
   hhData: HhResumeData | null;
   yandexConnected: boolean;
+  yandexEmail?: string | null;
   onConnectGitHub: (data: GitHubProfileData) => void;
   onConnectHh: (data: HhResumeData) => void;
   onConnectYandex: (email: string) => void;
@@ -42,6 +43,7 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
   githubData,
   hhData,
   yandexConnected,
+  yandexEmail,
   onConnectGitHub,
   onConnectHh,
   onConnectYandex,
@@ -51,6 +53,18 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
   const [loadingProvider, setLoadingProvider] = useState<string | null>(null);
   const [syncStep, setSyncStep] = useState<string>('');
   const [customGithubUser, setCustomGithubUser] = useState<string>('ipesterev');
+  const [customYandexEmail, setCustomYandexEmail] = useState<string>(
+    yandexEmail || (candidate.id === 'cand-pesterev' ? 'ivan.pesterev@yandex.ru' : `${candidate.email.split('@')[0]}@yandex.ru`)
+  );
+  const [isChangingYandex, setIsChangingYandex] = useState(false);
+
+  React.useEffect(() => {
+    if (yandexEmail) {
+      setCustomYandexEmail(yandexEmail);
+    } else if (candidate) {
+      setCustomYandexEmail(candidate.id === 'cand-pesterev' ? 'ivan.pesterev@yandex.ru' : `${candidate.email.split('@')[0]}@yandex.ru`);
+    }
+  }, [yandexEmail, candidate]);
 
   if (!isOpen) return null;
 
@@ -146,18 +160,30 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
   };
 
   const handleSimulateYandexAuth = () => {
+    let emailToUse = customYandexEmail.trim();
+    if (!emailToUse) {
+      emailToUse = candidate.id === 'cand-pesterev' ? 'ivan.pesterev@yandex.ru' : `${candidate.email.split('@')[0]}@yandex.ru`;
+    } else if (!emailToUse.includes('@')) {
+      emailToUse = `${emailToUse}@yandex.ru`;
+    }
+
     setLoadingProvider('yandex');
-    setSyncStep('Авторизация через Яндекс ID (Passport OAuth)...');
+    setSyncStep(`Инициализация Яндекс ID Passport OAuth2 для ${emailToUse}...`);
     
     setTimeout(() => {
-      setSyncStep('Синхронизация профиля и верификация почты...');
-    }, 800);
+      setSyncStep('Авторизация через Spring Security OAuth2 Client (/login/oauth2/code/yandex)...');
+    }, 600);
 
     setTimeout(() => {
-      onConnectYandex('alexander.belov@yandex.ru');
+      setSyncStep(`Проверка профиля ${emailToUse} и верификация почты...`);
+    }, 1200);
+
+    setTimeout(() => {
+      onConnectYandex(emailToUse);
+      setIsChangingYandex(false);
       setLoadingProvider(null);
       setSyncStep('');
-    }, 1600);
+    }, 1800);
   };
 
   return (
@@ -543,47 +569,112 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
                     Быстрый вход без паролей, подтвержденный email и доверенный статус пользователя в РФ.
                   </p>
                 </div>
-                {yandexConnected ? (
-                  <button
-                    onClick={() => onDisconnectProvider('yandex')}
-                    className="px-3 py-1.5 rounded-xl border border-red-500/40 text-red-400 hover:bg-red-500/10 text-xs font-bold transition-all shrink-0"
-                  >
-                    Отключить
-                  </button>
-                ) : (
-                  <button
-                    disabled={!!loadingProvider}
-                    onClick={handleSimulateYandexAuth}
-                    className="px-4 py-2 rounded-xl bg-[#ffcc00] hover:bg-[#e6b800] text-black text-xs font-bold transition-all shadow-md shadow-[#ffcc00]/30 flex items-center gap-2 shrink-0 disabled:opacity-50"
-                  >
-                    <span>Войти через Яндекс</span>
-                  </button>
-                )}
+                {yandexConnected && !isChangingYandex ? (
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      onClick={() => setIsChangingYandex(true)}
+                      className="px-3 py-1.5 rounded-xl border border-amber-500/40 text-amber-400 hover:bg-amber-500/10 text-xs font-bold transition-all"
+                    >
+                      Сменить профиль
+                    </button>
+                    <button
+                      onClick={() => {
+                        onDisconnectProvider('yandex');
+                        setIsChangingYandex(false);
+                      }}
+                      className="px-3 py-1.5 rounded-xl border border-red-500/40 text-red-400 hover:bg-red-500/10 text-xs font-bold transition-all"
+                    >
+                      Отключить
+                    </button>
+                  </div>
+                ) : null}
               </div>
 
-              {yandexConnected ? (
+              {yandexConnected && !isChangingYandex ? (
                 <div className="p-4 rounded-2xl bg-[#0b1021] border border-[#192340] flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-[#ffcc00] text-black font-black text-lg flex items-center justify-center">
                       Я
                     </div>
                     <div>
-                      <div className="text-xs font-bold text-white">alexander.belov@yandex.ru</div>
+                      <div className="text-xs font-bold text-white">
+                        {yandexEmail || customYandexEmail || 'ivan.pesterev@yandex.ru'}
+                      </div>
                       <div className="text-[11px] text-emerald-400 flex items-center gap-1 font-bold">
                         <CheckCircle2 className="w-3.5 h-3.5" />
                         Яндекс ID подтвержден
                       </div>
                     </div>
                   </div>
-                  <span className="text-[11px] text-slate-400">Активно</span>
+                  <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[11px] font-medium border border-emerald-500/30">
+                    Активно
+                  </span>
                 </div>
               ) : (
-                <div className="p-5 rounded-2xl bg-[#0b1021] border border-dashed border-[#1e2a4a] text-center space-y-2">
-                  <ShieldCheck className="w-8 h-8 text-slate-500 mx-auto" />
-                  <div className="text-xs font-bold text-slate-300">Яндекс ID не привязан</div>
-                  <p className="text-[11px] text-slate-500 max-w-sm mx-auto">
-                    Привяжите Яндекс ID для мгновенной авторизации и получения уведомлений о новых офферах на почту.
-                  </p>
+                <div className="p-5 rounded-2xl bg-[#0b1021] border border-[#1e2a4a] space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-300 flex items-center justify-between">
+                      <span>Email или логин Яндекс:</span>
+                      <span className="text-[10px] text-slate-500 font-normal">любой аккаунт @yandex.ru</span>
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <div className="relative flex-1">
+                        <input
+                          type="text"
+                          value={customYandexEmail}
+                          onChange={(e) => setCustomYandexEmail(e.target.value)}
+                          placeholder="например: ivan.pesterev или login@yandex.ru"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#070b16] border border-[#223055] text-white text-xs placeholder:text-slate-600 focus:outline-none focus:border-[#ffcc00] transition-colors"
+                        />
+                      </div>
+                      <button
+                        disabled={!!loadingProvider}
+                        onClick={handleSimulateYandexAuth}
+                        className="px-4 py-2.5 rounded-xl bg-[#ffcc00] hover:bg-[#e6b800] text-black text-xs font-bold transition-all shadow-md shadow-[#ffcc00]/30 flex items-center gap-2 shrink-0 disabled:opacity-50"
+                      >
+                        <ArrowRight className="w-3.5 h-3.5" />
+                        <span>{isChangingYandex ? 'Сохранить и войти' : 'Войти через Яндекс'}</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Быстрый выбор тестовых профилей */}
+                  <div className="space-y-1.5 pt-2 border-t border-[#141b2e]">
+                    <div className="text-[10px] text-slate-400 font-medium">Быстрый выбор аккаунта:</div>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        { name: 'Иван Пестерев', email: 'ivan.pesterev@yandex.ru' },
+                        { name: 'Александр Белов', email: 'alexander.belov@yandex.ru' },
+                        { name: 'Дарья Морозова', email: 'daria.morozova@yandex.ru' },
+                        { name: 'Михаил Соколов', email: 'mikhail.sokolov@yandex.ru' },
+                      ].map((acc) => (
+                        <button
+                          key={acc.email}
+                          type="button"
+                          onClick={() => setCustomYandexEmail(acc.email)}
+                          className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all border ${
+                            customYandexEmail === acc.email
+                              ? 'bg-[#ffcc00]/20 text-[#ffcc00] border-[#ffcc00]/50'
+                              : 'bg-[#10172c] text-slate-300 border-[#1e2a4a] hover:bg-[#16213f] hover:text-white'
+                          }`}
+                        >
+                          {acc.name} ({acc.email.split('@')[0]})
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {isChangingYandex && (
+                    <div className="flex justify-end pt-2">
+                      <button
+                        type="button"
+                        onClick={() => setIsChangingYandex(false)}
+                        className="text-xs text-slate-400 hover:text-white transition-colors"
+                      >
+                        Отмена
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
