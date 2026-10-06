@@ -1,4 +1,5 @@
 import { AlgorithmTask, CandidateProfile, EmployerProfile, Invitation, Vacancy } from '../types';
+import { PESTEREV_HH_CONFIRMED_SKILLS } from './mockOAuthData';
 
 export const INITIAL_TASKS: AlgorithmTask[] = [
   {
@@ -1393,6 +1394,65 @@ export const INITIAL_CANDIDATES: CandidateProfile[] = [
     phoneReal: '+7 (999) 123-45-88',
     telegramMasked: '@i•••••••v',
     telegramReal: '@ipesterev_dev',
+    hhConfirmedSkills: PESTEREV_HH_CONFIRMED_SKILLS,
+    githubSync: {
+      autoPushEnabled: true,
+      repoName: 'fsp-leetcode-solutions',
+      repoFullName: 'ipesterev/fsp-leetcode-solutions',
+      defaultBranch: 'main',
+      isPublicOnly: true,
+      lastSyncedAt: 'Сегодня, 10:20',
+      recentCommits: [
+        {
+          id: 'gh-c-1',
+          taskTitle: 'LeetCode #42: Trapping Rain Water',
+          taskSlug: 'trapping-rain-water',
+          difficulty: 'Hard',
+          language: 'Java 21',
+          runtimeMs: 8.4,
+          runtimeBeatsPercent: 98.4,
+          memoryMb: 14.2,
+          memoryBeatsPercent: 95.1,
+          commitHash: '8e4f1a2',
+          commitMessage: 'feat(leetcode): solve #42 Trapping Rain Water [Hard] - 8.4ms (beats 98.4%) 14.2MB (beats 95.1%)',
+          repoFullName: 'ipesterev/fsp-leetcode-solutions',
+          timestamp: '1 час назад',
+          githubUrl: 'https://github.com/ipesterev/fsp-leetcode-solutions/commit/8e4f1a2'
+        },
+        {
+          id: 'gh-c-2',
+          taskTitle: 'LeetCode #3: Longest Substring Without Repeating Characters',
+          taskSlug: 'longest-substring-without-repeating-characters',
+          difficulty: 'Medium',
+          language: 'TypeScript',
+          runtimeMs: 12.1,
+          runtimeBeatsPercent: 97.2,
+          memoryMb: 18.5,
+          memoryBeatsPercent: 94.0,
+          commitHash: '3c990ba',
+          commitMessage: 'feat(leetcode): solve #3 Longest Substring [Medium] - 12.1ms (beats 97.2%) 18.5MB (beats 94.0%)',
+          repoFullName: 'ipesterev/fsp-leetcode-solutions',
+          timestamp: 'Вчера, 18:45',
+          githubUrl: 'https://github.com/ipesterev/fsp-leetcode-solutions/commit/3c990ba'
+        },
+        {
+          id: 'gh-c-3',
+          taskTitle: 'LeetCode #1: Two Sum',
+          taskSlug: 'two-sum',
+          difficulty: 'Easy',
+          language: 'Java 21',
+          runtimeMs: 2.1,
+          runtimeBeatsPercent: 99.5,
+          memoryMb: 11.8,
+          memoryBeatsPercent: 96.8,
+          commitHash: '1a72d4c',
+          commitMessage: 'feat(leetcode): solve #1 Two Sum [Easy] - 2.1ms (beats 99.5%) 11.8MB (beats 96.8%)',
+          repoFullName: 'ipesterev/fsp-leetcode-solutions',
+          timestamp: '2 дня назад',
+          githubUrl: 'https://github.com/ipesterev/fsp-leetcode-solutions/commit/1a72d4c'
+        }
+      ]
+    },
     salaryExpectationMin: 400000,
     salaryExpectationMax: 520000,
     isLookingForJob: true,
@@ -1535,6 +1595,64 @@ export const INITIAL_CANDIDATES: CandidateProfile[] = [
     phoneReal: '+7 (916) 459-33-42',
     telegramMasked: '@a••••••••v',
     telegramReal: '@alex_belov_dev',
+    hhConfirmedSkills: [
+      {
+        id: 'hh-cs-b1',
+        skill: 'Алгоритмы и структуры данных',
+        level: 'Экспертный',
+        scorePercent: 100,
+        percentileRank: 'Топ-0.5% среди соискателей hh.ru',
+        confirmedAt: '12 февраля 2026 г.',
+        testTitle: 'Тестирование HeadHunter: Алгоритмические задачи и оптимизация сложности',
+        certificateId: 'HH-CERT-2026-ALGO-0042'
+      },
+      {
+        id: 'hh-cs-b2',
+        skill: 'Java 21 & Spring Boot 3',
+        level: 'Экспертный',
+        scorePercent: 99,
+        percentileRank: 'Топ-0.8% среди соискателей hh.ru',
+        confirmedAt: '20 января 2026 г.',
+        testTitle: 'Тестирование HeadHunter: Высоконагруженные сервисы на Java',
+        certificateId: 'HH-CERT-2026-JV-8812'
+      },
+      {
+        id: 'hh-cs-b3',
+        skill: 'PostgreSQL & Distributed DBs',
+        level: 'Экспертный',
+        scorePercent: 97,
+        percentileRank: 'Топ-1.2% среди соискателей hh.ru',
+        confirmedAt: '15 декабря 2025 г.',
+        testTitle: 'Тестирование HeadHunter: Оптимизация планов запросов и шардирование',
+        certificateId: 'HH-CERT-2025-DB-4410'
+      }
+    ],
+    githubSync: {
+      autoPushEnabled: true,
+      repoName: 'leetcode-fsp-solutions',
+      repoFullName: 'alex-belov-fsp/leetcode-fsp-solutions',
+      defaultBranch: 'main',
+      isPublicOnly: true,
+      lastSyncedAt: 'Сегодня, 09:15',
+      recentCommits: [
+        {
+          id: 'gh-cb-1',
+          taskTitle: 'LeetCode #239: Sliding Window Maximum',
+          taskSlug: 'sliding-window-maximum',
+          difficulty: 'Hard',
+          language: 'C++',
+          runtimeMs: 4.2,
+          runtimeBeatsPercent: 99.6,
+          memoryMb: 16.1,
+          memoryBeatsPercent: 98.2,
+          commitHash: 'a71e409',
+          commitMessage: 'feat(leetcode): solve #239 Sliding Window Maximum [Hard] - 4.2ms (beats 99.6%) 16.1MB (beats 98.2%)',
+          repoFullName: 'alex-belov-fsp/leetcode-fsp-solutions',
+          timestamp: '2 часа назад',
+          githubUrl: 'https://github.com/alex-belov-fsp/leetcode-fsp-solutions/commit/a71e409'
+        }
+      ]
+    },
     salaryExpectationMin: 420000,
     salaryExpectationMax: 550000,
     isLookingForJob: true,

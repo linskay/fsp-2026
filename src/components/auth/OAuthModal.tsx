@@ -19,7 +19,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { GitHubProfileData, HhResumeData, CandidateProfile } from '../../types';
-import { MOCK_GITHUB_PROFILE, MOCK_HH_RESUME } from '../../data/mockOAuthData';
+import { MOCK_GITHUB_PROFILE, MOCK_HH_RESUME, PESTEREV_HH_RESUME } from '../../data/mockOAuthData';
 import { api } from '../../services/api';
 
 interface OAuthModalProps {
@@ -128,18 +128,21 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
     
     setTimeout(() => {
       setSyncStep('Запрос активных резюме через hh.ru API v1 (/resumes/mine)...');
-    }, 800);
+    }, 600);
 
     setTimeout(() => {
-      setSyncStep('Автопарсинг опыта работы, навыков и зарплатных ожиданий...');
-    }, 1500);
+      setSyncStep('Автопарсинг опыта работы, подтвержденных навыков hh.ru и зарплатных ожиданий...');
+    }, 1200);
 
     setTimeout(async () => {
-      await api.syncHh(MOCK_HH_RESUME.resumeId);
-      onConnectHh(MOCK_HH_RESUME);
+      const resumeToUse = (candidate.id === 'cand-pesterev' || candidate.fullName.includes('Пестерев'))
+        ? PESTEREV_HH_RESUME
+        : MOCK_HH_RESUME;
+      await api.syncHh(resumeToUse.resumeId);
+      onConnectHh(resumeToUse);
       setLoadingProvider(null);
       setSyncStep('');
-    }, 2200);
+    }, 1800);
   };
 
   const handleSimulateYandexAuth = () => {
@@ -465,10 +468,44 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
                     </div>
                   </div>
 
+                  {/* Confirmed Skills from HeadHunter Assessment */}
+                  {hhData.confirmedSkills && hhData.confirmedSkills.length > 0 && (
+                    <div className="space-y-2 pt-2 border-t border-[#141b2e]">
+                      <div className="flex items-center justify-between">
+                        <div className="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                          <span>Подтвержденные навыки hh.ru ({hhData.confirmedSkills.length})</span>
+                        </div>
+                        <span className="text-[10px] text-emerald-400 font-mono">Тестирование HeadHunter</span>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {hhData.confirmedSkills.map((cs) => (
+                          <div key={cs.id} className="p-2.5 rounded-xl bg-[#0a0f21] border border-[#1e2c52] space-y-1">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-bold text-white">{cs.skill}</span>
+                              <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${
+                                cs.level === 'Экспертный' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+                              }`}>
+                                {cs.level}
+                              </span>
+                            </div>
+                            <div className="text-[10px] text-emerald-400 font-mono font-medium">
+                              {cs.scorePercent}% • {cs.percentileRank}
+                            </div>
+                            <div className="text-[9px] text-slate-400 flex items-center justify-between">
+                              <span>{cs.confirmedAt}</span>
+                              <span className="font-mono text-slate-500">{cs.certificateId}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Skills tags */}
                   <div className="space-y-1.5">
                     <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                      Импортированные навыки ({hhData.skills.length}):
+                      Все импортированные навыки ({hhData.skills.length}):
                     </div>
                     <div className="flex flex-wrap gap-1.5">
                       {hhData.skills.map(s => (

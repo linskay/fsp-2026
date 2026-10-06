@@ -24,7 +24,8 @@ import {
   SlidersHorizontal,
   FolderGit2,
   Bot,
-  RefreshCw
+  RefreshCw,
+  Github
 } from 'lucide-react';
 import { CandidateProfile, EmployerProfile, Grade, Invitation, Specialization, Vacancy, CandidateAiSummary } from '../../types';
 import { SendOfferModal } from './SendOfferModal';
@@ -405,6 +406,48 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
                           <span className="text-[10px] font-mono text-slate-500">
                             Рейтинг: #{c.leetcodeStats.ranking.toLocaleString('ru-RU')}
                           </span>
+                        </div>
+                      )}
+
+                      {/* HeadHunter Confirmed Skills Assessment Strip */}
+                      {c.hhConfirmedSkills && c.hhConfirmedSkills.length > 0 && (
+                        <div className="flex flex-wrap items-center gap-1.5 pt-2">
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-[#ff2b42]/15 text-white border border-[#ff2b42]/30 text-[11px] font-bold">
+                            <span className="w-3.5 h-3.5 rounded bg-[#ff2b42] text-white text-[8px] font-black flex items-center justify-center">hh</span>
+                            <span>Тесты HeadHunter:</span>
+                          </span>
+                          {c.hhConfirmedSkills.map(cs => (
+                            <span key={cs.id} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-[#0e162d] text-slate-200 border border-[#1d2b50] text-[11px]" title={`${cs.testTitle} (${cs.confirmedAt})`}>
+                              <span className="text-white font-medium">{cs.skill}</span>
+                              <span className={`px-1 py-0.2 rounded text-[9px] font-bold ${
+                                cs.level === 'Экспертный' ? 'text-purple-300 bg-purple-500/20' : 'text-blue-300 bg-blue-500/20'
+                              }`}>{cs.level}</span>
+                              <span className="text-emerald-400 font-mono font-bold text-[10px]">{cs.scorePercent}%</span>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* FSP-Hub Public Solutions Repo Sync */}
+                      {c.githubSync && (
+                        <div className="flex flex-wrap items-center gap-2 pt-2 text-xs">
+                          <a
+                            href={`https://github.com/${c.githubSync.repoFullName}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#0c1224] hover:bg-[#121b36] border border-[#2b35ff]/40 text-slate-200 transition-colors"
+                          >
+                            <Github className="w-3.5 h-3.5 text-white" />
+                            <span className="font-mono text-[#00f0ff] font-bold">@{c.githubSync.repoFullName}</span>
+                            <span className="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 text-[9px] font-mono border border-emerald-500/30">
+                              {c.githubSync.recentCommits?.length || 3} авто-коммита
+                            </span>
+                          </a>
+                          {c.githubSync.recentCommits && c.githubSync.recentCommits[0] && (
+                            <span className="text-[11px] text-slate-400 font-mono truncate max-w-sm">
+                              Последний: <strong className="text-white">{c.githubSync.recentCommits[0].taskTitle}</strong> ({c.githubSync.recentCommits[0].runtimeMs}ms, beats {c.githubSync.recentCommits[0].runtimeBeatsPercent}%)
+                            </span>
+                          )}
                         </div>
                       )}
                     </div>

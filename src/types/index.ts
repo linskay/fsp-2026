@@ -128,6 +128,10 @@ export interface CandidateProfile {
   telegramMasked: string;
   telegramReal: string;
 
+  // HeadHunter & GitHub расширенные интеграции
+  hhConfirmedSkills?: HhConfirmedSkill[];
+  githubSync?: GitHubSyncSettings;
+
   // Зарплатные ожидания
   salaryExpectationMin: number;
   salaryExpectationMax: number;
@@ -315,16 +319,55 @@ export interface HhWorkHistoryItem {
   description: string;
 }
 
+export interface HhConfirmedSkill {
+  id: string;
+  skill: string;
+  level: 'Базовый' | 'Продвинутый' | 'Экспертный' | 'Expert' | 'Advanced' | 'Intermediate';
+  scorePercent: number; // 0-100%
+  percentileRank: string; // e.g. "Топ-1% среди 48 000 соискателей"
+  confirmedAt: string; // e.g. "14 января 2026 г."
+  testTitle: string; // e.g. "Тестирование HeadHunter: Алгоритмы и структуры данных"
+  certificateId: string; // e.g. "HH-CERT-2026-88421"
+}
+
 export interface HhResumeData {
   resumeId: string;
   title: string;
   experienceYears: number;
   desiredSalary: number;
   skills: string[];
+  confirmedSkills?: HhConfirmedSkill[];
   workHistory: HhWorkHistoryItem[];
   about: string;
   education: string;
   connectedAt: string;
+}
+
+export interface GitHubSyncCommit {
+  id: string;
+  taskTitle: string;
+  taskSlug?: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+  language: string;
+  runtimeMs: number;
+  runtimeBeatsPercent: number;
+  memoryMb: number;
+  memoryBeatsPercent: number;
+  commitHash: string;
+  commitMessage: string;
+  repoFullName: string;
+  timestamp: string;
+  githubUrl: string;
+}
+
+export interface GitHubSyncSettings {
+  autoPushEnabled: boolean;
+  repoName: string;
+  repoFullName: string;
+  defaultBranch: string;
+  isPublicOnly: boolean; // строго 152-ФЗ
+  lastSyncedAt?: string;
+  recentCommits: GitHubSyncCommit[];
 }
 
 export interface HhEmployerVacancy {
