@@ -16,10 +16,23 @@ import {
   Lock,
   Layers,
   Check,
-  AlertCircle
+  AlertCircle,
+  Edit3,
+  Sliders,
+  Plus,
+  Trash2,
+  Award
 } from 'lucide-react';
-import { GitHubProfileData, HhResumeData, CandidateProfile } from '../../types';
-import { MOCK_GITHUB_PROFILE, MOCK_HH_RESUME, PESTEREV_HH_RESUME } from '../../data/mockOAuthData';
+import { GitHubProfileData, HhResumeData, CandidateProfile, GitHubRepo } from '../../types';
+import { 
+  MOCK_GITHUB_PROFILE, 
+  PESTEREV_GITHUB_PROFILE,
+  MOCK_HH_RESUME, 
+  PESTEREV_HH_RESUME, 
+  DARIA_HH_RESUME, 
+  SOKOLOV_HH_RESUME,
+  PESTEREV_HH_CONFIRMED_SKILLS
+} from '../../data/mockOAuthData';
 import { api } from '../../services/api';
 
 interface OAuthModalProps {
@@ -52,11 +65,32 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
   const [activeTab, setActiveTab] = useState<'github' | 'hh' | 'yandex'>('github');
   const [loadingProvider, setLoadingProvider] = useState<string | null>(null);
   const [syncStep, setSyncStep] = useState<string>('');
-  const [customGithubUser, setCustomGithubUser] = useState<string>('ipesterev');
+  
+  // GitHub state
+  const [customGithubUser, setCustomGithubUser] = useState<string>(
+    githubData?.username || (candidate.id === 'cand-pesterev' ? 'ipesterev' : 'alex-belov-fsp')
+  );
+  const [isChangingGithub, setIsChangingGithub] = useState(false);
+
+  // Yandex ID state
   const [customYandexEmail, setCustomYandexEmail] = useState<string>(
     yandexEmail || (candidate.id === 'cand-pesterev' ? 'ivan.pesterev@yandex.ru' : `${candidate.email.split('@')[0]}@yandex.ru`)
   );
   const [isChangingYandex, setIsChangingYandex] = useState(false);
+
+  // HH.ru interactive state
+  const [hhInputQuery, setHhInputQuery] = useState<string>('https://hh.ru/resume/c5f8842-lead-architect');
+  const [selectedHhPreset, setSelectedHhPreset] = useState<string>(
+    candidate.id === 'cand-pesterev' ? 'pesterev' : 'belov'
+  );
+  const [isChangingHh, setIsChangingHh] = useState(false);
+  const [isEditingHhManual, setIsEditingHhManual] = useState(false);
+
+  // Editable fields for manual resume customization:
+  const [editHhTitle, setEditHhTitle] = useState(hhData?.title || 'Lead Fullstack Engineer & Software Architect');
+  const [editHhSalary, setEditHhSalary] = useState(hhData?.desiredSalary || 450000);
+  const [editHhExperience, setEditHhExperience] = useState(hhData?.experienceYears || 7);
+  const [editHhSkillsStr, setEditHhSkillsStr] = useState(hhData?.skills?.join(', ') || 'TypeScript, React 19, Java 21, Spring Boot 3, PostgreSQL, Docker');
 
   React.useEffect(() => {
     if (yandexEmail) {
@@ -65,6 +99,21 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
       setCustomYandexEmail(candidate.id === 'cand-pesterev' ? 'ivan.pesterev@yandex.ru' : `${candidate.email.split('@')[0]}@yandex.ru`);
     }
   }, [yandexEmail, candidate]);
+
+  React.useEffect(() => {
+    if (githubData) {
+      setCustomGithubUser(githubData.username);
+    }
+  }, [githubData]);
+
+  React.useEffect(() => {
+    if (hhData) {
+      setEditHhTitle(hhData.title);
+      setEditHhSalary(hhData.desiredSalary);
+      setEditHhExperience(hhData.experienceYears);
+      setEditHhSkillsStr(hhData.skills.join(', '));
+    }
+  }, [hhData]);
 
   if (!isOpen) return null;
 
@@ -75,88 +124,180 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
     
     setTimeout(() => {
       setSyncStep(`Обмен authorization_code на Access Token (GitHub API для @${targetUser})...`);
-    }, 700);
+    }, 500);
 
     setTimeout(() => {
-      setSyncStep('Извлечение репозиториев, коммитов, pull requests и языка...');
-    }, 1400);
+      setSyncStep('Извлечение открытых репозиториев, коммитов, pull requests и языка...');
+    }, 1000);
 
     setTimeout(async () => {
       let profileToUse = MOCK_GITHUB_PROFILE;
-      if (targetUser.toLowerCase().includes('pesterev')) {
-        profileToUse = {
-          username: targetUser,
-          avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80',
-          bio: 'Fullstack Engineer & Architect • React, TypeScript, Java, Python • ФСП Атлет',
-          reposCount: 34,
-          commitsCountYear: 842,
-          mainLanguage: 'TypeScript / Java / Python',
-          connectedAt: new Date().toISOString(),
-          topRepos: [
-            {
-              name: 'fsp-2026-career-arena',
-              stars: 48,
-              language: 'TypeScript',
-              description: 'Платформа обратного найма и соревновательного программирования ФСП РФ.',
-              url: `https://github.com/${targetUser}/fsp-2026-career-arena`,
-              updatedAt: 'Сегодня'
-            },
-            {
-              name: 'enterprise-microservices-core',
-              stars: 62,
-              language: 'Java',
-              description: 'Высоконагруженное ядро микросервисов с интеграцией Spring Security, Kafka и PostgreSQL.',
-              url: `https://github.com/${targetUser}/enterprise-microservices-core`,
-              updatedAt: 'Вчера'
-            },
-            {
-              name: 'async-pipeline-optimizer',
-              stars: 29,
-              language: 'Python',
-              description: 'Асинхронный пайплайн обработки потоковых данных с контролем памяти и задержек.',
-              url: `https://github.com/${targetUser}/async-pipeline-optimizer`,
-              updatedAt: '3 дня назад'
+
+      try {
+        const userRes = await fetch(`https://api.github.com/users/${encodeURIComponent(targetUser)}`);
+        if (userRes.ok) {
+          const u = await userRes.json();
+          let topRepos: GitHubRepo[] = [];
+          try {
+            const rRes = await fetch(`https://api.github.com/users/${encodeURIComponent(targetUser)}/repos?sort=updated&per_page=6`);
+            if (rRes.ok) {
+              const rList = await rRes.json();
+              if (Array.isArray(rList) && rList.length > 0) {
+                topRepos = rList.map((r: any) => ({
+                  name: r.name,
+                  stars: r.stargazers_count || 0,
+                  language: r.language || 'Код',
+                  description: r.description || 'Публичный репозиторий с открытым исходным кодом',
+                  url: r.html_url,
+                  updatedAt: 'Недавно'
+                }));
+              }
             }
-          ]
-        };
-      } else if (targetUser !== 'alex-belov-fsp') {
-        profileToUse = {
-          ...MOCK_GITHUB_PROFILE,
-          username: targetUser,
-          bio: `Software Engineer @${targetUser} • Подтвержденный профиль через Spring Security OAuth2`,
-          commitsCountYear: 615,
-          connectedAt: new Date().toISOString()
-        };
+          } catch {}
+
+          profileToUse = {
+            username: u.login,
+            avatarUrl: u.avatar_url || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80',
+            bio: u.bio || `Инженер-разработчик @${u.login} • Верифицированный OAuth профиль`,
+            reposCount: u.public_repos || topRepos.length || 12,
+            commitsCountYear: Math.max((u.public_repos || 10) * 28, 480),
+            mainLanguage: topRepos[0]?.language || 'TypeScript / Java',
+            connectedAt: new Date().toISOString(),
+            topRepos: topRepos.length > 0 ? topRepos : (targetUser.toLowerCase().includes('pesterev') ? PESTEREV_GITHUB_PROFILE.topRepos : MOCK_GITHUB_PROFILE.topRepos)
+          };
+        } else {
+          if (targetUser.toLowerCase().includes('pesterev')) {
+            profileToUse = PESTEREV_GITHUB_PROFILE;
+          } else {
+            profileToUse = {
+              ...MOCK_GITHUB_PROFILE,
+              username: targetUser,
+              bio: `Software Engineer @${targetUser} • Подтвержденный профиль через Spring Security OAuth2`,
+              commitsCountYear: 780,
+              connectedAt: new Date().toISOString(),
+              topRepos: MOCK_GITHUB_PROFILE.topRepos.map(r => ({
+                ...r,
+                url: `https://github.com/${targetUser}/${r.name}`
+              }))
+            };
+          }
+        }
+      } catch {
+        if (targetUser.toLowerCase().includes('pesterev')) {
+          profileToUse = PESTEREV_GITHUB_PROFILE;
+        } else {
+          profileToUse = {
+            ...MOCK_GITHUB_PROFILE,
+            username: targetUser,
+            bio: `Software Engineer @${targetUser} • Подтвержденный профиль через Spring Security OAuth2`,
+            commitsCountYear: 780,
+            connectedAt: new Date().toISOString()
+          };
+        }
       }
 
       await api.syncGithub(targetUser);
       onConnectGitHub(profileToUse);
+      setIsChangingGithub(false);
       setLoadingProvider(null);
       setSyncStep('');
-    }, 2000);
+    }, 1500);
   };
 
-  const handleSimulateHhAuth = () => {
+  const handleConnectHhPreset = (presetKey: string) => {
+    setSelectedHhPreset(presetKey);
+    let chosenResume: HhResumeData;
+    if (presetKey === 'pesterev') chosenResume = PESTEREV_HH_RESUME;
+    else if (presetKey === 'belov') chosenResume = MOCK_HH_RESUME;
+    else if (presetKey === 'daria') chosenResume = DARIA_HH_RESUME;
+    else if (presetKey === 'sokolov') chosenResume = SOKOLOV_HH_RESUME;
+    else chosenResume = PESTEREV_HH_RESUME;
+
+    setEditHhTitle(chosenResume.title);
+    setEditHhSalary(chosenResume.desiredSalary);
+    setEditHhExperience(chosenResume.experienceYears);
+    setEditHhSkillsStr(chosenResume.skills.join(', '));
+
     setLoadingProvider('hh');
-    setSyncStep('Переход к авторизации в hh.ru OAuth2...');
-    
+    setSyncStep(`Запрос резюме «${chosenResume.title}» через hh.ru API v1...`);
     setTimeout(() => {
-      setSyncStep('Запрос активных резюме через hh.ru API v1 (/resumes/mine)...');
+      setSyncStep(`Автопарсинг ${chosenResume.confirmedSkills?.length || 0} подтвержденных навыков hh.ru и мест работы...`);
     }, 600);
-
-    setTimeout(() => {
-      setSyncStep('Автопарсинг опыта работы, подтвержденных навыков hh.ru и зарплатных ожиданий...');
-    }, 1200);
-
     setTimeout(async () => {
-      const resumeToUse = (candidate.id === 'cand-pesterev' || candidate.fullName.includes('Пестерев'))
-        ? PESTEREV_HH_RESUME
-        : MOCK_HH_RESUME;
-      await api.syncHh(resumeToUse.resumeId);
-      onConnectHh(resumeToUse);
+      await api.syncHh(chosenResume.resumeId);
+      onConnectHh(chosenResume);
+      setIsChangingHh(false);
+      setIsEditingHhManual(false);
       setLoadingProvider(null);
       setSyncStep('');
-    }, 1800);
+    }, 1400);
+  };
+
+  const handleImportHhQueryOrUrl = () => {
+    const q = hhInputQuery.trim();
+    setLoadingProvider('hh');
+    setSyncStep(`Парсинг резюме «${q || 'hh.ru'}» через API HeadHunter v1...`);
+    setTimeout(() => {
+      setSyncStep('Извлечение сертификатов тестирования HeadHunter и зарплатной вилки...');
+    }, 600);
+    setTimeout(async () => {
+      let base = PESTEREV_HH_RESUME;
+      if (q.toLowerCase().includes('front') || q.toLowerCase().includes('react') || q.toLowerCase().includes('belov')) {
+        base = MOCK_HH_RESUME;
+      } else if (q.toLowerCase().includes('daria') || q.toLowerCase().includes('morozova') || q.toLowerCase().includes('kotlin')) {
+        base = DARIA_HH_RESUME;
+      } else if (q.toLowerCase().includes('data') || q.toLowerCase().includes('python') || q.toLowerCase().includes('sokolov') || q.toLowerCase().includes('go')) {
+        base = SOKOLOV_HH_RESUME;
+      }
+
+      const cleanId = q.replace(/^https?:\/\/(?:[a-zA-Z0-9-]+\.)?hh\.ru\/resume\//i, '').replace(/[^a-zA-Z0-9_-]/g, '') || ('hh-res-' + Date.now().toString().slice(-6));
+      const resumeToUse: HhResumeData = {
+        ...base,
+        resumeId: cleanId,
+        connectedAt: new Date().toISOString()
+      };
+
+      await api.syncHh(resumeToUse.resumeId);
+      onConnectHh(resumeToUse);
+      setIsChangingHh(false);
+      setIsEditingHhManual(false);
+      setLoadingProvider(null);
+      setSyncStep('');
+    }, 1400);
+  };
+
+  const handleSaveCustomHhResume = async () => {
+    const rawSkills = editHhSkillsStr.split(',').map(s => s.trim()).filter(Boolean);
+    const customResume: HhResumeData = {
+      resumeId: hhData?.resumeId || ('hh-res-custom-' + Date.now().toString().slice(-6)),
+      title: editHhTitle.trim() || 'Инженер-разработчик',
+      experienceYears: Number(editHhExperience) || 5,
+      desiredSalary: Number(editHhSalary) || 300000,
+      skills: rawSkills.length > 0 ? rawSkills : ['TypeScript', 'Java', 'React', 'PostgreSQL'],
+      confirmedSkills: hhData?.confirmedSkills || PESTEREV_HH_CONFIRMED_SKILLS,
+      about: hhData?.about || `Резюме соискателя: ${editHhTitle}. Навыки верифицированы через тестирование hh.ru.`,
+      workHistory: hhData?.workHistory || [
+        {
+          company: 'ФСП Tech Enterprise',
+          position: editHhTitle,
+          period: '2023 — настоящее время',
+          description: 'Проектирование и разработка архитектурных компонентов.'
+        }
+      ],
+      education: hhData?.education || 'Высшее профильное образование (ИТ / Прикладная математика)',
+      connectedAt: new Date().toISOString()
+    };
+
+    setLoadingProvider('hh');
+    setSyncStep('Синхронизация кастомного резюме с профилем кандидата по 152-ФЗ...');
+    setTimeout(async () => {
+      await api.syncHh(customResume.resumeId);
+      onConnectHh(customResume);
+      setIsChangingHh(false);
+      setIsEditingHhManual(false);
+      setLoadingProvider(null);
+      setSyncStep('');
+    }, 1000);
   };
 
   const handleSimulateYandexAuth = () => {
@@ -293,13 +434,24 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
                     Подтягивает публичные репозитории, звезды, коммиты за последний год и основной стек. Работодатель видит качество кода без ручного заполнения.
                   </p>
                 </div>
-                {githubData ? (
-                  <button
-                    onClick={() => onDisconnectProvider('github')}
-                    className="px-3 py-1.5 rounded-xl border border-red-500/40 text-red-400 hover:bg-red-500/10 text-xs font-bold transition-all shrink-0 cursor-pointer"
-                  >
-                    Отключить
-                  </button>
+                {githubData && !isChangingGithub ? (
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      onClick={() => setIsChangingGithub(true)}
+                      className="px-3 py-1.5 rounded-xl border border-cyan-500/40 text-[#00f0ff] hover:bg-cyan-500/10 text-xs font-bold transition-all cursor-pointer"
+                    >
+                      Сменить профиль
+                    </button>
+                    <button
+                      onClick={() => {
+                        onDisconnectProvider('github');
+                        setIsChangingGithub(false);
+                      }}
+                      className="px-3 py-1.5 rounded-xl border border-red-500/40 text-red-400 hover:bg-red-500/10 text-xs font-bold transition-all shrink-0 cursor-pointer"
+                    >
+                      Отключить
+                    </button>
+                  </div>
                 ) : null}
               </div>
 
@@ -318,10 +470,10 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
                 </p>
               </div>
 
-              {!githubData && (
+              {(!githubData || isChangingGithub) && (
                 <div className="p-3.5 rounded-2xl bg-[#0b1021] border border-[#192340] space-y-3">
                   <span className="text-[11px] font-bold text-slate-300 block">
-                    Укажите ваш логин GitHub (по умолчанию <strong className="text-[#00f0ff]">ipesterev</strong>):
+                    Укажите ваш логин GitHub или выберите пресет:
                   </span>
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                     <div className="relative flex-1">
@@ -330,7 +482,7 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
                         type="text"
                         value={customGithubUser}
                         onChange={(e) => setCustomGithubUser(e.target.value)}
-                        placeholder="ipesterev"
+                        placeholder="например: ipesterev, torvalds, gaearon"
                         className="w-full pl-9 pr-3 py-2 bg-[#060914] border border-[#1e2a4a] focus:border-[#00f0ff] rounded-xl text-xs text-white placeholder:text-slate-500 font-mono outline-none transition-colors"
                       />
                     </div>
@@ -340,16 +492,51 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
                       className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#2b35ff] to-[#00f0ff] hover:from-[#3d49ff] hover:to-[#22f2ff] text-white text-xs font-bold transition-all shadow-md shadow-[#2b35ff]/30 flex items-center justify-center gap-2 shrink-0 disabled:opacity-50 cursor-pointer"
                     >
                       <Github className="w-3.5 h-3.5" />
-                      <span>Подключить @{customGithubUser || 'profile'}</span>
+                      <span>{isChangingGithub ? 'Сохранить и войти' : `Подключить @${customGithubUser || 'profile'}`}</span>
                     </button>
                   </div>
-                  <p className="text-[10px] text-slate-400 font-mono">
-                    * Spring Security OAuth2 Client запросит открытый профиль и публичные коммиты без раскрытия приватных данных (152-ФЗ).
-                  </p>
+
+                  {/* Быстрые пресеты GitHub */}
+                  <div className="space-y-1.5 pt-2 border-t border-[#141b2e]">
+                    <div className="text-[10px] text-slate-400 font-medium">Быстрый выбор профиля разработчика:</div>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        { name: 'Иван Пестерев', user: 'ipesterev' },
+                        { name: 'Александр Белов', user: 'alex-belov-fsp' },
+                        { name: 'Дарья Морозова', user: 'daria-morozova' },
+                        { name: 'Михаил Соколов', user: 'msokolov-dev' },
+                      ].map((acc) => (
+                        <button
+                          key={acc.user}
+                          type="button"
+                          onClick={() => setCustomGithubUser(acc.user)}
+                          className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all border cursor-pointer ${
+                            customGithubUser === acc.user
+                              ? 'bg-cyan-500/20 text-[#00f0ff] border-[#00f0ff]/50'
+                              : 'bg-[#10172c] text-slate-300 border-[#1e2a4a] hover:bg-[#16213f] hover:text-white'
+                          }`}
+                        >
+                          {acc.name} (@{acc.user})
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {isChangingGithub && (
+                    <div className="flex justify-end pt-1">
+                      <button
+                        type="button"
+                        onClick={() => setIsChangingGithub(false)}
+                        className="text-xs text-slate-400 hover:text-white transition-colors cursor-pointer"
+                      >
+                        Отмена
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
 
-              {githubData ? (
+              {githubData && !isChangingGithub ? (
                 <div className="p-4 rounded-2xl bg-[#0b1021] border border-[#192340] space-y-4">
                   {/* Privacy Status Pill */}
                   <div className="p-2.5 rounded-xl bg-emerald-950/30 border border-emerald-500/30 flex items-center justify-between text-xs">
@@ -414,15 +601,7 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
                     </div>
                   </div>
                 </div>
-              ) : (
-                <div className="p-5 rounded-2xl bg-[#0b1021] border border-dashed border-[#1e2a4a] text-center space-y-2">
-                  <GitBranch className="w-8 h-8 text-slate-500 mx-auto" />
-                  <div className="text-xs font-bold text-slate-300">GitHub профиль еще не подключен</div>
-                  <p className="text-[11px] text-slate-500 max-w-sm mx-auto">
-                    Авторизуйтесь через Spring Security OAuth2 Client, чтобы репозитории и коммиты автоматически появились в анкете для HR.
-                  </p>
-                </div>
-              )}
+              ) : null}
             </div>
           )}
 
@@ -438,71 +617,71 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
                     Импорт резюме через hh.ru API v1
                   </h4>
                   <p className="text-xs text-slate-400 leading-relaxed">
-                    Автоматический парсинг опыта работы, мест трудоустройства, подтвержденных навыков и желаемой зарплаты в рублях.
+                    Синхронизация опыта работы, мест трудоустройства, подтвержденных навыков тестирования и оклада из резюме hh.ru.
                   </p>
                 </div>
-                {hhData ? (
+                {hhData && !isChangingHh && !isEditingHhManual ? (
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      onClick={() => setIsChangingHh(true)}
+                      className="px-3 py-1.5 rounded-xl border border-amber-500/40 text-amber-400 hover:bg-amber-500/10 text-xs font-bold transition-all cursor-pointer"
+                    >
+                      Сменить резюме
+                    </button>
+                    <button
+                      onClick={() => setIsEditingHhManual(true)}
+                      className="px-3 py-1.5 rounded-xl border border-[#00f0ff]/40 text-[#00f0ff] hover:bg-[#00f0ff]/10 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
+                    >
+                      <Edit3 className="w-3 h-3" />
+                      Редактировать
+                    </button>
+                    <button
+                      onClick={() => onDisconnectProvider('hh')}
+                      className="px-3 py-1.5 rounded-xl border border-red-500/40 text-red-400 hover:bg-red-500/10 text-xs font-bold transition-all shrink-0 cursor-pointer"
+                    >
+                      Отключить
+                    </button>
+                  </div>
+                ) : (isChangingHh || isEditingHhManual) ? (
                   <button
-                    onClick={() => onDisconnectProvider('hh')}
-                    className="px-3 py-1.5 rounded-xl border border-red-500/40 text-red-400 hover:bg-red-500/10 text-xs font-bold transition-all shrink-0"
+                    onClick={() => {
+                      setIsChangingHh(false);
+                      setIsEditingHhManual(false);
+                    }}
+                    className="px-3 py-1.5 rounded-xl border border-slate-600 text-slate-300 hover:bg-white/5 text-xs font-bold transition-all shrink-0 cursor-pointer"
                   >
-                    Отключить
+                    Отмена
                   </button>
-                ) : (
-                  <button
-                    disabled={!!loadingProvider}
-                    onClick={handleSimulateHhAuth}
-                    className="px-4 py-2 rounded-xl bg-[#ff2b42] hover:bg-[#e02439] text-white text-xs font-bold transition-all shadow-md shadow-[#ff2b42]/30 flex items-center gap-2 shrink-0 disabled:opacity-50"
-                  >
-                    <FileText className="w-3.5 h-3.5" />
-                    Подтянуть с hh.ru
-                  </button>
-                )}
+                ) : null}
               </div>
 
-              {hhData ? (
+              {/* Connected Active Card */}
+              {hhData && !isChangingHh && !isEditingHhManual ? (
                 <div className="p-4 rounded-2xl bg-[#0b1021] border border-[#192340] space-y-4">
                   <div className="flex items-center justify-between pb-3 border-b border-[#141b2e]">
                     <div>
-                      <div className="text-xs font-bold text-white">{hhData.title}</div>
-                      <div className="text-[11px] text-slate-400">Опыт: {hhData.experienceYears} лет • Ожидания: {hhData.desiredSalary.toLocaleString('ru-RU')} ₽</div>
+                      <div className="text-sm font-bold text-white flex items-center gap-2">
+                        {hhData.title}
+                        <span className="text-[10px] font-mono text-slate-400">({hhData.resumeId})</span>
+                      </div>
+                      <div className="text-xs text-slate-400 pt-0.5">
+                        Опыт в ИТ: <strong className="text-white">{hhData.experienceYears} лет</strong> • Желаемый оклад: <strong className="text-emerald-400">{hhData.desiredSalary.toLocaleString('ru-RU')} ₽</strong>
+                      </div>
                     </div>
-                    <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-500/30">
+                    <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-500/30">
                       hh.ru Синхронизировано
                     </span>
                   </div>
 
-                  {/* Work History */}
-                  <div className="space-y-2">
-                    <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                      Опыт работы из резюме:
-                    </div>
-                    <div className="space-y-2">
-                      {hhData.workHistory.map((work, idx) => (
-                        <div key={idx} className="p-3 rounded-xl bg-[#0e152b] border border-[#16213d] space-y-1">
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                              <Building2 className="w-3 h-3 text-[#2b35ff]" />
-                              {work.company}
-                            </span>
-                            <span className="text-[10px] text-slate-400">{work.period}</span>
-                          </div>
-                          <div className="text-[11px] text-[#00f0ff] font-bold">{work.position}</div>
-                          <p className="text-[11px] text-slate-400 leading-snug">{work.description}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
                   {/* Confirmed Skills from HeadHunter Assessment */}
                   {hhData.confirmedSkills && hhData.confirmedSkills.length > 0 && (
-                    <div className="space-y-2 pt-2 border-t border-[#141b2e]">
+                    <div className="space-y-2 pt-1">
                       <div className="flex items-center justify-between">
                         <div className="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
                           <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                          <span>Подтвержденные навыки hh.ru ({hhData.confirmedSkills.length})</span>
+                          <span>Подтвержденные навыки тестирования HeadHunter ({hhData.confirmedSkills.length})</span>
                         </div>
-                        <span className="text-[10px] text-emerald-400 font-mono">Тестирование HeadHunter</span>
+                        <span className="text-[10px] text-emerald-400 font-mono">Верификация hh.ru</span>
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {hhData.confirmedSkills.map((cs) => (
@@ -528,10 +707,32 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
                     </div>
                   )}
 
-                  {/* Skills tags */}
-                  <div className="space-y-1.5">
+                  {/* Work History */}
+                  <div className="space-y-2 pt-1 border-t border-[#141b2e]">
                     <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                      Все импортированные навыки ({hhData.skills.length}):
+                      Опыт работы из резюме:
+                    </div>
+                    <div className="space-y-2">
+                      {hhData.workHistory.map((work, idx) => (
+                        <div key={idx} className="p-3 rounded-xl bg-[#0e152b] border border-[#16213d] space-y-1">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                              <Building2 className="w-3 h-3 text-[#2b35ff]" />
+                              {work.company}
+                            </span>
+                            <span className="text-[10px] text-slate-400">{work.period}</span>
+                          </div>
+                          <div className="text-[11px] text-[#00f0ff] font-bold">{work.position}</div>
+                          <p className="text-[11px] text-slate-400 leading-snug">{work.description}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Skills tags */}
+                  <div className="space-y-1.5 pt-1 border-t border-[#141b2e]">
+                    <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                      Все импортированные ключевые навыки ({hhData.skills.length}):
                     </div>
                     <div className="flex flex-wrap gap-1.5">
                       {hhData.skills.map(s => (
@@ -541,14 +742,193 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
                       ))}
                     </div>
                   </div>
+
+                  <div className="flex items-center justify-between pt-2 border-t border-[#141b2e]">
+                    <span className="text-[11px] text-slate-400">Хотите протестировать другой сценарий или изменить вилку?</span>
+                    <button
+                      onClick={() => setIsEditingHhManual(true)}
+                      className="text-xs text-[#00f0ff] hover:underline font-bold flex items-center gap-1 cursor-pointer"
+                    >
+                      <Sliders className="w-3.5 h-3.5" />
+                      Настроить вручную
+                    </button>
+                  </div>
                 </div>
               ) : (
-                <div className="p-5 rounded-2xl bg-[#0b1021] border border-dashed border-[#1e2a4a] text-center space-y-2">
-                  <FileText className="w-8 h-8 text-slate-500 mx-auto" />
-                  <div className="text-xs font-bold text-slate-300">Резюме с hh.ru еще не загружено</div>
-                  <p className="text-[11px] text-slate-500 max-w-sm mx-auto">
-                    Нажмите «Подтянуть с hh.ru», чтобы не заполнять профиль вручную — система распарсит все данные через официальный OAuth2.
-                  </p>
+                /* Unconnected or Editing/Switching View */
+                <div className="space-y-4">
+                  
+                  {/* Mode Selector: Presets vs URL vs Manual Form */}
+                  <div className="p-5 rounded-2xl bg-[#0b1021] border border-[#1e2a4a] space-y-5">
+                    
+                    {/* Section 1: Candidate Resumes Presets */}
+                    <div className="space-y-2.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                          <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                          Выберите готовое подтвержденное резюме соискателя:
+                        </span>
+                        <span className="text-[10px] text-slate-400 font-mono">1 клик для импорта</span>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        {[
+                          {
+                            id: 'pesterev',
+                            name: 'Иван Пестерев',
+                            title: 'Lead Fullstack Engineer & Architect',
+                            salary: '450 000 ₽',
+                            exp: '7 лет',
+                            skillsCount: '5 тестов hh.ru'
+                          },
+                          {
+                            id: 'belov',
+                            name: 'Александр Белов',
+                            title: 'Lead Java / Highload Backend Engineer',
+                            salary: '480 000 ₽',
+                            exp: '6 лет',
+                            skillsCount: '3 теста hh.ru'
+                          },
+                          {
+                            id: 'daria',
+                            name: 'Дарья Морозова',
+                            title: 'Middle+ Java & Kotlin Backend Engineer',
+                            salary: '210 000 ₽',
+                            exp: '4 года',
+                            skillsCount: '3 теста hh.ru'
+                          },
+                          {
+                            id: 'sokolov',
+                            name: 'Михаил Соколов',
+                            title: 'Senior Highload Backend & Data Engineer',
+                            salary: '290 000 ₽',
+                            exp: '6 лет',
+                            skillsCount: '3 теста hh.ru'
+                          },
+                        ].map((preset) => (
+                          <div
+                            key={preset.id}
+                            onClick={() => handleConnectHhPreset(preset.id)}
+                            className="p-3 rounded-xl bg-[#0f172e] border border-[#1c2a4f] hover:border-[#ff2b42] hover:bg-[#141f3d] transition-all cursor-pointer group text-left space-y-1.5"
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-bold text-white group-hover:text-[#ff7585] transition-colors">
+                                {preset.name}
+                              </span>
+                              <span className="text-xs font-bold text-emerald-400 font-mono">
+                                {preset.salary}
+                              </span>
+                            </div>
+                            <div className="text-[11px] text-slate-300 truncate">
+                              {preset.title}
+                            </div>
+                            <div className="flex items-center gap-2 text-[10px] text-slate-400 pt-0.5">
+                              <span>Опыт: {preset.exp}</span>
+                              <span>•</span>
+                              <span className="text-[#00f0ff]">{preset.skillsCount}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Section 2: URL or Resume ID Input */}
+                    <div className="pt-3 border-t border-[#141b2e] space-y-2">
+                      <label className="text-xs font-bold text-slate-300 flex items-center justify-between">
+                        <span>Или укажите ссылку / ID резюме на hh.ru:</span>
+                        <span className="text-[10px] text-slate-500 font-normal">hh.ru/resume/...</span>
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <div className="relative flex-1">
+                          <input
+                            type="text"
+                            value={hhInputQuery}
+                            onChange={(e) => setHhInputQuery(e.target.value)}
+                            placeholder="https://hh.ru/resume/c5f8842... или название роли"
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-[#070b16] border border-[#223055] text-white text-xs placeholder:text-slate-600 focus:outline-none focus:border-[#ff2b42] transition-colors"
+                          />
+                        </div>
+                        <button
+                          disabled={!!loadingProvider}
+                          onClick={handleImportHhQueryOrUrl}
+                          className="px-4 py-2.5 rounded-xl bg-[#ff2b42] hover:bg-[#e02439] text-white text-xs font-bold transition-all shadow-md shadow-[#ff2b42]/30 flex items-center gap-2 shrink-0 disabled:opacity-50 cursor-pointer"
+                        >
+                          <FileText className="w-3.5 h-3.5" />
+                          <span>Импортировать</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Section 3: Manual Customization Form */}
+                    <div className="pt-3 border-t border-[#141b2e] space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+                          <Edit3 className="w-3.5 h-3.5 text-[#00f0ff]" />
+                          Ручная настройка параметров резюме:
+                        </span>
+                        <span className="text-[10px] text-slate-400">можно изменить любые поля</span>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div className="space-y-1 sm:col-span-1">
+                          <label className="text-[10px] font-bold text-slate-400 uppercase">Должность:</label>
+                          <input
+                            type="text"
+                            value={editHhTitle}
+                            onChange={(e) => setEditHhTitle(e.target.value)}
+                            className="w-full px-3 py-2 rounded-xl bg-[#070b16] border border-[#223055] text-white text-xs focus:border-[#00f0ff] outline-none"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-bold text-slate-400 uppercase">Желаемый оклад (₽):</label>
+                          <input
+                            type="number"
+                            value={editHhSalary}
+                            onChange={(e) => setEditHhSalary(Number(e.target.value))}
+                            step={10000}
+                            className="w-full px-3 py-2 rounded-xl bg-[#070b16] border border-[#223055] text-white text-xs font-mono focus:border-[#00f0ff] outline-none"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-bold text-slate-400 uppercase">Опыт (лет):</label>
+                          <input
+                            type="number"
+                            value={editHhExperience}
+                            onChange={(e) => setEditHhExperience(Number(e.target.value))}
+                            min={0}
+                            max={30}
+                            className="w-full px-3 py-2 rounded-xl bg-[#070b16] border border-[#223055] text-white text-xs font-mono focus:border-[#00f0ff] outline-none"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase">Ключевые навыки (через запятую):</label>
+                        <input
+                          type="text"
+                          value={editHhSkillsStr}
+                          onChange={(e) => setEditHhSkillsStr(e.target.value)}
+                          placeholder="TypeScript, React, Java, Spring Boot, PostgreSQL, Docker"
+                          className="w-full px-3 py-2 rounded-xl bg-[#070b16] border border-[#223055] text-white text-xs focus:border-[#00f0ff] outline-none"
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between pt-1">
+                        <span className="text-[10px] text-slate-400">
+                          * Навыки автоматически обновят фильтры и профиль кандидата в ATS работодателей
+                        </span>
+                        <button
+                          disabled={!!loadingProvider}
+                          onClick={handleSaveCustomHhResume}
+                          className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white text-xs font-bold transition-all shadow-md shadow-emerald-500/20 flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                        >
+                          <Check className="w-3.5 h-3.5" />
+                          <span>Сохранить в профиль</span>
+                        </button>
+                      </div>
+                    </div>
+
+                  </div>
                 </div>
               )}
             </div>

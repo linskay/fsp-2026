@@ -23,7 +23,14 @@ import {
   GitHubProfileData,
   HhResumeData
 } from './types';
-import { MOCK_GITHUB_PROFILE, PESTEREV_GITHUB_PROFILE, MOCK_HH_RESUME } from './data/mockOAuthData';
+import { 
+  MOCK_GITHUB_PROFILE, 
+  PESTEREV_GITHUB_PROFILE, 
+  MOCK_HH_RESUME, 
+  PESTEREV_HH_RESUME, 
+  DARIA_HH_RESUME, 
+  SOKOLOV_HH_RESUME 
+} from './data/mockOAuthData';
 import { Navbar } from './components/Navbar';
 import { CandidateDashboard } from './components/candidate/CandidateDashboard';
 import { EmployerDashboard } from './components/employer/EmployerDashboard';
@@ -48,7 +55,7 @@ export default function App() {
 
   // OAuth Integrations State
   const [githubData, setGithubData] = useState<GitHubProfileData | null>(PESTEREV_GITHUB_PROFILE);
-  const [hhData, setHhData] = useState<HhResumeData | null>(MOCK_HH_RESUME);
+  const [hhData, setHhData] = useState<HhResumeData | null>(PESTEREV_HH_RESUME);
   const [yandexConnected, setYandexConnected] = useState<boolean>(true);
   const [yandexEmail, setYandexEmail] = useState<string | null>('ivan.pesterev@yandex.ru');
   const [isOAuthModalOpen, setIsOAuthModalOpen] = useState<boolean>(false);
@@ -190,7 +197,8 @@ export default function App() {
             experienceYears: data.experienceYears,
             salaryExpectationMin: data.desiredSalary * 0.9,
             salaryExpectationMax: data.desiredSalary * 1.2,
-            skills: Array.from(new Set([...c.skills, ...data.skills]))
+            skills: Array.from(new Set([...c.skills, ...data.skills])),
+            hhConfirmedSkills: data.confirmedSkills && data.confirmedSkills.length > 0 ? data.confirmedSkills : c.hhConfirmedSkills
           };
         }
         return c;
@@ -474,10 +482,18 @@ export default function App() {
               setActiveCandidateId(id);
               if (id === 'cand-pesterev') {
                 setGithubData(PESTEREV_GITHUB_PROFILE);
+                setHhData(PESTEREV_HH_RESUME);
                 setYandexEmail('ivan.pesterev@yandex.ru');
               } else if (id === 'cand-1') {
                 setGithubData(MOCK_GITHUB_PROFILE);
+                setHhData(MOCK_HH_RESUME);
                 setYandexEmail('alexander.belov@yandex.ru');
+              } else if (id === 'cand-2') {
+                setHhData(DARIA_HH_RESUME);
+                setYandexEmail('daria.morozova@yandex.ru');
+              } else if (id === 'cand-3') {
+                setHhData(SOKOLOV_HH_RESUME);
+                setYandexEmail('mikhail.sokolov@yandex.ru');
               } else {
                 const found = candidates.find(c => c.id === id);
                 if (found) {

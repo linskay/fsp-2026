@@ -665,6 +665,7 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
           <LeetCodeStatsCard
             stats={candidate.leetcodeStats}
             candidateName={candidate.fullName}
+            onUpdateStats={(newStats) => onUpdateCandidate({ leetcodeStats: newStats })}
           />
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">

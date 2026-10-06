@@ -236,6 +236,141 @@ export const MOCK_HH_RESUME: HhResumeData = {
   ]
 };
 
+export const DARIA_HH_RESUME: HhResumeData = {
+  resumeId: 'hh-res-morozova-2026',
+  title: 'Middle+ Java & Kotlin Backend Engineer',
+  experienceYears: 4,
+  desiredSalary: 210000,
+  skills: [
+    'Java 17/21',
+    'Kotlin',
+    'Spring Boot 3',
+    'PostgreSQL',
+    'Docker',
+    'REST API',
+    'Kafka Basics',
+    'JUnit 5 / Mockito',
+    'Git'
+  ],
+  confirmedSkills: [
+    {
+      id: 'hh-cs-dm-1',
+      skill: 'Java Core & Collections',
+      level: 'Экспертный',
+      scorePercent: 96,
+      percentileRank: 'Топ-2% среди соискателей hh.ru',
+      confirmedAt: '18 января 2026 г.',
+      testTitle: 'Тестирование HeadHunter: Java Core и многопоточность',
+      certificateId: 'HH-CERT-2026-DM-1102'
+    },
+    {
+      id: 'hh-cs-dm-2',
+      skill: 'Spring Framework & Spring Boot',
+      level: 'Продвинутый',
+      scorePercent: 92,
+      percentileRank: 'Топ-5% среди соискателей hh.ru',
+      confirmedAt: '25 декабря 2025 г.',
+      testTitle: 'Тестирование HeadHunter: Архитектура Spring Boot приложений',
+      certificateId: 'HH-CERT-2025-DM-4912'
+    },
+    {
+      id: 'hh-cs-dm-3',
+      skill: 'SQL & Реляционные базы данных',
+      level: 'Продвинутый',
+      scorePercent: 90,
+      percentileRank: 'Топ-7% среди соискателей hh.ru',
+      confirmedAt: '12 ноября 2025 г.',
+      testTitle: 'Тестирование HeadHunter: PostgreSQL и проектирование БД',
+      certificateId: 'HH-CERT-2025-DM-3801'
+    }
+  ],
+  about: 'Middle+ бэкенд разработчик на Java и Kotlin. Опыт создания отказоустойчивых REST сервисов и микросервисов, покрытие тестами более 85%. Активный участник региональных олимпиад ФСП.',
+  education: 'НИУ ВШЭ, Факультет компьютерных наук (Бакалавриат, 2022)',
+  connectedAt: new Date().toISOString(),
+  workHistory: [
+    {
+      company: 'Digital Retail Hub',
+      position: 'Middle Java Developer',
+      period: '2022 — настоящее время (2 года)',
+      description: 'Разработка микросервисов лояльности и скидок на Spring Boot 3 и PostgreSQL. Оптимизация времени ответа сервисов.'
+    },
+    {
+      company: 'FinTech Startup',
+      position: 'Junior Java Developer',
+      period: '2020 — 2022 (2 года)',
+      description: 'Поддержка платежного шлюза, написание интеграционных тестов, интеграция с внешними банковскими API.'
+    }
+  ]
+};
+
+export const SOKOLOV_HH_RESUME: HhResumeData = {
+  resumeId: 'hh-res-sokolov-2026',
+  title: 'Senior Highload Backend & Data Engineer (Python / Go)',
+  experienceYears: 6,
+  desiredSalary: 290000,
+  skills: [
+    'Python 3.12',
+    'Go (Golang)',
+    'FastAPI',
+    'PostgreSQL',
+    'ClickHouse',
+    'Apache Kafka',
+    'Redis',
+    'Docker',
+    'Kubernetes',
+    'Алгоритмы и структуры данных'
+  ],
+  confirmedSkills: [
+    {
+      id: 'hh-cs-ms-1',
+      skill: 'Python Backend & Asyncio',
+      level: 'Экспертный',
+      scorePercent: 98,
+      percentileRank: 'Топ-0.9% среди соискателей hh.ru',
+      confirmedAt: '5 февраля 2026 г.',
+      testTitle: 'Тестирование HeadHunter: Асинхронное программирование Python',
+      certificateId: 'HH-CERT-2026-MS-9201'
+    },
+    {
+      id: 'hh-cs-ms-2',
+      skill: 'Go Concurrency & Microservices',
+      level: 'Экспертный',
+      scorePercent: 96,
+      percentileRank: 'Топ-1.5% среди соискателей hh.ru',
+      confirmedAt: '12 января 2026 г.',
+      testTitle: 'Тестирование HeadHunter: Go горутины, каналы и микросервисы',
+      certificateId: 'HH-CERT-2026-MS-7712'
+    },
+    {
+      id: 'hh-cs-ms-3',
+      skill: 'ClickHouse & Аналитические СУБД',
+      level: 'Экспертный',
+      scorePercent: 95,
+      percentileRank: 'Топ-2% среди соискателей hh.ru',
+      confirmedAt: '28 декабря 2025 г.',
+      testTitle: 'Тестирование HeadHunter: Большие данные и аналитический SQL',
+      certificateId: 'HH-CERT-2025-MS-5531'
+    }
+  ],
+  about: 'Senior разработчик высоконагруженных распределенных сервисов и витрин данных. Стек: Go, Python, ClickHouse, Kafka. Кандидат в мастера спорта (КМС) по спортивному программированию.',
+  education: 'МГТУ им. Баумана, ИУ7 «Программное обеспечение ЭВМ и информационные технологии» (Магистратура, 2020)',
+  connectedAt: new Date().toISOString(),
+  workHistory: [
+    {
+      company: 'AdTech Platform Core',
+      position: 'Senior Data & Go Engineer',
+      period: '2023 — настоящее время (2 года)',
+      description: 'Построение пайплайнов обработки кликов и показов в реальном времени на Kafka и ClickHouse (80 000 событий/сек).'
+    },
+    {
+      company: 'Logistics Tech Solutions',
+      position: 'Middle / Senior Python Developer',
+      period: '2020 — 2023 (3 года)',
+      description: 'Разработка ядра маршрутизации курьеров с решением задачи коммивояжера (TSP) и графовыми эвристиками.'
+    }
+  ]
+};
+
 export const MOCK_HH_EMPLOYER_VACANCIES: HhEmployerVacancy[] = [
   {
     id: 'hh-vac-1',
