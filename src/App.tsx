@@ -146,16 +146,16 @@ export default function App() {
             ...c,
             fullName: isIvan ? 'Иван Пестерев' : (data.username === 'alex-belov-fsp' ? c.fullName : `@${data.username}`),
             avatarUrl: data.avatarUrl || c.avatarUrl,
-            title: isIvan ? 'Lead Fullstack Engineer & Software Architect' : c.title,
+            title: isIvan ? (c.title || 'Java-разработчик') : c.title,
             about: isIvan
-              ? 'Ведущий Fullstack-разработчик и системный архитектор. Синхронизировано 842 публичных коммита на GitHub (@ipesterev). Приватные репозитории защищены политикой 152-ФЗ.'
+              ? 'Java-разработчик с опытом коммерческой разработки 5 лет 1 месяц. Синхронизировано 842 публичных коммита на GitHub (@ipesterev). Резюме верифицировано через hh.ru, приватные репозитории защищены политикой 152-ФЗ.'
               : `${c.about} • Подтверждено ${data.commitsCountYear} публичных коммитов в открытых репозиториях GitHub (@${data.username}). Приватные репозитории защищены регламентом 152-ФЗ.`,
             githubUrl: `https://github.com/${data.username}`,
             skills: newSkills,
             fspBadges: Array.from(new Set([...c.fspBadges, `GitHub Verified: @${data.username}`, 'Public Repos Sync'])),
             aiSummary: {
               summaryText: isIvan
-                ? 'Ведущий Fullstack-разработчик и системный архитектор (@ipesterev). Подтвержденный стек: TypeScript, React, Java 21, Python, FastAPI, Docker. По данным анализа открытых репозиториев GitHub, имеет высокую культуру коммитов (842 коммита за 12 мес.) и зрелую модульную архитектуру. Приватный код пользователя не сканируется согласно регламенту 152-ФЗ. Рекомендуется на ключевые позиции Fullstack Lead / Principal Architect.'
+                ? 'Java-разработчик (@ipesterev) с 5 годами опыта и спортивным рейтингом 2540 ELO. Стек: Java, Spring Boot, PostgreSQL, Docker, REST API. Профиль верифицирован через hh.ru (120 000 ₽ на руки, удаленно, постоянная занятость).'
                 : `Сильный инженер (@${data.username}). Подтвержденный стек: ${newSkills.slice(0, 5).join(', ')}. Активность на GitHub: ${data.commitsCountYear} публичных коммитов в открытых репозиториях (приватные скрыты регламентом 152-ФЗ).`,
               keyStrengths: [
                 `Высокая подтвержденная активность (${data.commitsCountYear} публичных коммитов)`,
@@ -484,6 +484,9 @@ export default function App() {
             onOpenOAuth={(provider) => {
               setIsOAuthModalOpen(true);
             }}
+            candidate={currentCandidate}
+            hhData={hhData}
+            githubData={githubData}
           />
         )}
 

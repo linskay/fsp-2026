@@ -2,8 +2,8 @@ import { GitHubProfileData, HhResumeData, HhEmployerVacancy } from '../types';
 
 export const PESTEREV_GITHUB_PROFILE: GitHubProfileData = {
   username: 'ipesterev',
-  avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80',
-  bio: 'Fullstack Engineer & Software Architect • React, TypeScript, Java, Python • ФСП Атлет',
+  avatarUrl: '/avatars/user_pesterev.png',
+  bio: 'Java-разработчик • Java, Spring Boot, PostgreSQL, Docker • ФСП Атлет',
   reposCount: 34,
   commitsCountYear: 842,
   mainLanguage: 'TypeScript / Java / Python',

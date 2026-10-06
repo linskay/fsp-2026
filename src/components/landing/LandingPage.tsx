@@ -36,19 +36,41 @@ import {
   Search,
   Star
 } from 'lucide-react';
-import { UserRole } from '../../types';
+import { UserRole, CandidateProfile, HhResumeData, GitHubProfileData } from '../../types';
+import { INITIAL_CANDIDATES } from '../../data/mockData';
 import { FspLogo, FspStarIcon } from '../brand/FspLogo';
 import { UserAvatar } from '../brand/UserAvatar';
 
 interface LandingPageProps {
   onSelectRole: (role: UserRole) => void;
   onOpenOAuth: (provider?: 'github' | 'hh' | 'yandex') => void;
+  candidate?: CandidateProfile;
+  hhData?: HhResumeData | null;
+  githubData?: GitHubProfileData | null;
 }
 
 export const LandingPage: React.FC<LandingPageProps> = ({
   onSelectRole,
-  onOpenOAuth
+  onOpenOAuth,
+  candidate,
+  hhData,
+  githubData
 }) => {
+  const displayCandidate = candidate || INITIAL_CANDIDATES[0];
+  const isIvan = displayCandidate.id === 'cand-pesterev' || displayCandidate.fullName.includes('Пестерев');
+  const rankShort = displayCandidate.fspRank.includes('КМС') || displayCandidate.fspRank.includes('Кандидат') ? 'КМС РФ' : 'МС РФ';
+  const desiredSalaryStr = hhData 
+    ? `${hhData.desiredSalary.toLocaleString('ru-RU')} ₽` 
+    : (displayCandidate.salaryExpectationMin ? `${displayCandidate.salaryExpectationMin.toLocaleString('ru-RU')} ₽` : '120 000 ₽');
+  const commitsCount = githubData?.commitsCountYear || (isIvan ? 842 : 1842);
+  const lcSolved = displayCandidate.leetcodeStats?.totalSolved || (isIvan ? 642 : 742);
+  const lcBadge = displayCandidate.leetcodeStats?.badge || 'Knight';
+  const lcHard = displayCandidate.leetcodeStats?.hardSolved || (isIvan ? 90 : 142);
+  const topPercentageStr = displayCandidate.leetcodeStats?.contestTopPercentage 
+    ? `ТОП-${displayCandidate.leetcodeStats.contestTopPercentage}% В РФ` 
+    : 'ТОП-0.5% В РФ';
+  const githubLogin = displayCandidate.githubUrl ? displayCandidate.githubUrl.split('/').pop() : (isIvan ? 'ipesterev' : 'alex-belov-fsp');
+
   // Hero Interactive Role Switcher: 'candidate' | 'employer'
   const [heroRole, setHeroRole] = useState<'candidate' | 'employer'>('candidate');
   
@@ -258,7 +280,7 @@ public class Solution {
                       onClick={() => onSelectRole('candidate')}
                       className="w-full py-3.5 px-5 rounded-xl btn-wow-primary text-white font-bold text-sm flex items-center justify-center gap-2.5 cursor-pointer group"
                     >
-                      <span>Перейти в кабинет кандидата (Александр Белов, ELO 2740)</span>
+                      <span>Перейти в кабинет кандидата ({displayCandidate.fullName}, ELO {displayCandidate.fspRating})</span>
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </button>
                   </div>
@@ -271,40 +293,40 @@ public class Solution {
                   <div className="flex items-start justify-between gap-3 border-b border-white/[0.06] pb-4">
                     <div className="flex items-center gap-3.5">
                       <UserAvatar
-                        name="Александр Белов"
-                        src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150"
+                        name={displayCandidate.fullName}
+                        src={displayCandidate.avatarUrl}
                         size="lg"
-                        rank="Мастер спорта РФ"
+                        rank={displayCandidate.fspRank}
                       />
                       <div>
                         <div className="flex items-center gap-2">
-                          <h4 className="font-bold text-white text-base">Александр Белов</h4>
+                          <h4 className="font-bold text-white text-base">{displayCandidate.fullName}</h4>
                           <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30 text-[10px] font-bold">
-                            МС РФ
+                            {rankShort}
                           </span>
                         </div>
-                        <p className="text-xs text-slate-400 font-medium">Lead Java / Highload Engineer</p>
+                        <p className="text-xs text-slate-400 font-medium">{displayCandidate.title}</p>
                       </div>
                     </div>
 
                     <div className="text-right">
-                      <div className="text-xl sm:text-2xl font-black text-cyan-300 font-mono tracking-tight">2740 ELO</div>
-                      <div className="text-[10px] text-emerald-400 font-semibold tracking-wide">ТОП-0.1% В РФ</div>
+                      <div className="text-xl sm:text-2xl font-black text-cyan-300 font-mono tracking-tight">{displayCandidate.fspRating} ELO</div>
+                      <div className="text-[10px] text-emerald-400 font-semibold tracking-wide">{topPercentageStr}</div>
                     </div>
                   </div>
 
                   {/* GitHub, LeetCode & ELO Stats */}
                   <div className="grid grid-cols-3 gap-2 text-center text-xs">
                     <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-                      <div className="font-bold text-white font-mono text-sm">1 842</div>
+                      <div className="font-bold text-white font-mono text-sm">{commitsCount.toLocaleString('ru-RU')}</div>
                       <div className="text-[10px] text-slate-400 font-medium mt-0.5">Коммиты GitHub</div>
                     </div>
                     <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-                      <div className="font-bold text-amber-400 font-mono text-sm">742 LC</div>
-                      <div className="text-[10px] text-slate-400 font-medium mt-0.5">Guardian (Hard: 142)</div>
+                      <div className="font-bold text-amber-400 font-mono text-sm">{lcSolved} LC</div>
+                      <div className="text-[10px] text-slate-400 font-medium mt-0.5">{lcBadge} (Hard: {lcHard})</div>
                     </div>
                     <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-                      <div className="font-bold text-emerald-400 font-mono text-sm">480 000 ₽</div>
+                      <div className="font-bold text-emerald-400 font-mono text-sm">{desiredSalaryStr}</div>
                       <div className="text-[10px] text-slate-400 font-medium mt-0.5">Ожидаемый оклад</div>
                     </div>
                   </div>
@@ -316,8 +338,10 @@ public class Solution {
                         ₽
                       </div>
                       <div>
-                        <div className="font-bold text-white">Входящий оффер: СберТех</div>
-                        <div className="text-[11px] text-emerald-300 font-mono font-medium">520 000 ₽ (на руки) • Remote</div>
+                        <div className="font-bold text-white">Входящий оффер: {isIvan ? 'ВТБ (HighLoad Core)' : 'СберТех'}</div>
+                        <div className="text-[11px] text-emerald-300 font-mono font-medium">
+                          {isIvan ? '135 000 ₽ (на руки) • Remote' : '520 000 ₽ (на руки) • Remote'}
+                        </div>
                       </div>
                     </div>
                     <span className="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-500/30">
@@ -399,13 +423,13 @@ public class Solution {
                   {/* Filter chips */}
                   <div className="flex flex-wrap gap-1.5 text-[10px]">
                     <span className="px-2.5 py-1 rounded-lg bg-purple-500/15 border border-purple-500/30 text-purple-300 font-semibold">
-                      ELO ≥ 2400 (КМС / МС)
+                      ELO ≥ {Math.floor(displayCandidate.fspRating / 100) * 100} ({rankShort.replace(' РФ', '')})
                     </span>
                     <span className="px-2.5 py-1 rounded-lg bg-blue-500/15 border border-blue-500/30 text-blue-300 font-semibold">
-                      Java 21 / Highload
+                      {displayCandidate.skills.slice(0, 2).join(' / ') || 'Java / Backend'}
                     </span>
                     <span className="px-2.5 py-1 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-semibold">
-                      Вилка 350-500k ₽
+                      Вилка {displayCandidate.salaryExpectationMin ? `${Math.round(displayCandidate.salaryExpectationMin / 1000)}-${Math.round(displayCandidate.salaryExpectationMax / 1000)}k ₽` : '108-138k ₽'}
                     </span>
                   </div>
 
@@ -413,10 +437,10 @@ public class Solution {
                   <div className="space-y-2 pt-1">
                     <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] flex items-center justify-between text-xs hover:border-white/[0.12] transition-colors">
                       <div className="flex items-center gap-3">
-                        <UserAvatar name="Александр Белов" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" size="sm" rank="Мастер спорта РФ" />
+                        <UserAvatar name={displayCandidate.fullName} src={displayCandidate.avatarUrl} size="sm" rank={displayCandidate.fspRank} />
                         <div>
-                          <div className="font-bold text-white text-xs">Александр Б. (Мастер спорта)</div>
-                          <div className="text-[10px] text-slate-400">Senior Java • Москва / Remote</div>
+                          <div className="font-bold text-white text-xs">{displayCandidate.fullName.split(' ')[0]} {displayCandidate.fullName.split(' ')[1]?.[0]}. ({rankShort.replace(' РФ', '')})</div>
+                          <div className="text-[10px] text-slate-400">{displayCandidate.title} • {displayCandidate.city} / Remote</div>
                         </div>
                       </div>
                       <button 
@@ -688,20 +712,20 @@ public class Solution {
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-6">
               <div className="flex items-center gap-4">
                 <img 
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200" 
-                  alt="Александр Белов" 
+                  src={displayCandidate.avatarUrl} 
+                  alt={displayCandidate.fullName} 
                   className="w-16 h-16 rounded-2xl object-cover border-2 border-[#00f0ff] shadow-lg shadow-[#00f0ff]/30"
                 />
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="text-xl font-black text-white">Александр Белов</h3>
+                    <h3 className="text-xl font-black text-white">{displayCandidate.fullName}</h3>
                     <span className="px-2 py-0.5 rounded-md bg-[#2b35ff]/40 text-[#00f0ff] text-xs font-bold">
-                      Мастер спорта РФ
+                      {displayCandidate.fspRank}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-300">Lead Java / Highload Engineer • Москва / Remote</p>
+                  <p className="text-xs text-slate-300">{displayCandidate.title} • {displayCandidate.city} / Remote</p>
                   <div className="flex items-center gap-2 text-[11px] text-slate-400 mt-1">
-                    <span>GitHub: @alex-belov-fsp</span>
+                    <span>GitHub: @{githubLogin}</span>
                     <span>•</span>
                     <span className="text-emerald-400">152-ФЗ Верифицирован</span>
                   </div>
@@ -709,8 +733,10 @@ public class Solution {
               </div>
 
               <div className="p-3 rounded-2xl bg-[#060917] border border-[#2b35ff]/40 text-center sm:text-right">
-                <div className="text-2xl font-black text-[#00f0ff] font-mono">2740 ELO</div>
-                <div className="text-[10px] text-yellow-400 font-bold uppercase">Кубок России 2024 (1 место)</div>
+                <div className="text-2xl font-black text-[#00f0ff] font-mono">{displayCandidate.fspRating} ELO</div>
+                <div className="text-[10px] text-yellow-400 font-bold uppercase">
+                  {displayCandidate.achievements?.[0]?.badge || (isIvan ? 'Кубок Инноваций ФСП' : 'Кубок России 2024 (1 место)')}
+                </div>
               </div>
             </div>
 
@@ -722,32 +748,44 @@ public class Solution {
                   <span>AI-Summary технического профиля</span>
                 </div>
                 <span className="text-[10px] text-purple-400 bg-purple-500/20 px-2 py-0.5 rounded-md font-bold">
-                  Чистота кода: 98/100
+                  Чистота кода: {displayCandidate.aiSummary?.codeCleanlinessScore || 98}/100
                 </span>
               </div>
 
               <p className="text-xs sm:text-sm text-slate-200 leading-relaxed italic bg-[#060917]/70 p-4 rounded-xl border border-purple-500/20">
-                «Высококлассный системный архитектор с безупречным алгоритмическим бэкграундом. Решает задачи уровня Hard за среднее время 18 минут. В кодовой базе на GitHub преобладают многопоточные распределенные сервисы на Java 21, Spring Boot 3 и Kafka с минимальным memory footprint и доказанной алгоритмической сложностью O(V+E). Рекомендуется на позиции Lead / Principal Highload Engineer.»
+                «{displayCandidate.aiSummary?.summaryText || (isIvan 
+                  ? 'Java-разработчик (@ipesterev) с 5 годами опыта и спортивным рейтингом 2540 ELO. Стек: Java, Spring Boot, PostgreSQL, Docker, REST API. Профиль верифицирован через hh.ru (120 000 ₽ на руки, удаленно, постоянная занятость).'
+                  : 'Высококлассный системный архитектор с безупречным алгоритмическим бэкграундом. Решает задачи уровня Hard за среднее время 18 минут.')}»
               </p>
 
               {/* Key strengths tag pills */}
               <div className="flex flex-wrap gap-2 text-xs">
-                <span className="px-3 py-1 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-bold">
-                  ✓ Оптимизация GC и Lock-free структуры
-                </span>
-                <span className="px-3 py-1 rounded-lg bg-blue-500/20 border border-blue-500/40 text-blue-300 font-bold">
-                  ✓ Динамическое программирование и графы
-                </span>
-                <span className="px-3 py-1 rounded-lg bg-purple-500/20 border border-purple-500/40 text-purple-300 font-bold">
-                  ✓ Архитектура распределенных брокеров (Kafka/gRPC)
-                </span>
+                {displayCandidate.aiSummary?.keyStrengths && displayCandidate.aiSummary.keyStrengths.length > 0 ? (
+                  displayCandidate.aiSummary.keyStrengths.map((str, idx) => (
+                    <span key={idx} className="px-3 py-1 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-bold">
+                      ✓ {str}
+                    </span>
+                  ))
+                ) : (
+                  <>
+                    <span className="px-3 py-1 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-bold">
+                      ✓ Опыт в разработке: 5 лет 1 месяц (Java-разработчик)
+                    </span>
+                    <span className="px-3 py-1 rounded-lg bg-blue-500/20 border border-blue-500/40 text-blue-300 font-bold">
+                      ✓ Стек: Java, Spring Boot, PostgreSQL, Docker, REST API
+                    </span>
+                    <span className="px-3 py-1 rounded-lg bg-purple-500/20 border border-purple-500/40 text-purple-300 font-bold">
+                      ✓ Желаемый оклад: 120 000 ₽ на руки (Удаленно)
+                    </span>
+                  </>
+                )}
               </div>
             </div>
 
             {/* Action Bar */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
               <div className="text-xs text-slate-400">
-                Желаемый оклад: <strong className="text-emerald-400 font-mono text-base">480 000 ₽</strong> (на руки)
+                Желаемый оклад: <strong className="text-emerald-400 font-mono text-base">{desiredSalaryStr}</strong> (на руки)
               </div>
               <div className="flex items-center gap-3 w-full sm:w-auto">
                 <button
