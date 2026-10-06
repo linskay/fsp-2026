@@ -91,6 +91,31 @@ export interface BackendAiSummaryDto {
   generatedAt: string;
 }
 
+export interface TestUserDto {
+  role: 'CANDIDATE' | 'EMPLOYER';
+  email: string;
+  password: string;
+  fullName: string;
+  description: string;
+}
+
+export interface AuthLoginResponse {
+  status: string;
+  userId: string;
+  email: string;
+  fullName: string;
+  role: 'CANDIDATE' | 'EMPLOYER';
+  avatarUrl?: string;
+  candidateId?: string;
+  employerId?: string;
+  companyName?: string;
+  fspElo?: number;
+  fspRank?: string;
+  token: string;
+  error?: string;
+  hint?: string;
+}
+
 // Convert Backend Candidate DTO to Frontend CandidateProfile
 export function mapBackendCandidateToFrontend(dto: BackendCandidateDto): CandidateProfile {
   const specLower = (dto.specialization ? dto.specialization.toLowerCase() : 'backend') as Specialization;
@@ -618,6 +643,79 @@ class ApiService {
       console.warn('GitHub live fetch failed:', e);
     }
     return null;
+  }
+
+  // 11. Authenticate with Login & Password (Candidate / Employer)
+  async login(email: string, password: string): Promise<AuthLoginResponse> {
+    try {
+      const res = await fetch(`${API_BASE}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Ошибка авторизации');
+      }
+      return data;
+    } catch (err: any) {
+      // Fallback for standalone/mock mode if backend is not reachable
+      const normEmail = email.trim().toLowerCase();
+      if (normEmail === 'candidate@fsp.ru' && password === 'candidate2026') {
+        return {
+          status: 'SUCCESS',
+          userId: 'c0000000-0000-0000-0000-000000000001',
+          candidateId: 'cand-pesterev',
+          email: 'candidate@fsp.ru',
+          fullName: 'Иван Пестерев',
+          role: 'CANDIDATE',
+          avatarUrl: '/avatars/user_pesterev.png',
+          fspElo: 1200,
+          fspRank: 'UNRANKED',
+          token: 'fsp-jwt-candidate-token'
+        };
+      }
+      if (normEmail === 'employer@fsp.ru' && password === 'employer2026') {
+        return {
+          status: 'SUCCESS',
+          userId: 'e0000000-0000-0000-0000-000000000001',
+          employerId: 'emp-sbertech',
+          email: 'employer@fsp.ru',
+          fullName: 'Елена Романова (СберТех HR)',
+          role: 'EMPLOYER',
+          companyName: 'ПАО Сбербанк (СберТех)',
+          avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
+          token: 'fsp-jwt-employer-token'
+        };
+      }
+      throw new Error(err.message || 'Неверный логин или пароль');
+    }
+  }
+
+  // 12. Fetch Test Users list
+  async getTestUsers(): Promise<TestUserDto[]> {
+    try {
+      const res = await fetch(`${API_BASE}/auth/test-users`);
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return [
+      {
+        role: 'CANDIDATE',
+        email: 'candidate@fsp.ru',
+        password: 'candidate2026',
+        fullName: 'Иван Пестерев',
+        description: 'Кандидат: Java-разработчик (5 лет опыта с hh.ru, 1200 ELO, GitHub @ipesterev)'
+      },
+      {
+        role: 'EMPLOYER',
+        email: 'employer@fsp.ru',
+        password: 'employer2026',
+        fullName: 'Елена Романова (СберТех HR)',
+        description: 'Работодатель: ПАО Сбербанк (СберТех), вакансия Senior Java 350-520к ₽'
+      }
+    ];
   }
 }
 

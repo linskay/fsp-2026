@@ -34,7 +34,8 @@ import {
   Activity,
   Send,
   Search,
-  Star
+  Star,
+  Key
 } from 'lucide-react';
 import { UserRole, CandidateProfile, HhResumeData, GitHubProfileData } from '../../types';
 import { INITIAL_CANDIDATES } from '../../data/mockData';
@@ -44,6 +45,7 @@ import { UserAvatar } from '../brand/UserAvatar';
 interface LandingPageProps {
   onSelectRole: (role: UserRole) => void;
   onOpenOAuth: (provider?: 'github' | 'hh' | 'yandex') => void;
+  onOpenLogin?: () => void;
   candidate?: CandidateProfile;
   hhData?: HhResumeData | null;
   githubData?: GitHubProfileData | null;
@@ -52,6 +54,7 @@ interface LandingPageProps {
 export const LandingPage: React.FC<LandingPageProps> = ({
   onSelectRole,
   onOpenOAuth,
+  onOpenLogin,
   candidate,
   hhData,
   githubData
@@ -293,6 +296,17 @@ public class Solution {
                       <span>Перейти в кабинет кандидата ({displayCandidate.fullName}, ELO {displayCandidate.fspRating})</span>
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </button>
+
+                    <button
+                      onClick={() => {
+                        if (onOpenLogin) onOpenLogin();
+                        else onSelectRole('candidate');
+                      }}
+                      className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-blue-600/15 to-indigo-600/15 hover:from-blue-600/25 hover:to-indigo-600/25 border border-blue-500/30 text-blue-200 text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm hover:scale-[1.01]"
+                    >
+                      <Key className="w-3.5 h-3.5 text-cyan-400" />
+                      <span>Войти по логину и паролю (Тестовый аккаунт: candidate@fsp.ru)</span>
+                    </button>
                   </div>
                 </div>
 
@@ -416,6 +430,17 @@ public class Solution {
                     >
                       <span>Открыть HR-панель поиска (База 50 000+ атлетов)</span>
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        if (onOpenLogin) onOpenLogin();
+                        else onSelectRole('employer');
+                      }}
+                      className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-purple-600/15 to-indigo-600/15 hover:from-purple-600/25 hover:to-indigo-600/25 border border-purple-500/30 text-purple-200 text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm hover:scale-[1.01]"
+                    >
+                      <Key className="w-3.5 h-3.5 text-purple-400" />
+                      <span>Войти по логину и паролю (Тестовый аккаунт: employer@fsp.ru)</span>
                     </button>
                   </div>
                 </div>

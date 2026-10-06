@@ -44,6 +44,8 @@ import { RoadmapPresentation } from './components/roadmap/RoadmapPresentation';
 import { LandingPage } from './components/landing/LandingPage';
 import { NotFoundPage } from './components/common/NotFoundPage';
 import { OAuthModal } from './components/auth/OAuthModal';
+import { LoginModal } from './components/auth/LoginModal';
+import { AuthLoginResponse } from './services/api';
 import { FspFooterPartners } from './components/brand/FspLogo';
 import { calculateDynamicStats } from './utils/ratingEngine';
 import { Sparkles, Trophy, Bell, CheckCircle2, ShieldCheck, ArrowRight, X } from 'lucide-react';
@@ -56,6 +58,20 @@ export default function App() {
   const [vacancies, setVacancies] = useState<Vacancy[]>(INITIAL_VACANCIES);
   const [invitations, setInvitations] = useState<Invitation[]>(INITIAL_INVITATIONS);
   const [tasks, setTasks] = useState<AlgorithmTask[]>(INITIAL_TASKS);
+
+  // Authentication & Test Users State
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
+  const [currentUser, setCurrentUser] = useState<{
+    email: string;
+    fullName: string;
+    role: 'CANDIDATE' | 'EMPLOYER';
+    avatarUrl?: string;
+  } | null>({
+    email: 'candidate@fsp.ru',
+    fullName: 'Иван Пестерев',
+    role: 'CANDIDATE',
+    avatarUrl: '/avatars/user_pesterev.png'
+  });
 
   // OAuth Integrations State
   const [githubData, setGithubData] = useState<GitHubProfileData | null>(PESTEREV_GITHUB_PROFILE);
@@ -483,6 +499,33 @@ export default function App() {
   const candidateInvitationsCount = invitations.filter(i => i.candidateId === activeCandidateId && i.status === 'sent').length;
   const acceptedOffersCount = invitations.filter(i => i.status === 'accepted').length;
 
+  // Handle Login from Modal
+  const handleLoginSuccess = (authResp: AuthLoginResponse) => {
+    setCurrentUser({
+      email: authResp.email,
+      fullName: authResp.fullName,
+      role: authResp.role,
+      avatarUrl: authResp.avatarUrl
+    });
+
+    if (authResp.role === 'CANDIDATE') {
+      setCurrentRole('candidate');
+      if (authResp.candidateId) {
+        setActiveCandidateId(authResp.candidateId);
+      }
+      showToast(`Успешный вход в систему! Добро пожаловать, ${authResp.fullName} (Кандидат)`, 'fsp');
+    } else if (authResp.role === 'EMPLOYER') {
+      setCurrentRole('employer');
+      showToast(`Успешный вход в систему! Добро пожаловать, ${authResp.fullName} (${authResp.companyName || 'ПАО Сбербанк'})`, 'fsp');
+    }
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    setCurrentRole('landing');
+    showToast('Вы вышли из учетной записи', 'info');
+  };
+
   if (currentRole === 'not_found') {
     return (
       <div className="min-h-screen bg-[#04060d]">
@@ -503,6 +546,11 @@ export default function App() {
           onConnectYandex={handleConnectYandex}
           onDisconnectProvider={handleDisconnectProvider}
         />
+        <LoginModal
+          isOpen={isLoginModalOpen}
+          onClose={() => setIsLoginModalOpen(false)}
+          onLoginSuccess={handleLoginSuccess}
+        />
       </div>
     );
   }
@@ -517,8 +565,11 @@ export default function App() {
         invitationsCount={candidateInvitationsCount}
         acceptedOffersCount={acceptedOffersCount}
         onOpenOAuthModal={() => setIsOAuthModalOpen(true)}
+        onOpenLoginModal={() => setIsLoginModalOpen(true)}
         isOAuthConnected={!!(githubData || hhData || yandexConnected)}
         candidate={currentCandidate}
+        currentUser={currentUser}
+        onLogout={handleLogout}
       />
 
       {/* Toast Notification Bar */}
@@ -553,6 +604,7 @@ export default function App() {
             onOpenOAuth={(provider) => {
               setIsOAuthModalOpen(true);
             }}
+            onOpenLogin={() => setIsLoginModalOpen(true)}
             candidate={currentCandidate}
             hhData={hhData}
             githubData={githubData}
@@ -673,6 +725,13 @@ export default function App() {
         onConnectHh={handleConnectHh}
         onConnectYandex={handleConnectYandex}
         onDisconnectProvider={handleDisconnectProvider}
+      />
+
+      {/* Test Users & Credentials Login Modal */}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        onLoginSuccess={handleLoginSuccess}
       />
 
       {/* Footer with clean ministry & partner attribution */}

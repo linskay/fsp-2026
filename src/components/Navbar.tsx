@@ -1,5 +1,8 @@
 import React from 'react';
-import { Award, ShieldCheck, Building2, Code2, BookOpen, Presentation, UserCheck, Lock, Github, Sparkles } from 'lucide-react';
+import { 
+  Award, ShieldCheck, Building2, Code2, BookOpen, Presentation, 
+  UserCheck, Lock, Github, Sparkles, LogIn, LogOut, KeyRound 
+} from 'lucide-react';
 import { CandidateProfile, UserRole } from '../types';
 import { FspLogo } from './brand/FspLogo';
 import { UserAvatar } from './brand/UserAvatar';
@@ -10,8 +13,16 @@ interface NavbarProps {
   invitationsCount: number;
   acceptedOffersCount: number;
   onOpenOAuthModal?: () => void;
+  onOpenLoginModal?: () => void;
   isOAuthConnected?: boolean;
   candidate?: CandidateProfile;
+  currentUser?: {
+    email: string;
+    fullName: string;
+    role: 'CANDIDATE' | 'EMPLOYER';
+    avatarUrl?: string;
+  } | null;
+  onLogout?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -20,8 +31,11 @@ export const Navbar: React.FC<NavbarProps> = ({
   invitationsCount,
   acceptedOffersCount,
   onOpenOAuthModal,
+  onOpenLoginModal,
   isOAuthConnected = true,
-  candidate
+  candidate,
+  currentUser,
+  onLogout
 }) => {
   return (
     <header className="sticky top-0 z-50 bg-[#04060d]/80 backdrop-blur-2xl border-b border-white/[0.06] transition-colors">
@@ -98,6 +112,18 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span>Арена</span>
               </button>
             </nav>
+
+            {/* Test Accounts / Login Modal Button */}
+            {onOpenLoginModal && (
+              <button
+                onClick={onOpenLoginModal}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-blue-600/20 to-indigo-600/20 hover:from-blue-600/30 hover:to-indigo-600/30 border border-blue-500/30 text-xs text-blue-200 font-semibold transition-all cursor-pointer shadow-sm hover:scale-[1.02]"
+                title="Вход по логину и паролю (Тестовые аккаунты: candidate@fsp.ru / employer@fsp.ru)"
+              >
+                <KeyRound className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Войти</span>
+              </button>
+            )}
 
             {/* OAuth Login / Connect Button */}
             {onOpenOAuthModal && (
