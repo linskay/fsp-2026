@@ -1277,12 +1277,12 @@ function maxFlow(n, source, sink, edges) {
 export const INITIAL_CANDIDATES: CandidateProfile[] = [
   {
     id: 'cand-pesterev',
-    email: 'ivan.pesterev@fsp-athlete.ru',
+    email: '89259112970@mail.ru',
     fullName: 'Иван Пестерев',
-    city: 'Москва / Санкт-Петербург',
-    avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&auto=format&fit=crop&q=80',
-    title: 'Lead Fullstack Engineer & Software Architect',
-    specialization: 'fullstack',
+    city: 'Москва',
+    avatarUrl: '/avatars/user_pesterev.png',
+    title: 'Java-разработчик',
+    specialization: 'backend',
     targetGrade: 'senior',
     currentGradeAssigned: 'senior',
     fspId: 'FSP-RU-2026-0842',
@@ -1291,8 +1291,8 @@ export const INITIAL_CANDIDATES: CandidateProfile[] = [
     fspBadges: [
       'ФСП Атлет 2026',
       'GitHub Verified @ipesterev',
-      '842 Public Commits',
-      'Fullstack Core Architect',
+      'Java Backend Specialist',
+      'hh.ru Verified',
       'Keycloak Verified'
     ],
     isVerified: true,
@@ -1309,16 +1309,16 @@ export const INITIAL_CANDIDATES: CandidateProfile[] = [
       },
       {
         id: 'ach-pesterev-2',
-        title: '2 место — Кубок ФСП по спортивной веб-разработке',
+        title: '2 место — Кубок ФСП по спортивному программированию',
         year: 2025,
         badge: 'Серебряная медаль ФСП',
-        description: 'Разработка распределенного интерфейса реального времени и оптимизация рендеринга.',
+        description: 'Решение распределенных олимпиадных задач и оптимизация микросервисов.',
         event: 'Всероссийский турнир ФСП'
       }
     ],
-    skills: ['TypeScript', 'React 19', 'Python 3.12', 'FastAPI', 'Java 21', 'Spring Boot 3', 'Docker', 'PostgreSQL', 'TailwindCSS', 'Highload'],
-    experienceYears: 7,
-    about: 'Ведущий Fullstack-разработчик и системный архитектор. Специализируюсь на реактивных веб-приложениях, распределенных бэкендах (Java/Python/Go) и интеграции защищенных контуров (152-ФЗ, OAuth2, Keycloak). Подтверждено 842 публичных коммита на GitHub (приватные репозитории защищены политикой конфиденциальности).',
+    skills: ['Java', 'Spring Boot', 'PostgreSQL', 'Docker', 'REST API', 'Git', 'Maven', 'Hibernate', 'JUnit', 'TypeScript'],
+    experienceYears: 5,
+    about: 'Java-разработчик с опытом коммерческой разработки 5 лет 1 месяц. Тип занятости: Постоянная работа, формат: Удалённо, командировки: Могу. Резюме верифицировано через hh.ru.',
     githubUrl: 'https://github.com/ipesterev',
     fspProfileUrl: 'https://fsp-russia.com/athletes/ipesterev',
     leetcodeStats: {
@@ -1366,17 +1366,17 @@ export const INITIAL_CANDIDATES: CandidateProfile[] = [
       ]
     },
     aiSummary: {
-      summaryText: 'Ведущий Fullstack-разработчик и системный архитектор (@ipesterev). Подтвержденный стек: TypeScript, React, Java 21, Python, FastAPI, Docker. По данным анализа открытых репозиториев GitHub, имеет высокую культуру коммитов (842 коммита за 12 мес.) и зрелую модульную архитектуру. Приватный код пользователя не сканируется согласно регламенту 152-ФЗ. Рекомендуется на ключевые позиции Fullstack Lead / Principal Architect.',
+      summaryText: 'Java-разработчик (@ipesterev) с 5 годами опыта и спортивным рейтингом 2540 ELO. Стек: Java, Spring Boot, PostgreSQL, Docker, REST API. Профиль верифицирован через hh.ru (120 000 ₽ на руки, удаленно, постоянная занятость). Тестирование hh.ru еще не пройдено, алгоритмический грейд подтверждается через Арену ФСП (Judge0).',
       keyStrengths: [
-        'Высокая подтвержденная активность (842 публичных коммита на GitHub)',
-        'Кросс-функциональный стек: TypeScript, Java 21, Python 3.12, Spring Boot 3',
-        'Чистая модульная архитектура и покрытие тестами',
-        'Строгое соблюдение стандартов информационной безопасности (152-ФЗ: без доступа к private repo)'
+        'Опыт в разработке: 5 лет 1 месяц (Java-разработчик)',
+        'Стек: Java, Spring Boot, PostgreSQL, Docker, REST API',
+        'Желаемый оклад: 120 000 ₽ на руки (Удаленно)',
+        'Спортивный разряд: Кандидат в мастера спорта (КМС ФСП)'
       ],
       recommendedProjects: [
-        'Высоконагруженные платформы обратного найма',
-        'Корпоративные FinTech и GovTech экосистемы',
-        'Микросервисные асинхронные ядра'
+        'Микросервисные бэкенды на Java и Spring Boot',
+        'Корпоративные платформы и интеграция реляционных СУБД',
+        'Высоконагруженные REST API сервисы'
       ],
       codeCleanlinessScore: 98,
       averageSolveTimeMinutes: 11,
@@ -1390,11 +1390,11 @@ export const INITIAL_CANDIDATES: CandidateProfile[] = [
     memoryEfficiencyScore: 97,
     lastTestingDate: '2026-03-15T10:00:00Z',
     canRetakeAfterDate: '2026-06-15T10:00:00Z',
-    phoneMasked: '+7 (999) •••-••-88',
-    phoneReal: '+7 (999) 123-45-88',
+    phoneMasked: '+7 (925) •••-••-70',
+    phoneReal: '+7 (925) 911-29-70',
     telegramMasked: '@i•••••••v',
     telegramReal: '@ipesterev_dev',
-    hhConfirmedSkills: PESTEREV_HH_CONFIRMED_SKILLS,
+    hhConfirmedSkills: [],
     githubSync: {
       autoPushEnabled: true,
       repoName: 'fsp-leetcode-solutions',
@@ -1453,8 +1453,8 @@ export const INITIAL_CANDIDATES: CandidateProfile[] = [
         }
       ]
     },
-    salaryExpectationMin: 400000,
-    salaryExpectationMax: 520000,
+    salaryExpectationMin: 110000,
+    salaryExpectationMax: 140000,
     isLookingForJob: true,
     preferredFormat: 'remote'
   },

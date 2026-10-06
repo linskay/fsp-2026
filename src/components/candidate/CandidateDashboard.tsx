@@ -942,7 +942,7 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
                     </div>
 
                     {/* HeadHunter Confirmed Skills Assessment in Portfolio */}
-                    {((hhData?.confirmedSkills && hhData.confirmedSkills.length > 0) || (candidate.hhConfirmedSkills && candidate.hhConfirmedSkills.length > 0)) && (
+                    {((hhData?.confirmedSkills && hhData.confirmedSkills.length > 0) || (candidate.hhConfirmedSkills && candidate.hhConfirmedSkills.length > 0)) ? (
                       <div className="space-y-2 pt-2 border-t border-[#162038]">
                         <div className="flex items-center justify-between">
                           <div className="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
@@ -980,6 +980,19 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
                             </div>
                           ))}
                         </div>
+                      </div>
+                    ) : (
+                      <div className="p-3.5 rounded-2xl bg-[#0c1224] border border-[#192442] space-y-1.5 text-xs">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-slate-300 flex items-center gap-1.5">
+                            <span className="w-4 h-4 rounded bg-[#ff2b42] text-white text-[8px] font-black flex items-center justify-center">hh</span>
+                            Тестирование HeadHunter:
+                          </span>
+                          <span className="text-[10px] text-slate-500 font-mono">0 тестов на hh.ru</span>
+                        </div>
+                        <p className="text-[11px] text-slate-400 leading-relaxed">
+                          Раздел «Пройденные тесты и экзамены» на hh.ru пока не заполнен. Квалификация и навыки кандидата подтверждаются решениями задач олимпиадного уровня в Арене ФСП (Judge0).
+                        </p>
                       </div>
                     )}
 

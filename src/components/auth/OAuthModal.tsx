@@ -82,7 +82,7 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
   const [isChangingYandex, setIsChangingYandex] = useState(false);
 
   // HH.ru interactive state
-  const [hhInputQuery, setHhInputQuery] = useState<string>('https://hh.ru/resume/c5f8842-lead-architect');
+  const [hhInputQuery, setHhInputQuery] = useState<string>('c182d902ff0dfdff810039ed1f5a564a4b7575');
   const [selectedHhPreset, setSelectedHhPreset] = useState<string>(
     candidate.id === 'cand-pesterev' ? 'pesterev' : 'belov'
   );
@@ -90,10 +90,10 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
   const [isEditingHhManual, setIsEditingHhManual] = useState(false);
 
   // Editable fields for manual resume customization:
-  const [editHhTitle, setEditHhTitle] = useState(hhData?.title || 'Lead Fullstack Engineer & Software Architect');
-  const [editHhSalary, setEditHhSalary] = useState(hhData?.desiredSalary || 450000);
-  const [editHhExperience, setEditHhExperience] = useState(hhData?.experienceYears || 7);
-  const [editHhSkillsStr, setEditHhSkillsStr] = useState(hhData?.skills?.join(', ') || 'TypeScript, React 19, Java 21, Spring Boot 3, PostgreSQL, Docker');
+  const [editHhTitle, setEditHhTitle] = useState(hhData?.title || 'Java-разработчик');
+  const [editHhSalary, setEditHhSalary] = useState(hhData?.desiredSalary || 120000);
+  const [editHhExperience, setEditHhExperience] = useState(hhData?.experienceYears || 5);
+  const [editHhSkillsStr, setEditHhSkillsStr] = useState(hhData?.skills?.join(', ') || 'Java, Spring Boot, PostgreSQL, Docker, REST API, Git, Hibernate');
 
   React.useEffect(() => {
     if (yandexEmail) {
@@ -699,7 +699,7 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
                   </div>
 
                   {/* Confirmed Skills from HeadHunter Assessment */}
-                  {hhData.confirmedSkills && hhData.confirmedSkills.length > 0 && (
+                  {hhData.confirmedSkills && hhData.confirmedSkills.length > 0 ? (
                     <div className="space-y-2 pt-1">
                       <div className="flex items-center justify-between">
                         <div className="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
@@ -729,6 +729,25 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
                           </div>
                         ))}
                       </div>
+                    </div>
+                  ) : (
+                    <div className="p-3.5 rounded-2xl bg-[#0c1224] border border-[#1b2646] space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="w-5 h-5 rounded-lg bg-[#ff2b42] text-white flex items-center justify-center font-black text-[9px]">
+                            hh
+                          </div>
+                          <span className="text-xs font-bold text-slate-200">
+                            Тестирование HeadHunter: тесты еще не пройдены
+                          </span>
+                        </div>
+                        <span className="px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 text-[10px] font-mono border border-slate-700">
+                          0 тестов на hh.ru
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-400 leading-relaxed">
+                        В резюме на hh.ru раздел «Пройденные тесты и экзамены» пока не заполнен. Вы можете подтвердить свой олимпиадный и алгоритмический уровень прямо в Арене ФСП (Judge0) либо сдать квалификацию на hh.ru.
+                      </p>
                     </div>
                   )}
 
@@ -800,11 +819,11 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
                         {[
                           {
                             id: 'pesterev',
-                            name: 'Иван Пестерев',
-                            title: 'Lead Fullstack Engineer & Architect',
-                            salary: '450 000 ₽',
-                            exp: '7 лет',
-                            skillsCount: '5 тестов hh.ru'
+                            name: 'Иван Пестерев (hh.ru)',
+                            title: 'Java-разработчик',
+                            salary: '120 000 ₽',
+                            exp: '5 лет 1 мес',
+                            skillsCount: '0 тестов hh.ru'
                           },
                           {
                             id: 'belov',

@@ -72,92 +72,40 @@ export const MOCK_GITHUB_PROFILE: GitHubProfileData = {
   ]
 };
 
-export const PESTEREV_HH_CONFIRMED_SKILLS: import('../types').HhConfirmedSkill[] = [
-  {
-    id: 'hh-cs-1',
-    skill: 'Алгоритмы и структуры данных',
-    level: 'Экспертный',
-    scorePercent: 100,
-    percentileRank: 'Топ-0.5% среди соискателей hh.ru',
-    confirmedAt: '2 марта 2026 г.',
-    testTitle: 'Тестирование HeadHunter: Алгоритмические задачи и оптимизация сложности O(N)',
-    certificateId: 'HH-CERT-2026-FSP-0842'
-  },
-  {
-    id: 'hh-cs-2',
-    skill: 'Java 21 & Spring Boot 3',
-    level: 'Экспертный',
-    scorePercent: 98,
-    percentileRank: 'Топ-1% среди соискателей hh.ru',
-    confirmedAt: '14 января 2026 г.',
-    testTitle: 'Тестирование HeadHunter: Архитектура Java и многопоточность',
-    certificateId: 'HH-CERT-2026-JB-9104'
-  },
-  {
-    id: 'hh-cs-3',
-    skill: 'TypeScript & React 19',
-    level: 'Экспертный',
-    scorePercent: 97,
-    percentileRank: 'Топ-1.5% среди соискателей hh.ru',
-    confirmedAt: '22 февраля 2026 г.',
-    testTitle: 'Тестирование HeadHunter: Современная frontend-архитектура',
-    certificateId: 'HH-CERT-2026-TR-4581'
-  },
-  {
-    id: 'hh-cs-4',
-    skill: 'PostgreSQL & HighLoad SQL',
-    level: 'Продвинутый',
-    scorePercent: 95,
-    percentileRank: 'Топ-3% среди соискателей hh.ru',
-    confirmedAt: '10 декабря 2025 г.',
-    testTitle: 'Тестирование HeadHunter: Проектирование и оптимизация СУБД',
-    certificateId: 'HH-CERT-2025-PG-3209'
-  },
-  {
-    id: 'hh-cs-5',
-    skill: 'Docker, Linux & CI/CD',
-    level: 'Продвинутый',
-    scorePercent: 93,
-    percentileRank: 'Топ-4% среди соискателей hh.ru',
-    confirmedAt: '18 ноября 2025 г.',
-    testTitle: 'Тестирование HeadHunter: Контейнеризация и оркестрация',
-    certificateId: 'HH-CERT-2025-DK-1184'
-  }
-];
+export const PESTEREV_HH_CONFIRMED_SKILLS: import('../types').HhConfirmedSkill[] = [];
 
 export const PESTEREV_HH_RESUME: HhResumeData = {
-  resumeId: 'hh-res-pesterev-2026',
-  title: 'Lead Fullstack Engineer & Software Architect',
-  experienceYears: 7,
-  desiredSalary: 450000,
+  resumeId: 'c182d902ff0dfdff810039ed1f5a564a4b7575',
+  title: 'Java-разработчик',
+  experienceYears: 5,
+  desiredSalary: 120000,
   skills: [
-    'TypeScript',
-    'React 19',
-    'Java 21',
-    'Spring Boot 3',
-    'Python 3.12',
+    'Java',
+    'Spring Boot',
     'PostgreSQL',
     'Docker',
-    'Алгоритмы и структуры данных',
-    'Highload',
-    '152-ФЗ'
+    'REST API',
+    'Git',
+    'Maven',
+    'Hibernate',
+    'JUnit'
   ],
-  confirmedSkills: PESTEREV_HH_CONFIRMED_SKILLS,
-  about: 'Ведущий Fullstack-разработчик и системный архитектор. Специализируюсь на реактивных веб-приложениях, распределенных бэкендах (Java/Python) и интеграции защищенных контуров (152-ФЗ, OAuth2).',
-  education: 'СПбГУ, Математико-механический факультет (Программная инженерия, Магистратура)',
+  confirmedSkills: [],
+  about: 'Java-разработчик с опытом работы 5 лет 1 месяц. Тип занятости: Постоянная работа, формат: Удалённо, командировки: Могу. Резюме верифицировано через hh.ru.',
+  education: 'Высшее профильное образование (Информационные технологии)',
   connectedAt: new Date().toISOString(),
   workHistory: [
     {
-      company: 'ФСП Career Arena Platform',
-      position: 'Lead Software Architect',
-      period: '2024 — настоящее время (2 года)',
-      description: 'Проектирование безопасной архитектуры платформы обратного найма, Judge0 песочницы и протоколов 152-ФЗ.'
+      company: 'ИТ Проекты & Разработка',
+      position: 'Java-разработчик',
+      period: '2021 — настоящее время (3 года)',
+      description: 'Разработка серверной части приложений на Java и Spring Boot, интеграция с базами данных PostgreSQL, проектирование REST API сервисов.'
     },
     {
-      company: 'HighTech Solutions',
-      position: 'Senior Fullstack Engineer',
-      period: '2021 — 2024 (3 года)',
-      description: 'Разработка распределенных микросервисов на Spring Boot и реактивного UI на React/TypeScript.'
+      company: 'Технологические решения',
+      position: 'Junior / Middle Java Developer',
+      period: '2019 — 2021 (2 года 1 месяц)',
+      description: 'Поддержка микросервисов, исправление багов, написание юнит-тестов (JUnit, Mockito), оптимизация запросов SQL.'
     }
   ]
 };
