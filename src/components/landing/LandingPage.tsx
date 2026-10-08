@@ -41,6 +41,7 @@ import { UserRole, CandidateProfile, HhResumeData, GitHubProfileData } from '../
 import { INITIAL_CANDIDATES } from '../../data/mockData';
 import { FspLogo, FspStarIcon } from '../brand/FspLogo';
 import { UserAvatar } from '../brand/UserAvatar';
+import { evaluateCandidateLevel, getEloPercentile } from '../../utils/ratingEngine';
 
 interface LandingPageProps {
   onSelectRole: (role: UserRole) => void;
@@ -79,9 +80,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   const lcSolved = displayCandidate.leetcodeStats ? displayCandidate.leetcodeStats.totalSolved : 0;
   const lcBadge = displayCandidate.leetcodeStats?.badge || 'Без LC';
   const lcHard = displayCandidate.leetcodeStats?.hardSolved || 0;
-  const topPercentageStr = displayCandidate.leetcodeStats?.contestTopPercentage 
-    ? `ТОП-${displayCandidate.leetcodeStats.contestTopPercentage}% В РФ` 
-    : (displayCandidate.fspRating >= 2400 ? 'ТОП-1.2% В РФ' : 'Дивизион ФСП');
+  const candidateLvl = evaluateCandidateLevel({
+    elo: displayCandidate.fspRating,
+    achievements: displayCandidate.achievements,
+    solvedTasksCount: displayCandidate.solvedTasksCount,
+    leetcodeStats: displayCandidate.leetcodeStats
+  });
+  const topPercentageStr = candidateLvl.topPercentile;
   const githubLogin = displayCandidate.githubUrl ? displayCandidate.githubUrl.split('/').pop() : (isIvan ? 'ipesterev' : 'alina-dev');
 
   // Hero Interactive Role Switcher: 'candidate' | 'employer'
@@ -770,7 +775,7 @@ public class Solution {
               <div className="p-3 rounded-2xl bg-[#060917] border border-[#2b35ff]/40 text-center sm:text-right">
                 <div className="text-2xl font-black text-[#00f0ff] font-mono">{displayCandidate.fspRating} ELO</div>
                 <div className="text-[10px] text-yellow-400 font-bold uppercase">
-                  {displayCandidate.achievements?.[0]?.badge || (isIvan ? 'Кубок Инноваций ФСП' : 'Кубок России 2024 (1 место)')}
+                  {displayCandidate.achievements?.[0]?.badge || (candidateLvl.isInTop ? 'Призер ФСП РФ' : 'Квалификационный дивизион ФСП')}
                 </div>
               </div>
             </div>

@@ -32,21 +32,14 @@ import { FspStarIcon, FspCircuitBackground } from '../brand/FspLogo';
 import { EloTierProgressBar } from './EloTierProgressBar';
 import { UserAvatar } from '../brand/UserAvatar';
 import { LeetCodeStatsCard } from './LeetCodeStatsCard';
-import { Github, Star, GitBranch, Share2, Bot, BrainCircuit, LineChart, FolderGit2 } from 'lucide-react';
-
-function getEloPercentile(elo: number): string {
-  if (elo >= 2700) return 'Топ 0.1% по РФ';
-  if (elo >= 2500) return 'Топ 0.5% по РФ';
-  if (elo >= 2300) return 'Топ 1.5% по РФ';
-  if (elo >= 2000) return 'Топ 5.0% по РФ';
-  return 'Топ 12% по РФ';
-}
-
-function getFspTier(grade: string, elo: number): string {
-  if (elo >= 2650) return 'ФСП Tier-1 (Элита)';
-  if (elo >= 2300) return 'ФСП Tier-2 (Мастер)';
-  return 'ФСП Tier-3 (Атлет)';
-}
+import { Github, Star, GitBranch, Share2, Bot, BrainCircuit, LineChart, FolderGit2, CheckCircle, ShieldAlert } from 'lucide-react';
+import { 
+  getEloPercentile, 
+  getFspTier, 
+  evaluateCandidateLevel, 
+  calculateCandidateAchievementPoints,
+  FSP_STANDARD_LEVELS 
+} from '../../utils/ratingEngine';
 
 interface EloMilestone {
   pts: number;
@@ -55,29 +48,42 @@ interface EloMilestone {
   color?: string;
 }
 
-function getDynamicEloProgression(currentElo: number, rank: string): EloMilestone[] {
-  const p1 = Math.round((currentElo * 0.78) / 10) * 10;
-  const p2 = Math.round((currentElo * 0.85) / 10) * 10;
+function getDynamicEloProgression(currentElo: number, candidate: CandidateProfile): EloMilestone[] {
+  if (candidate.eloHistory && candidate.eloHistory.length >= 3) {
+    return candidate.eloHistory.slice(-5).map((h, idx) => ({
+      pts: h.elo,
+      label: h.event,
+      stage: h.date,
+      color: idx === candidate.eloHistory!.length - 1 ? 'text-[#00f0ff]' : undefined
+    }));
+  }
+
+  // If candidate is a starter without tournament history
+  if (currentElo <= 1300 && (!candidate.achievements || candidate.achievements.length <= 1) && (candidate.solvedTasksCount === 0)) {
+    return [
+      { pts: 1200, label: 'Реестр ФСП', stage: 'Старт', color: 'text-slate-400' },
+      { pts: 1200, label: 'hh.ru верификация', stage: 'Профиль' },
+      { pts: 1200, label: 'Текущий пик', stage: 'Квалификация', color: 'text-[#00f0ff]' },
+      { pts: 1265, label: 'Арена (+65)', stage: 'Цель 1' },
+      { pts: 1400, label: '3-й разряд ФСП', stage: 'Вход в ТОП-35%', color: 'text-amber-400' }
+    ];
+  }
+
+  const p1 = Math.round((currentElo * 0.8) / 10) * 10;
+  const p2 = Math.round((currentElo * 0.88) / 10) * 10;
   const p3 = Math.round((currentElo * 0.94) / 10) * 10;
-  const p4 = Math.round((currentElo * 0.97) / 10) * 10;
+  const p4 = Math.round((currentElo * 0.98) / 10) * 10;
   const p5 = currentElo;
 
-  let s3 = 'Чемпионат РФ';
-  let s4 = 'Высшая Лига ФСП';
-  if (currentElo < 2300) {
-    s3 = 'Городской кубок';
-    s4 = '1-й спорт. разряд';
-  } else if (currentElo < 2550) {
-    s3 = 'Чемпионат ФО';
-    s4 = 'Норматив КМС';
-  }
+  const achName1 = candidate.achievements?.[1]?.badge || 'Отбор ФСП';
+  const achName2 = candidate.achievements?.[0]?.badge || (currentElo >= 2400 ? 'Норматив КМС' : '1-й разряд');
 
   return [
     { pts: p1, label: 'Отбор ФСП', stage: 'Квалификация' },
-    { pts: p2, label: 'Кубок Региона', stage: 'Плей-офф' },
-    { pts: p3, label: s3, stage: 'Финал РФ', color: 'text-amber-400' },
-    { pts: p4, label: s4, stage: 'Гранд-финал' },
-    { pts: p5, label: 'Judge0 Sandbox', stage: 'Текущий пик', color: 'text-[#00f0ff]' },
+    { pts: p2, label: achName1, stage: 'Турнир' },
+    { pts: p3, label: achName2, stage: 'Финал', color: 'text-amber-400' },
+    { pts: p4, label: 'Высшая Лига', stage: 'Суперлига' },
+    { pts: p5, label: 'Judge0 Sandbox', stage: 'Текущий пик', color: 'text-[#00f0ff]' }
   ];
 }
 
@@ -116,7 +122,13 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
   onTaskSolved,
   onUpdateCandidate
 }) => {
-  const milestones = getDynamicEloProgression(candidate.fspRating, candidate.fspRank);
+  const candidateLvl = evaluateCandidateLevel({
+    elo: candidate.fspRating,
+    achievements: candidate.achievements,
+    solvedTasksCount: candidate.solvedTasksCount,
+    leetcodeStats: candidate.leetcodeStats
+  });
+  const milestones = getDynamicEloProgression(candidate.fspRating, candidate);
   const minElo = Math.min(...milestones.map(m => m.pts)) - 50;
   const maxElo = Math.max(...milestones.map(m => m.pts)) + 20;
 
@@ -131,7 +143,7 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
   const sparkAreaPath = `M ${sparkPoints[0].x} 75 L ${sparkPoints.map(p => `${p.x} ${p.y}`).join(' L ')} L ${sparkPoints[sparkPoints.length - 1].x} 75 Z`;
 
   const nextAttemptDate = new Date(Date.now() + 75 * 24 * 60 * 60 * 1000).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
-  const [activeTab, setActiveTab] = useState<'invitations' | 'arena' | 'chat' | 'portfolio'>('invitations');
+  const [activeTab, setActiveTab] = useState<'invitations' | 'arena' | 'chat' | 'portfolio' | 'achievements'>('invitations');
   const [selectedInvitationForChat, setSelectedInvitationForChat] = useState<string | null>(
     invitations.find(i => i.status === 'accepted')?.id || invitations[0]?.id || null
   );
@@ -224,20 +236,20 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
                 <span className="text-lg font-black text-[#00f0ff] font-mono block">
                   {candidate.fspRating} pts
                 </span>
-                <span className="text-[10px] text-emerald-400 font-semibold block">
-                  {getEloPercentile(candidate.fspRating)}
+                <span className={`text-[10px] font-semibold block ${candidateLvl.isInTop ? 'text-emerald-400' : 'text-amber-400'}`}>
+                  {candidateLvl.topPercentile}
                 </span>
               </div>
 
               <div className="p-3.5 bg-[#0c1224] rounded-2xl border border-[#162038] space-y-1">
                 <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">
-                  Подтвержденный грейд
+                  Спортивный уровень & AP
                 </span>
                 <span className="text-lg font-black text-purple-400 font-mono block">
-                  {candidate.currentGradeAssigned.toUpperCase()}
+                  {candidateLvl.shortRank}
                 </span>
                 <span className="text-[10px] text-purple-300 font-medium block">
-                  {getFspTier(candidate.currentGradeAssigned, candidate.fspRating)}
+                  {candidateLvl.achievementPoints} AP • Ур. {candidateLvl.levelNumber}
                 </span>
               </div>
 
@@ -591,6 +603,9 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
       {/* ========================================================================= */}
       <EloTierProgressBar
         currentElo={candidate.fspRating}
+        candidate={candidate}
+        achievements={candidate.achievements}
+        solvedTasksCount={candidate.solvedTasksCount}
         onOpenArena={() => setActiveTab('arena')}
       />
 
@@ -610,6 +625,21 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
             <span>Входящие офферы от компаний</span>
             <span className="px-2 py-0.5 rounded-full bg-[#ff2b42] text-white text-[10px] font-bold">
               {myInvitations.length}
+            </span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('achievements')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+              activeTab === 'achievements'
+                ? 'bg-[#2b35ff] text-white shadow-lg shadow-[#2b35ff]/30'
+                : 'text-slate-400 hover:text-white hover:bg-[#121932]'
+            }`}
+          >
+            <Award className="w-4 h-4 text-amber-400" />
+            <span>Достижения & Нормативы ЕВСК</span>
+            <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold border border-amber-500/30">
+              {candidateLvl.achievementPoints} AP
             </span>
           </button>
 
@@ -696,7 +726,7 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
           <LeetCodeStatsCard
             stats={candidate.leetcodeStats}
             candidateName={candidate.fullName}
-            onUpdateStats={(newStats) => onUpdateCandidate({ leetcodeStats: newStats })}
+            onUpdateStats={(newStats: any) => onUpdateCandidate({ leetcodeStats: newStats })}
           />
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -1316,6 +1346,243 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
             )}
           </div>
 
+        </div>
+      )}
+
+      {/* Tab: Achievements & Official FSP Standards */}
+      {activeTab === 'achievements' && (
+        <div className="space-y-6">
+          {/* Header Banner */}
+          <div className="p-6 rounded-3xl bg-[#0b0f1d] border border-[#1d2645] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="space-y-1.5 max-w-3xl">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 text-xs font-bold flex items-center gap-1.5">
+                  <Award className="w-3.5 h-3.5 text-amber-400" />
+                  Официальный реестр ФСП РФ
+                </span>
+                <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${
+                  candidateLvl.isInTop ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' : 'bg-slate-800 text-slate-300 border-slate-700'
+                }`}>
+                  {candidateLvl.topPercentile}
+                </span>
+              </div>
+              <h2 className="text-xl font-black text-white">
+                Спортивные достижения & Квалификационные нормативы Минспорта РФ
+              </h2>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                По регламенту Федерации спортивного программирования России и ЕВСК, нахождение в официальном ТОПе атлетов требует не только рейтинга ELO, но и подтвержденных турнирных результатов или выполненных нормативов решения алгоритмических задач.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#070b1a] border border-[#2b35ff]/40 text-right shrink-0">
+              <div className="text-xs text-slate-400 font-bold uppercase">Очки Достижений (AP)</div>
+              <div className="text-2xl font-black text-amber-400 font-mono mt-0.5">
+                {candidateLvl.achievementPoints} <span className="text-sm font-normal text-slate-400">AP</span>
+              </div>
+              <div className="text-[11px] text-slate-400 mt-1">
+                Подтверждено: <strong className="text-white">{candidate.achievements?.length || 0}</strong> турниров
+              </div>
+            </div>
+          </div>
+
+          {/* Qualification Division Notice (Anti-cheat) if candidate is not in TOP */}
+          {!candidateLvl.isInTop && (
+            <div className="p-5 rounded-3xl bg-amber-500/10 border border-amber-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <div className="p-2.5 rounded-xl bg-amber-500/20 text-amber-400 shrink-0 mt-0.5">
+                  <ShieldAlert className="w-6 h-6" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="text-sm font-bold text-amber-300">
+                    Статус: Квалификационный дивизион (Честный старт)
+                  </h4>
+                  <p className="text-xs text-slate-300 max-w-3xl">
+                    У вас пока нет подтвержденных турнирных призовых мест и решенных задач. Чтобы получить 3-й спортивный разряд и войти в <strong className="text-white">ТОП-35% спортсменов РФ</strong>, наберите 1400 ELO и решите первые 5 задач в Арене или подтвердите олимпиадную победу.
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setActiveTab('arena')}
+                className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:brightness-110 text-white text-xs font-bold transition-all shadow-lg shadow-amber-500/20 flex items-center gap-2 shrink-0"
+              >
+                <Code2 className="w-4 h-4" />
+                <span>Решить задачу в Арене (+85 ELO)</span>
+              </button>
+            </div>
+          )}
+
+          {/* Verified Achievements List */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <Trophy className="w-5 h-5 text-amber-400" />
+                Подтвержденные спортивные победы и награды
+              </h3>
+              <span className="text-xs text-slate-400">
+                Верификация: <strong className="text-[#00f0ff]">ФСП РФ (ЕВСК)</strong>
+              </span>
+            </div>
+
+            {candidate.achievements && candidate.achievements.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {candidate.achievements.map((ach, idx) => (
+                  <div 
+                    key={idx}
+                    className="p-5 rounded-2xl bg-[#0c1224] border border-[#1d2645] hover:border-[#2b35ff]/50 transition-all space-y-3 relative overflow-hidden"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-start gap-3">
+                        <div className="text-2xl p-2 rounded-xl bg-[#141b33] border border-[#2b35ff]/30 shrink-0">
+                          {ach.badge || '🏆'}
+                        </div>
+                        <div className="space-y-0.5">
+                          <span className="text-[10px] text-amber-400 font-bold uppercase tracking-wider block">
+                            {ach.year} • Федерация спортивного программирования РФ
+                          </span>
+                          <h4 className="text-sm font-bold text-white leading-snug">
+                            {ach.title}
+                          </h4>
+                        </div>
+                      </div>
+
+                      <span className="px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-300 border border-amber-500/30 text-[11px] font-mono font-bold shrink-0">
+                        Подтверждено
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-slate-300 leading-relaxed">
+                      {ach.description}
+                    </p>
+
+                    <div className="pt-2 border-t border-[#162038] flex items-center justify-between text-[11px] text-slate-400">
+                      <span className="flex items-center gap-1 text-emerald-400 font-medium">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        Верифицировано в реестре Минспорта
+                      </span>
+                      <span className="font-mono text-slate-400">ID: ФСП-{ach.year}-{idx + 101}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-8 rounded-2xl bg-[#0c1224] border border-dashed border-[#1d2645] text-center space-y-3">
+                <Trophy className="w-10 h-10 text-slate-600 mx-auto" />
+                <h4 className="text-sm font-bold text-slate-300">
+                  Пока нет подтвержденных турнирных наград
+                </h4>
+                <p className="text-xs text-slate-400 max-w-md mx-auto">
+                  Принимайте участие в Чемпионатах и Кубках ФСП РФ или синхронизируйте профиль LeetCode / Codeforces для автоматического начисления наград.
+                </p>
+                <div className="pt-2">
+                  <button
+                    onClick={() => setActiveTab('arena')}
+                    className="px-4 py-2 rounded-xl bg-[#2b35ff] hover:bg-[#2028cc] text-white text-xs font-bold transition-all"
+                  >
+                    Открыть задачи Арены
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Normative Matrix Table (7 Levels of FSP & MinSport RF) */}
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-[#00f0ff]" />
+                Таблица квалификационных нормативов (ЕВСК Минспорта РФ)
+              </h3>
+              <p className="text-xs text-slate-400 mt-1">
+                Для перехода на каждый следующий уровень необходимо выполнить оба норматива: ELO и турнирный опыт.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-[#1b233a] overflow-hidden bg-[#090d1a]">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-[#0f172a] text-slate-400 font-bold uppercase tracking-wider border-b border-[#1b233a]">
+                    <tr>
+                      <th className="py-3 px-4">Уровень / Разряд</th>
+                      <th className="py-3 px-4">Норматив ELO</th>
+                      <th className="py-3 px-4">Турнирные награды</th>
+                      <th className="py-3 px-4">Решено задач</th>
+                      <th className="py-3 px-4">Официальный ТОП</th>
+                      <th className="py-3 px-4 text-right">Статус</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#162038]">
+                    {FSP_STANDARD_LEVELS.map((lvl) => {
+                      const isCurrent = lvl.levelNumber === candidateLvl.levelNumber;
+                      const isCompleted = lvl.levelNumber < candidateLvl.levelNumber;
+                      const isNext = lvl.levelNumber === candidateLvl.levelNumber + 1;
+
+                      return (
+                        <tr 
+                          key={lvl.levelNumber}
+                          className={`transition-colors ${
+                            isCurrent 
+                              ? 'bg-[#2b35ff]/10 font-medium' 
+                              : isCompleted 
+                              ? 'opacity-80 hover:bg-[#0c1224]' 
+                              : 'opacity-60 hover:bg-[#0c1224]'
+                          }`}
+                        >
+                          <td className="py-3.5 px-4 font-bold text-white flex items-center gap-2">
+                            <span className={`w-6 h-6 rounded-md flex items-center justify-center text-xs font-black border ${lvl.badgeColor}`}>
+                              {lvl.levelNumber}
+                            </span>
+                            <div>
+                              <div className="text-white font-bold">{lvl.shortRank}</div>
+                              <div className="text-[10px] text-slate-400 font-normal">{lvl.rankName}</div>
+                            </div>
+                          </td>
+                          <td className="py-3.5 px-4 font-mono font-bold text-[#00f0ff]">
+                            {lvl.minElo}+ ELO
+                          </td>
+                          <td className="py-3.5 px-4 text-slate-300">
+                            {lvl.minAchievements > 0 ? `${lvl.minAchievements} турнир(а)` : 'Не требуется'}
+                          </td>
+                          <td className="py-3.5 px-4 text-slate-300 font-mono">
+                            {lvl.minTasks > 0 ? `${lvl.minTasks}+ задач` : '0 задач'}
+                          </td>
+                          <td className="py-3.5 px-4">
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                              lvl.isInTop ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30' : 'bg-slate-800 text-slate-400'
+                            }`}>
+                              {lvl.topPercentile}
+                            </span>
+                          </td>
+                          <td className="py-3.5 px-4 text-right">
+                            {isCompleted && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-bold">
+                                <Check className="w-3 h-3" /> Выполнен
+                              </span>
+                            )}
+                            {isCurrent && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#00f0ff]/20 text-[#00f0ff] border border-[#00f0ff]/40 text-[10px] font-bold shadow-sm">
+                                <Zap className="w-3 h-3" /> Текущий
+                              </span>
+                            )}
+                            {isNext && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] font-bold">
+                                Следующая цель
+                              </span>
+                            )}
+                            {!isCompleted && !isCurrent && !isNext && (
+                              <span className="inline-flex items-center gap-1 text-slate-500 text-[10px]">
+                                <Lock className="w-3 h-3" /> Заблокирован
+                              </span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 

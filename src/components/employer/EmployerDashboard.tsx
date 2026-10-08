@@ -35,6 +35,7 @@ import { FspStarIcon, FspCircuitBackground } from '../brand/FspLogo';
 import { UserAvatar } from '../brand/UserAvatar';
 import { LeetCodeStatsCard } from '../candidate/LeetCodeStatsCard';
 import { CandidateAiSummaryModal } from '../candidate/CandidateAiSummaryModal';
+import { evaluateCandidateLevel, calculateCandidateAchievementPoints } from '../../utils/ratingEngine';
 
 interface EmployerDashboardProps {
   currentEmployer: EmployerProfile;
@@ -63,8 +64,9 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSpecialization, setSelectedSpecialization] = useState<string>('all');
   const [selectedGrade, setSelectedGrade] = useState<string>('all');
-  const [minRating, setMinRating] = useState<number>(1800);
+  const [minRating, setMinRating] = useState<number>(1200);
   const [onlyVerifiedFsp, setOnlyVerifiedFsp] = useState(true);
+  const [onlyWithAchievements, setOnlyWithAchievements] = useState(false);
 
   // Modals state
   const [isOfferModalOpen, setIsOfferModalOpen] = useState(false);
@@ -84,6 +86,7 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
   const filteredCandidates = candidates
     .filter(c => {
       if (onlyVerifiedFsp && !c.isVerified) return false;
+      if (onlyWithAchievements && (!c.achievements || c.achievements.length === 0)) return false;
       if (selectedSpecialization !== 'all' && c.specialization !== selectedSpecialization) return false;
       if (selectedGrade !== 'all' && c.targetGrade !== selectedGrade) return false;
       if (c.fspRating < minRating) return false;
@@ -311,6 +314,29 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
               </div>
 
             </div>
+
+            {/* Filter Toggle: Only with achievements / Top candidates */}
+            <div className="flex flex-wrap items-center gap-4 pt-2 border-t border-[#162038] text-xs">
+              <label className="flex items-center gap-2 cursor-pointer text-slate-300 hover:text-white select-none">
+                <input
+                  type="checkbox"
+                  checked={onlyWithAchievements}
+                  onChange={(e) => setOnlyWithAchievements(e.target.checked)}
+                  className="rounded bg-[#0e1428] border-[#1e294b] text-[#2b35ff] focus:ring-0 w-4 h-4 cursor-pointer"
+                />
+                <span className="font-semibold text-amber-300">Только атлеты с подтвержденными победами (Официальный ТОП)</span>
+              </label>
+
+              <label className="flex items-center gap-2 cursor-pointer text-slate-300 hover:text-white select-none">
+                <input
+                  type="checkbox"
+                  checked={onlyVerifiedFsp}
+                  onChange={(e) => setOnlyVerifiedFsp(e.target.checked)}
+                  className="rounded bg-[#0e1428] border-[#1e294b] text-[#2b35ff] focus:ring-0 w-4 h-4 cursor-pointer"
+                />
+                <span>Верификация реестра 152-ФЗ</span>
+              </label>
+            </div>
           </div>
 
           {/* Candidates List */}
@@ -325,7 +351,15 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
               </span>
             </div>
 
-            {filteredCandidates.map((c, rankIndex) => (
+            {filteredCandidates.map((c, rankIndex) => {
+              const candidateLvl = evaluateCandidateLevel({
+                elo: c.fspRating,
+                achievements: c.achievements,
+                solvedTasksCount: c.solvedTasksCount,
+                leetcodeStats: c.leetcodeStats
+              });
+
+              return (
               <div
                 key={c.id}
                 className="bg-[#0b0f1d] rounded-3xl border border-[#1d2645] hover:border-[#2b35ff]/60 p-6 space-y-5 transition-all shadow-xl"
@@ -343,11 +377,19 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
                           size="lg"
                           rank={c.fspRank}
                         />
-                        <div className="absolute -top-1.5 -left-1.5 w-6 h-6 rounded-full bg-[#080c18] border border-[#00f0ff]/50 flex items-center justify-center font-black text-[10px] text-[#00f0ff] shadow-md">
-                          #{rankIndex + 1}
-                        </div>
+                        {candidateLvl.isInTop ? (
+                          <div className="absolute -top-1.5 -left-1.5 w-6 h-6 rounded-full bg-[#080c18] border border-[#00f0ff]/50 flex items-center justify-center font-black text-[10px] text-[#00f0ff] shadow-md">
+                            #{rankIndex + 1}
+                          </div>
+                        ) : (
+                          <div className="absolute -top-1.5 -left-1.5 px-1 py-0.5 rounded bg-slate-900 border border-slate-600 flex items-center justify-center font-bold text-[8px] text-slate-400 shadow-md">
+                            Квал
+                          </div>
+                        )}
                       </div>
-                      <span className="text-[10px] font-mono text-slate-500 mt-1">ТОП-{rankIndex + 1}</span>
+                      <span className={`text-[10px] font-mono mt-1 ${candidateLvl.isInTop ? 'text-slate-500' : 'text-amber-400 font-semibold'}`}>
+                        {candidateLvl.isInTop ? `ТОП-${rankIndex + 1}` : 'Вне ТОПа'}
+                      </span>
                     </div>
 
                     {/* Candidate Info */}
@@ -358,7 +400,14 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
                         </h3>
                         <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30 text-xs font-bold">
                           <Trophy className="w-3.5 h-3.5 text-amber-400" />
-                          {c.fspRank}
+                          {candidateLvl.shortRank} (Ур. {candidateLvl.levelNumber})
+                        </span>
+                        <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${
+                          candidateLvl.isInTop 
+                            ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30' 
+                            : 'bg-slate-800 text-slate-400 border-slate-700'
+                        }`}>
+                          {candidateLvl.topPercentile}
                         </span>
                         <span className="px-2.5 py-0.5 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/30 text-xs font-bold">
                           Грейд: {c.currentGradeAssigned.toUpperCase()}
@@ -448,6 +497,36 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
                               Последний: <strong className="text-white">{c.githubSync.recentCommits[0].taskTitle}</strong> ({c.githubSync.recentCommits[0].runtimeMs}ms, beats {c.githubSync.recentCommits[0].runtimeBeatsPercent}%)
                             </span>
                           )}
+                        </div>
+                      )}
+
+                      {/* FSP Official Tournament Achievements Strip */}
+                      {c.achievements && c.achievements.length > 0 ? (
+                        <div className="flex flex-wrap items-center gap-1.5 pt-2">
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-amber-500/15 text-amber-300 border border-amber-500/30 text-[11px] font-bold">
+                            <Award className="w-3.5 h-3.5 text-amber-400" />
+                            <span>Достижения ФСП ({candidateLvl.achievementPoints} AP):</span>
+                          </span>
+                          {c.achievements.map((ach, idx) => (
+                            <span 
+                              key={idx} 
+                              className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-[#0e162d] text-amber-200 border border-amber-500/30 text-[11px]" 
+                              title={ach.description}
+                            >
+                              <span>{ach.badge || '🏆'}</span>
+                              <span className="font-semibold text-white">{ach.title}</span>
+                              <span className="text-slate-400 text-[10px]">({ach.year})</span>
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 pt-2 text-xs">
+                          <span className="px-2 py-0.5 rounded-md bg-slate-800 border border-slate-700 text-slate-400 text-[10px] font-bold">
+                            Вне официального ТОПа
+                          </span>
+                          <span className="text-[11px] text-slate-400">
+                            0 подтвержденных турнирных побед • Квалификационный дивизион ФСП
+                          </span>
                         </div>
                       )}
                     </div>
@@ -580,7 +659,8 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
                 </div>
 
               </div>
-            ))}
+            );
+          })}
           </div>
 
         </div>
