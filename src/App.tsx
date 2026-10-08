@@ -10,7 +10,8 @@ import {
   INITIAL_EMPLOYERS, 
   INITIAL_INVITATIONS, 
   INITIAL_TASKS,
-  INITIAL_VACANCIES
+  INITIAL_VACANCIES,
+  INITIAL_ASSESSMENTS
 } from './data/mockData';
 import { 
   AlgorithmTask, 
@@ -22,7 +23,10 @@ import {
   Vacancy,
   GitHubProfileData,
   HhResumeData,
-  FspRank
+  FspRank,
+  AssessmentAssignment,
+  EmployerAssessmentReview,
+  CandidateAssessmentSubmission
 } from './types';
 import { 
   MOCK_GITHUB_PROFILE, 
@@ -58,6 +62,7 @@ export default function App() {
   const [vacancies, setVacancies] = useState<Vacancy[]>(INITIAL_VACANCIES);
   const [invitations, setInvitations] = useState<Invitation[]>(INITIAL_INVITATIONS);
   const [tasks, setTasks] = useState<AlgorithmTask[]>(INITIAL_TASKS);
+  const [assessments, setAssessments] = useState<AssessmentAssignment[]>(INITIAL_ASSESSMENTS);
 
   // Authentication & Test Users State
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
@@ -451,6 +456,50 @@ export default function App() {
     );
   };
 
+  const handleAssignTest = (newAssessment: AssessmentAssignment) => {
+    setAssessments(prev => [newAssessment, ...prev]);
+    showToast(`Тестирование «${newAssessment.task.title}» успешно назначено соискателю ${newAssessment.candidateName}!${newAssessment.isLiveInterview ? ' Ссылка на Яндекс Телемост прикреплена.' : ''}`, 'success');
+  };
+
+  const handleSubmitAssessment = (assessmentId: string, submission: CandidateAssessmentSubmission) => {
+    setAssessments(prev =>
+      prev.map(a => {
+        if (a.id === assessmentId) {
+          return {
+            ...a,
+            status: 'submitted',
+            submission
+          };
+        }
+        return a;
+      })
+    );
+    try {
+      confetti({
+        particleCount: 80,
+        spread: 60,
+        origin: { y: 0.6 }
+      });
+    } catch (e) {}
+    showToast('Решение задачи успешно отправлено на код-ревью работодателю!', 'fsp');
+  };
+
+  const handleReviewAssessment = (assessmentId: string, review: EmployerAssessmentReview) => {
+    setAssessments(prev =>
+      prev.map(a => {
+        if (a.id === assessmentId) {
+          return {
+            ...a,
+            status: 'reviewed',
+            review
+          };
+        }
+        return a;
+      })
+    );
+    showToast(`Оценка решения (${review.verdict === 'like' ? '👍 Лайк' : '👎 Дизлайк'}) сохранена, а фидбек отправлен соискателю!`, 'success');
+  };
+
   const handleUpdateCandidate = (updated: Partial<CandidateProfile>) => {
     setCandidates(prev =>
       prev.map(c => {
@@ -644,6 +693,8 @@ export default function App() {
             }}
             invitations={invitations}
             tasks={tasks}
+            assessments={assessments}
+            onSubmitAssessment={handleSubmitAssessment}
             githubData={githubData}
             hhData={hhData}
             yandexConnected={yandexConnected}
@@ -663,9 +714,13 @@ export default function App() {
             candidates={candidates}
             vacancies={vacancies}
             invitations={invitations}
+            assessments={assessments}
+            tasks={tasks}
             onSendOffer={handleSendOffer}
             onAddVacancy={handleAddVacancy}
             onSendMessage={handleSendMessage}
+            onAssignTest={handleAssignTest}
+            onReviewTest={handleReviewAssessment}
             onUpdateCandidate={(id, updated) => {
               setCandidates(prev => prev.map(c => c.id === id ? { ...c, ...updated } : c));
               showToast('ИИ-портрет кандидата успешно обновлен!', 'success');

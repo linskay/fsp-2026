@@ -386,3 +386,74 @@ export interface HhEmployerVacancy {
   imported: boolean;
 }
 
+export type AssessmentTaskSource = 'leetcode_preset' | 'custom_created';
+
+export interface EmployerAssessmentTask {
+  id: string;
+  sourceType: AssessmentTaskSource;
+  title: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+  description: string;
+  constraints?: string[];
+  starterCode?: {
+    javascript?: string;
+    python?: string;
+    java?: string;
+    cpp?: string;
+    go?: string;
+  };
+  sampleTestCases?: Array<{
+    input: string;
+    expectedOutput: string;
+  }>;
+}
+
+export type AssessmentStatus = 'pending' | 'in_progress' | 'submitted' | 'reviewed';
+
+export interface CandidateAssessmentSubmission {
+  code: string;
+  language: string;
+  executionLogs?: string;
+  passedCount?: number;
+  totalCount?: number;
+  spentTimeMinutes?: number;
+  submittedAt: string;
+}
+
+export interface EmployerAssessmentReview {
+  verdict: 'like' | 'dislike';
+  internalNote: string; // Внутренний комментарий для компании (скрыт от соискателя по 152-ФЗ)
+  candidateFeedbackMessage: string; // Сообщение соискателю
+  reviewedAt: string;
+  reviewerName: string;
+}
+
+export interface AssessmentAssignment {
+  id: string;
+  employerId: string;
+  companyName: string;
+  companyLogo: string;
+  vacancyId?: string;
+  vacancyTitle?: string;
+  candidateId: string;
+  candidateName: string;
+  
+  task: EmployerAssessmentTask;
+  status: AssessmentStatus;
+  
+  timeLimitMinutes: number;
+  createdAt: string;
+  deadlineAt?: string;
+  
+  // Яндекс Телемост интеграция
+  isLiveInterview: boolean;
+  telemostRoomUrl?: string;
+  scheduledInterviewAt?: string;
+
+  // Решение кандидата
+  submission?: CandidateAssessmentSubmission;
+
+  // Оценка и комментарии работодателя
+  review?: EmployerAssessmentReview;
+}
+

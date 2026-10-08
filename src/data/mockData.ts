@@ -1,4 +1,4 @@
-import { AlgorithmTask, CandidateProfile, EmployerProfile, Invitation, Vacancy } from '../types';
+import { AlgorithmTask, CandidateProfile, EmployerProfile, Invitation, Vacancy, AssessmentAssignment } from '../types';
 import { PESTEREV_HH_CONFIRMED_SKILLS } from './mockOAuthData';
 
 export const INITIAL_TASKS: AlgorithmTask[] = [
@@ -2335,5 +2335,188 @@ export const INITIAL_INVITATIONS: Invitation[] = [
         timestamp: '2026-03-12T10:00:00Z'
       }
     ]
+  }
+];
+
+export const INITIAL_ASSESSMENTS: AssessmentAssignment[] = [
+  {
+    id: 'asmt-1',
+    employerId: 'emp-1',
+    companyName: 'ПАО Сбербанк (SberTech)',
+    companyLogo: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=128&auto=format&fit=crop&q=80',
+    vacancyId: 'vac-1',
+    vacancyTitle: 'Senior Java / Highload Core Engineer',
+    candidateId: 'cand-pesterev',
+    candidateName: 'Иван Пестерев',
+    task: {
+      id: 'asmt-task-1',
+      sourceType: 'custom_created',
+      title: 'Оптимизация Lock-free кольцевого буфера для брокера событий',
+      difficulty: 'Hard',
+      description: `Реализуйте эффективный кольцевой буфер (Ring Buffer) с семантикой Lock-free на основе атомарных операций (Atomic CAS / compare-and-swap).
+Буфер должен безопасно обрабатывать множественных производителей (producers) и потребителей (consumers) без захвата традиционных мьютексов.
+
+Требования:
+1. Фиксированный размер буфера (степень двойки для быстрой битовой маскировки \`index & (capacity - 1)\`).
+2. Гарантия Lock-free / Wait-free прогресса.
+3. Время работы операций \`offer()\` и \`poll()\` — O(1).
+4. Защита от ABA-проблемы и кэш-контеншена (false sharing).`,
+      constraints: [
+        'Размер буфера: 2^16 элементов',
+        'Многопоточность: до 64 параллельных потоков',
+        'Максимальная задержка (p99): < 15 наносекунд'
+      ],
+      starterCode: {
+        java: `public class LockFreeRingBuffer<T> {
+    private final Object[] buffer;
+    private final int capacity;
+    private final int mask;
+
+    public LockFreeRingBuffer(int capacity) {
+        this.capacity = capacity;
+        this.mask = capacity - 1;
+        this.buffer = new Object[capacity];
+    }
+
+    public boolean offer(T item) {
+        // TODO: Реализуйте CAS-вставку в кольцевой буфер
+        return true;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T poll() {
+        // TODO: Реализуйте атомарное извлечение
+        return null;
+    }
+}`,
+        python: `class LockFreeRingBuffer:
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.buffer = [None] * capacity
+
+    def offer(self, item) -> bool:
+        # TODO: Реализовать потокобезопасную запись
+        return True
+
+    def poll(self):
+        # TODO: Реализовать извлечение
+        return None`
+      },
+      sampleTestCases: [
+        {
+          input: '10 000 операций concurrent offer/poll в 16 потоков',
+          expectedOutput: 'Все 10 000 элементов успешно обработаны без потерь и deadlocks'
+        }
+      ]
+    },
+    status: 'submitted',
+    timeLimitMinutes: 45,
+    createdAt: '2026-03-12T11:00:00Z',
+    isLiveInterview: true,
+    telemostRoomUrl: 'https://telemost.yandex.ru/j/84920491823901',
+    scheduledInterviewAt: '2026-03-14T15:00:00+03:00',
+    submission: {
+      code: `public class LockFreeRingBuffer<T> {
+    private final AtomicReferenceArray<T> buffer;
+    private final AtomicLong tail = new AtomicLong(0);
+    private final AtomicLong head = new AtomicLong(0);
+    private final int mask;
+
+    public LockFreeRingBuffer(int capacity) {
+        this.mask = capacity - 1;
+        this.buffer = new AtomicReferenceArray<>(capacity);
+    }
+
+    public boolean offer(T item) {
+        while (true) {
+            long currentTail = tail.get();
+            long currentHead = head.get();
+            if (currentTail - currentHead >= buffer.length()) {
+                return false; // Буфер полон
+            }
+            if (tail.compareAndSet(currentTail, currentTail + 1)) {
+                int index = (int) (currentTail & mask);
+                buffer.set(index, item);
+                return true;
+            }
+        }
+    }
+
+    public T poll() {
+        while (true) {
+            long currentHead = head.get();
+            long currentTail = tail.get();
+            if (currentHead >= currentTail) {
+                return null; // Буфер пуст
+            }
+            if (head.compareAndSet(currentHead, currentHead + 1)) {
+                int index = (int) (currentHead & mask);
+                return buffer.getAndSet(index, null);
+            }
+        }
+    }
+}`,
+      language: 'java',
+      spentTimeMinutes: 28,
+      passedCount: 4,
+      totalCount: 4,
+      executionLogs: 'Все 4 стресс-теста успешно пройдены за 18мс в изолированном контейнере. Пропускная способность: 18.4M ops/sec.',
+      submittedAt: '2026-03-12T11:28:00Z'
+    }
+  },
+  {
+    id: 'asmt-2',
+    employerId: 'emp-1',
+    companyName: 'ПАО Сбербанк (SberTech)',
+    companyLogo: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=128&auto=format&fit=crop&q=80',
+    vacancyId: 'vac-1',
+    vacancyTitle: 'Senior Java / Highload Core Engineer',
+    candidateId: 'cand-1',
+    candidateName: 'Александр Белов',
+    task: {
+      id: 'asmt-task-2',
+      sourceType: 'leetcode_preset',
+      title: 'LeetCode #1: Two Sum (Поиск пары транзакций)',
+      difficulty: 'Easy',
+      description: 'Классическая задача проверки алгоритмического фундамента: поиск пары чисел с целевой суммой за O(N) по времени.',
+      constraints: ['2 <= nums.length <= 10^4', 'Требуемая сложность O(N)'],
+      starterCode: {
+        python: `def twoSum(nums, target):
+    seen = {}
+    for i, num in enumerate(nums):
+        complement = target - num
+        if complement in seen:
+            return [seen[complement], i]
+        seen[num] = i
+    return []`
+      }
+    },
+    status: 'reviewed',
+    timeLimitMinutes: 30,
+    createdAt: '2026-03-10T14:00:00Z',
+    isLiveInterview: false,
+    submission: {
+      code: `def twoSum(nums, target):
+    hashmap = {}
+    for i, n in enumerate(nums):
+        diff = target - n
+        if diff in hashmap:
+            return [hashmap[diff], i]
+        hashmap[n] = i
+    return []`,
+      language: 'python',
+      spentTimeMinutes: 8,
+      passedCount: 3,
+      totalCount: 3,
+      executionLogs: 'Пройдены все открытые и скрытые тест-кейсы за 6 мс.',
+      submittedAt: '2026-03-10T14:08:00Z'
+    },
+    review: {
+      verdict: 'like',
+      internalNote: 'Отличная алгоритмическая база, мгновенное понимание условий задачи, чистый код. Рекомендуем на позицию Senior разработчика.',
+      candidateFeedbackMessage: 'Александр, спасибо за безупречное решение задачи! Ваша чистота кода и скорость решения нас впечатлили. С удовольствием переходим к этапу финального оффера.',
+      reviewedAt: '2026-03-10T15:30:00Z',
+      reviewerName: 'Михаил Волков (Lead Architect СберТех)'
+    }
   }
 ];

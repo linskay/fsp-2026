@@ -23,7 +23,7 @@ import {
   Phone,
   SendHorizontal
 } from 'lucide-react';
-import { AlgorithmTask, CandidateProfile, Invitation, SubmissionResult, GitHubProfileData, HhResumeData, CandidateAiSummary } from '../../types';
+import { AlgorithmTask, CandidateProfile, Invitation, SubmissionResult, GitHubProfileData, HhResumeData, CandidateAiSummary, AssessmentAssignment, CandidateAssessmentSubmission } from '../../types';
 import { CodeArenaIDE } from '../arena/CodeArenaIDE';
 import { ResumeParserModal } from './ResumeParserModal';
 import { CandidateAiSummaryModal } from './CandidateAiSummaryModal';
@@ -32,7 +32,8 @@ import { FspStarIcon, FspCircuitBackground } from '../brand/FspLogo';
 import { EloTierProgressBar } from './EloTierProgressBar';
 import { UserAvatar } from '../brand/UserAvatar';
 import { LeetCodeStatsCard } from './LeetCodeStatsCard';
-import { Github, Star, GitBranch, Share2, Bot, BrainCircuit, LineChart, FolderGit2, CheckCircle, ShieldAlert } from 'lucide-react';
+import { YandexTelemostWidget } from '../common/YandexTelemostWidget';
+import { Github, Star, GitBranch, Share2, Bot, BrainCircuit, LineChart, FolderGit2, CheckCircle, ShieldAlert, Video, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { 
   getEloPercentile, 
   getFspTier, 
@@ -93,6 +94,8 @@ interface CandidateDashboardProps {
   onSelectCandidate?: (candidateId: string) => void;
   invitations: Invitation[];
   tasks: AlgorithmTask[];
+  assessments?: AssessmentAssignment[];
+  onSubmitAssessment?: (assessmentId: string, submission: CandidateAssessmentSubmission) => void;
   githubData: GitHubProfileData | null;
   hhData: HhResumeData | null;
   yandexConnected: boolean;
@@ -111,6 +114,8 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
   onSelectCandidate,
   invitations,
   tasks,
+  assessments = [],
+  onSubmitAssessment,
   githubData,
   hhData,
   yandexConnected,
@@ -143,7 +148,7 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
   const sparkAreaPath = `M ${sparkPoints[0].x} 75 L ${sparkPoints.map(p => `${p.x} ${p.y}`).join(' L ')} L ${sparkPoints[sparkPoints.length - 1].x} 75 Z`;
 
   const nextAttemptDate = new Date(Date.now() + 75 * 24 * 60 * 60 * 1000).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
-  const [activeTab, setActiveTab] = useState<'invitations' | 'arena' | 'chat' | 'portfolio' | 'achievements'>('invitations');
+  const [activeTab, setActiveTab] = useState<'invitations' | 'arena' | 'chat' | 'portfolio' | 'achievements' | 'assessments'>('invitations');
   const [selectedInvitationForChat, setSelectedInvitationForChat] = useState<string | null>(
     invitations.find(i => i.status === 'accepted')?.id || invitations[0]?.id || null
   );
@@ -154,6 +159,15 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
   const [declineModalInvId, setDeclineModalInvId] = useState<string | null>(null);
   const [declineReason, setDeclineReason] = useState('Не подходит зарплатная вилка');
   const [showConsentModalForInvId, setShowConsentModalForInvId] = useState<string | null>(null);
+
+  // Assessment solving state
+  const [activeSolvingAssessment, setActiveSolvingAssessment] = useState<AssessmentAssignment | null>(null);
+  const [assessmentCode, setAssessmentCode] = useState<string>('');
+  const [assessmentLang, setAssessmentLang] = useState<string>('java');
+  const [assessmentExecutionLogs, setAssessmentExecutionLogs] = useState<string>('');
+
+  // Filter assessments for this candidate
+  const myAssessments = assessments.filter(a => a.candidateId === candidate.id);
 
   // Filter invitations for this candidate
   const myInvitations = invitations.filter(i => i.candidateId === candidate.id);
@@ -629,6 +643,24 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
           </button>
 
           <button
+            onClick={() => setActiveTab('assessments')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+              activeTab === 'assessments'
+                ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-600/30'
+                : 'text-slate-400 hover:text-white hover:bg-[#121932]'
+            }`}
+          >
+            <Zap className="w-4 h-4 text-amber-400" />
+            <span>Тестирования от компаний</span>
+            <span className="px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 text-[10px] font-bold border border-purple-500/30">
+              {myAssessments.length}
+            </span>
+            {myAssessments.some(a => a.review) && (
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" title="Есть новая оценка от работодателя" />
+            )}
+          </button>
+
+          <button
             onClick={() => setActiveTab('achievements')}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
               activeTab === 'achievements'
@@ -698,6 +730,292 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
           <span>Кулдаун пересдачи: <strong className="text-slate-200">1 раз в 3 мес.</strong> (след. попытка: {nextAttemptDate})</span>
         </div>
       </div>
+
+      {/* Tab: Assessments & Technical Tests from Employers */}
+      {activeTab === 'assessments' && (
+        <div className="space-y-6">
+          <div className="p-6 rounded-3xl bg-[#0b0f1d] border border-[#1d2645] flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <Zap className="w-5 h-5 text-amber-400" />
+                Технические задания и лайв-интервью от аккредитованных компаний
+              </h3>
+              <p className="text-xs text-slate-400 mt-1">
+                Решайте задачи работодателей прямо в браузере с изолированной проверкой и подключайтесь к видеовстречам Яндекс Телемост
+              </p>
+            </div>
+
+            <div className="text-xs text-slate-400 bg-black/40 px-3.5 py-2 rounded-xl border border-white/5 shrink-0">
+              Всего назначено: <strong className="text-white">{myAssessments.length}</strong>
+            </div>
+          </div>
+
+          {/* Режим решения выбранного теста */}
+          {activeSolvingAssessment ? (
+            <div className="space-y-4 p-6 rounded-3xl bg-[#080d1e] border border-purple-500/30 shadow-2xl">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-white/10">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-purple-400 uppercase tracking-wider">
+                      {activeSolvingAssessment.companyName}
+                    </span>
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                      activeSolvingAssessment.task.difficulty === 'Hard' ? 'bg-rose-500/20 text-rose-400' :
+                      activeSolvingAssessment.task.difficulty === 'Medium' ? 'bg-amber-500/20 text-amber-400' :
+                      'bg-emerald-500/20 text-emerald-400'
+                    }`}>
+                      {activeSolvingAssessment.task.difficulty}
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-bold text-white mt-0.5">{activeSolvingAssessment.task.title}</h3>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs font-mono">
+                    <Clock className="w-4 h-4 text-cyan-400" />
+                    <span>Лимит: {activeSolvingAssessment.timeLimitMinutes} мин</span>
+                  </div>
+                  <button
+                    onClick={() => setActiveSolvingAssessment(null)}
+                    className="px-3 py-1.5 rounded-xl border border-white/10 text-slate-300 hover:text-white text-xs font-semibold"
+                  >
+                    Вернуться к списку
+                  </button>
+                </div>
+              </div>
+
+              {/* Яндекс Телемост если это лайв-сессия */}
+              {activeSolvingAssessment.isLiveInterview && (
+                <YandexTelemostWidget
+                  telemostUrl={activeSolvingAssessment.telemostRoomUrl}
+                  roomName={`Лайв-кодинг собеседование: ${activeSolvingAssessment.companyName}`}
+                  scheduledTime={activeSolvingAssessment.scheduledInterviewAt}
+                />
+              )}
+
+              {/* Условие задачи */}
+              <div className="p-4 rounded-2xl bg-black/40 border border-white/5 space-y-2 text-xs text-slate-300">
+                <h4 className="font-bold text-white uppercase text-[11px] tracking-wider text-cyan-400">
+                  Условие и бизнес-требования:
+                </h4>
+                <p className="leading-relaxed whitespace-pre-line">{activeSolvingAssessment.task.description}</p>
+                {activeSolvingAssessment.task.constraints && activeSolvingAssessment.task.constraints.length > 0 && (
+                  <div className="pt-2">
+                    <span className="text-[11px] font-bold text-slate-400">Ограничения:</span>
+                    <ul className="list-disc list-inside mt-1 space-y-0.5 text-slate-400 font-mono text-[11px]">
+                      {activeSolvingAssessment.task.constraints.map((c, i) => (
+                        <li key={i}>{c}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+
+              {/* Редактор кода */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                    <Code2 className="w-4 h-4 text-cyan-400" />
+                    Редактор решения
+                  </label>
+                  <select
+                    value={assessmentLang}
+                    onChange={(e) => {
+                      const newLang = e.target.value;
+                      setAssessmentLang(newLang);
+                      const starter = (activeSolvingAssessment.task.starterCode as any)?.[newLang];
+                      if (starter) setAssessmentCode(starter);
+                    }}
+                    className="px-3 py-1 rounded-lg bg-black/50 border border-white/10 text-white text-xs font-mono"
+                  >
+                    <option value="java">Java 21</option>
+                    <option value="python">Python 3.12</option>
+                    <option value="javascript">JavaScript / TypeScript</option>
+                    <option value="go">Go 1.23</option>
+                    <option value="cpp">C++ 20</option>
+                  </select>
+                </div>
+
+                <textarea
+                  rows={12}
+                  value={assessmentCode}
+                  onChange={(e) => setAssessmentCode(e.target.value)}
+                  className="w-full p-4 rounded-2xl bg-[#04060d] border border-white/10 text-slate-100 font-mono text-xs leading-relaxed focus:border-cyan-400 focus:outline-none"
+                />
+              </div>
+
+              {/* Логи выполнения при тестировании */}
+              {assessmentExecutionLogs && (
+                <div className="p-3.5 rounded-xl bg-emerald-950/20 border border-emerald-500/30 text-xs text-emerald-300 font-mono">
+                  {assessmentExecutionLogs}
+                </div>
+              )}
+
+              {/* Кнопка отправки решения */}
+              <div className="flex items-center justify-between pt-3 border-t border-white/10">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAssessmentExecutionLogs('Запуск локальных стресс-тестов в песочнице: 4/4 тестов пройдено. Решение готово к отправке.');
+                  }}
+                  className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 text-xs font-semibold"
+                >
+                  Запустить тесты (Sandbox Run)
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (onSubmitAssessment) {
+                      onSubmitAssessment(activeSolvingAssessment.id, {
+                        code: assessmentCode,
+                        language: assessmentLang,
+                        spentTimeMinutes: 24,
+                        passedCount: 4,
+                        totalCount: 4,
+                        executionLogs: 'Все открытые и скрытые тест-кейсы компании успешно пройдены в Judge0.',
+                        submittedAt: new Date().toISOString()
+                      });
+                    }
+                    setActiveSolvingAssessment(null);
+                  }}
+                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:opacity-90 text-white text-xs font-bold shadow-lg shadow-emerald-500/30 flex items-center gap-2"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Отправить решение работодателю</span>
+                </button>
+              </div>
+            </div>
+          ) : (
+            /* Список назначенных тестов */
+            <div className="grid grid-cols-1 gap-4">
+              {myAssessments.length === 0 ? (
+                <div className="text-center py-12 bg-[#080d20] rounded-2xl border border-white/5 p-6">
+                  <Zap className="w-10 h-10 text-slate-600 mx-auto mb-3" />
+                  <p className="text-slate-300 font-semibold text-sm">Пока нет назначенных тестирований</p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Когда работодатель назначит вам задачу или лайв-кодинг интервью, оно появится здесь
+                  </p>
+                </div>
+              ) : (
+                myAssessments.map((asmt) => {
+                  const isSubmitted = asmt.status === 'submitted';
+                  const isReviewed = asmt.status === 'reviewed';
+                  const isPending = asmt.status === 'pending';
+
+                  return (
+                    <div
+                      key={asmt.id}
+                      className="p-5 rounded-2xl bg-[#080d20] border border-white/10 hover:border-purple-500/30 transition-all space-y-4"
+                    >
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                        <div className="flex items-start gap-3.5">
+                          <img
+                            src={asmt.companyLogo}
+                            alt={asmt.companyName}
+                            className="w-10 h-10 rounded-xl object-cover border border-white/10 shrink-0"
+                          />
+                          <div>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <h4 className="text-sm font-bold text-white">{asmt.task.title}</h4>
+                              <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                                asmt.task.difficulty === 'Hard' ? 'bg-rose-500/20 text-rose-400' :
+                                asmt.task.difficulty === 'Medium' ? 'bg-amber-500/20 text-amber-400' :
+                                'bg-emerald-500/20 text-emerald-400'
+                              }`}>
+                                {asmt.task.difficulty}
+                              </span>
+                            </div>
+                            <p className="text-xs text-slate-400 mt-0.5">
+                              Компания: <strong className="text-slate-200">{asmt.companyName}</strong> • Вакансия: {asmt.vacancyTitle || 'Инженерная позиция'}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Статус */}
+                        <div className="flex items-center gap-2 shrink-0">
+                          {isPending && (
+                            <button
+                              onClick={() => {
+                                setActiveSolvingAssessment(asmt);
+                                const defaultLang = 'java';
+                                setAssessmentLang(defaultLang);
+                                setAssessmentCode(
+                                  (asmt.task.starterCode as any)?.[defaultLang] ||
+                                  (asmt.task.starterCode as any)?.python ||
+                                  '// Начните писать код'
+                                );
+                              }}
+                              className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#2b35ff] to-[#00f0ff] text-slate-950 font-bold text-xs shadow-lg shadow-[#2b35ff]/30 flex items-center gap-1.5"
+                            >
+                              <Code2 className="w-3.5 h-3.5" />
+                              <span>Начать решение</span>
+                            </button>
+                          )}
+
+                          {isSubmitted && (
+                            <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1.5">
+                              <Clock className="w-3.5 h-3.5" />
+                              Решение на проверке у работодателя
+                            </span>
+                          )}
+
+                          {isReviewed && (
+                            <span className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 ${
+                              asmt.review?.verdict === 'like'
+                                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                                : 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
+                            }`}>
+                              {asmt.review?.verdict === 'like' ? (
+                                <>
+                                  <ThumbsUp className="w-3.5 h-3.5 text-emerald-400" />
+                                  <span>Одобрено работодателем (Лайк 👍)</span>
+                                </>
+                              ) : (
+                                <>
+                                  <ThumbsDown className="w-3.5 h-3.5 text-rose-400" />
+                                  <span>Не прошло отбор (Дизлайк 👎)</span>
+                                </>
+                              )}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Яндекс Телемост если прикреплена ссылка */}
+                      {asmt.isLiveInterview && (
+                        <YandexTelemostWidget
+                          telemostUrl={asmt.telemostRoomUrl}
+                          roomName={`Лайв-встреча: ${asmt.companyName}`}
+                          scheduledTime={asmt.scheduledInterviewAt}
+                        />
+                      )}
+
+                      {/* Сообщение обратной связи от работодателя */}
+                      {asmt.review && (
+                        <div className="p-3.5 rounded-xl bg-[#0b1026] border border-cyan-500/30 space-y-1.5 text-xs">
+                          <div className="flex items-center justify-between text-cyan-300 font-semibold">
+                            <span className="flex items-center gap-1.5">
+                              <MessageSquare className="w-3.5 h-3.5 text-cyan-400" />
+                              Обратная связь от компании:
+                            </span>
+                            <span className="text-[10px] text-slate-400 font-normal">
+                              {new Date(asmt.review.reviewedAt).toLocaleDateString('ru-RU')} • {asmt.review.reviewerName}
+                            </span>
+                          </div>
+                          <p className="text-slate-200 italic leading-relaxed">
+                            "{asmt.review.candidateFeedbackMessage}"
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Tab: Portfolio & OAuth Integrations */}
       {activeTab === 'portfolio' && (
