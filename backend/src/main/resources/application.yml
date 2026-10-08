@@ -70,6 +70,9 @@ integrations:
   ai:
     provider: ${AI_PROVIDER:yandexgpt}
     api-key: ${AI_API_KEY:mock-ai-key}
+    folder-id: ${YANDEX_FOLDER_ID:b1gmockfolderid}
+    api-url: ${AI_API_URL:https://llm.api.cloud.yandex.net/foundationModels/v1/completion}
+    model: ${AI_MODEL:yandexgpt}
 
 jwt:
   secret: ${JWT_SECRET:fsp_career_arena_ultra_secure_jwt_secret_key_2026_at_least_256_bits_long!}

@@ -213,27 +213,13 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
                   <h1 className="text-lg sm:text-xl font-black text-white leading-tight">
                     {candidate.fullName}
                   </h1>
-
-                  {/* Dynamic Candidate Selector for paired inspection */}
-                  {allCandidates && allCandidates.length > 1 && onSelectCandidate && (
-                    <select
-                      value={candidate.id}
-                      onChange={(e) => onSelectCandidate(e.target.value)}
-                      className="px-2 py-0.5 rounded-lg bg-[#0c1224] border border-[#2b35ff]/50 text-xs text-[#00f0ff] font-semibold cursor-pointer focus:outline-none hover:border-[#00f0ff] transition-colors"
-                      title="Переключить соискателя для проверки динамических данных"
-                    >
-                      {allCandidates.map(c => (
-                        <option key={c.id} value={c.id} className="bg-[#090d1a] text-white">
-                          {c.fullName} ({c.fspRating} ELO, {c.fspRank})
-                        </option>
-                      ))}
-                    </select>
-                  )}
                 </div>
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#2b35ff]/20 text-[#00f0ff] border border-[#2b35ff]/40 text-[11px] font-bold">
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  Keycloak SSO Verified
-                </div>
+                {candidate.isVerified && (
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#2b35ff]/20 text-[#00f0ff] border border-[#2b35ff]/40 text-[11px] font-bold">
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    Верифицирован ФСП РФ
+                  </div>
+                )}
                 <div className="text-xs text-amber-400 font-bold flex items-center gap-1.5 pt-0.5">
                   <Trophy className="w-3.5 h-3.5 text-amber-400" />
                   {candidate.fspRank}

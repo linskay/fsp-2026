@@ -24,6 +24,19 @@ public class VacancyController {
 
     private final VacancyService vacancyService;
 
+    @GetMapping
+    @Operation(summary = "Получение списка всех активных вакансий (с опциональными фильтрами)")
+    public ResponseEntity<List<VacancyDto>> getAllVacancies(
+            @RequestParam(required = false) Specialization specialization,
+            @RequestParam(required = false) Grade grade,
+            @RequestParam(required = false) Integer maxRequiredElo
+    ) {
+        if (specialization != null || grade != null || maxRequiredElo != null) {
+            return ResponseEntity.ok(vacancyService.searchVacancies(specialization, grade, maxRequiredElo));
+        }
+        return ResponseEntity.ok(vacancyService.getAllVacancies());
+    }
+
     @GetMapping("/search")
     @Operation(summary = "Поиск активных вакансий по фильтрам")
     public ResponseEntity<List<VacancyDto>> searchVacancies(

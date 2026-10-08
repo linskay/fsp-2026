@@ -113,39 +113,17 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             </nav>
 
-            {/* Test Accounts / Login Modal Button */}
+            {/* Login Button */}
             {onOpenLoginModal && (
               <button
                 onClick={onOpenLoginModal}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-blue-600/20 to-indigo-600/20 hover:from-blue-600/30 hover:to-indigo-600/30 border border-blue-500/30 text-xs text-blue-200 font-semibold transition-all cursor-pointer shadow-sm hover:scale-[1.02]"
-                title="Вход по логину и паролю (Тестовые аккаунты: candidate@fsp.ru / employer@fsp.ru)"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-xs text-white font-semibold transition-all cursor-pointer shadow-md shadow-blue-500/20 hover:scale-[1.02]"
+                title="Войти в личный кабинет"
               >
-                <KeyRound className="w-3.5 h-3.5 text-cyan-400" />
+                <LogIn className="w-3.5 h-3.5" />
                 <span>Войти</span>
               </button>
             )}
-
-            {/* OAuth Login / Connect Button */}
-            {onOpenOAuthModal && (
-              <button
-                onClick={onOpenOAuthModal}
-                className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.08] text-xs text-slate-300 font-semibold transition-all cursor-pointer shadow-sm"
-                title="Spring Security OAuth2 Авторизация"
-              >
-                <Lock className="w-3.5 h-3.5 text-cyan-400" />
-                <span>OAuth</span>
-                {isOAuthConnected && (
-                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                )}
-              </button>
-            )}
-
-            {/* Keycloak Verified Pill */}
-            <div className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.03] border border-white/[0.08]">
-              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <span className="text-[11px] text-slate-300 font-semibold">Keycloak SSO</span>
-            </div>
 
             {/* Logged In Candidate Avatar */}
             {candidate && (

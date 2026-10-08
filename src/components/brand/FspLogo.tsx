@@ -121,18 +121,9 @@ export const FspFooterPartners: React.FC<{ onNavigate?: (role: any) => void }> =
           </a>
         </div>
 
-        {/* Right: Copyright & 404 test shortcut */}
+        {/* Right: Copyright */}
         <div className="flex items-center gap-3 text-center md:text-right text-[11px] text-slate-400 font-mono font-bold">
-          {onNavigate && (
-            <button
-              onClick={() => onNavigate('not_found')}
-              className="px-2 py-0.5 rounded bg-white/[0.04] hover:bg-white/[0.1] text-slate-500 hover:text-[#00f0ff] border border-white/[0.05] transition-colors cursor-pointer"
-              title="Проверить страницу ошибки 404"
-            >
-              404
-            </button>
-          )}
-          <span>No PHP - No Problems, 2026</span>
+          <span>ФСП Career Arena © 2026</span>
         </div>
 
       </div>

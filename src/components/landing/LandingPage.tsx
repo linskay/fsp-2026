@@ -266,39 +266,14 @@ public class Solution {
                     Никаких сотен холодных откликов. Работодатели сами отправляют вам предложения с прозрачной вилкой в рублях на основе ваших алгоритмических побед.
                   </p>
 
-                  {/* OAuth Actions */}
-                  <div className="space-y-3 pt-2">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                      <button
-                        onClick={() => {
-                          onOpenOAuth('github');
-                          onSelectRole('candidate');
-                        }}
-                        className="py-3 px-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.1] text-white text-xs font-semibold flex items-center justify-center gap-2.5 transition-all cursor-pointer shadow-sm group hover:scale-[1.02]"
-                      >
-                        <Github className="w-4 h-4 group-hover:scale-110 transition-transform text-white" />
-                        <span>Войти через GitHub</span>
-                      </button>
-
-                      <button
-                        onClick={() => {
-                          onOpenOAuth('hh');
-                          onSelectRole('candidate');
-                        }}
-                        className="py-3 px-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.1] text-slate-200 text-xs font-semibold flex items-center justify-center gap-2.5 transition-all cursor-pointer shadow-sm group hover:scale-[1.02]"
-                      >
-                        <div className="w-4 h-4 rounded-full bg-[#ff2b42] flex items-center justify-center text-[9px] font-black text-white">
-                          hh
-                        </div>
-                        <span>Яндекс ID / hh.ru</span>
-                      </button>
-                    </div>
-
+                  {/* Candidate Actions */}
+                  <div className="flex flex-col sm:flex-row gap-3 pt-3">
                     <button
                       onClick={() => onSelectRole('candidate')}
-                      className="w-full py-3.5 px-5 rounded-xl btn-wow-primary text-white font-bold text-sm flex items-center justify-center gap-2.5 cursor-pointer group"
+                      className="flex-1 py-3.5 px-6 rounded-xl btn-wow-primary text-white font-bold text-sm flex items-center justify-center gap-2.5 cursor-pointer group shadow-lg shadow-blue-500/25"
                     >
-                      <span>Перейти в кабинет кандидата ({displayCandidate.fullName}, ELO {displayCandidate.fspRating})</span>
+                      <UserCheck className="w-4 h-4" />
+                      <span>Кабинет соискателя</span>
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </button>
 
@@ -307,10 +282,10 @@ public class Solution {
                         if (onOpenLogin) onOpenLogin();
                         else onSelectRole('candidate');
                       }}
-                      className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-blue-600/15 to-indigo-600/15 hover:from-blue-600/25 hover:to-indigo-600/25 border border-blue-500/30 text-blue-200 text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm hover:scale-[1.01]"
+                      className="py-3.5 px-5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.12] text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm hover:scale-[1.02]"
                     >
                       <Key className="w-3.5 h-3.5 text-cyan-400" />
-                      <span>Войти по логину и паролю (Тестовый аккаунт: candidate@fsp.ru)</span>
+                      <span>Авторизоваться</span>
                     </button>
                   </div>
                 </div>
@@ -405,35 +380,13 @@ public class Solution {
                   </p>
 
                   {/* Employer Actions */}
-                  <div className="space-y-3 pt-2">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                      <button
-                        onClick={() => onSelectRole('employer')}
-                        className="py-3 px-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.1] text-white text-xs font-semibold flex items-center justify-center gap-2.5 transition-all cursor-pointer shadow-sm group hover:scale-[1.02]"
-                      >
-                        <Building2 className="w-4 h-4 group-hover:scale-110 transition-transform text-white" />
-                        <span>Войти как компания</span>
-                      </button>
-
-                      <button
-                        onClick={() => {
-                          onOpenOAuth('hh');
-                          onSelectRole('employer');
-                        }}
-                        className="py-3 px-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.1] text-slate-200 text-xs font-semibold flex items-center justify-center gap-2.5 transition-all cursor-pointer shadow-sm group hover:scale-[1.02]"
-                      >
-                        <div className="w-4 h-4 rounded-full bg-[#ff2b42] flex items-center justify-center text-[9px] font-black text-white">
-                          hh
-                        </div>
-                        <span>hh.ru для бизнеса</span>
-                      </button>
-                    </div>
-
+                  <div className="flex flex-col sm:flex-row gap-3 pt-3">
                     <button
                       onClick={() => onSelectRole('employer')}
-                      className="w-full py-3.5 px-5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-sm flex items-center justify-center gap-2.5 shadow-lg shadow-indigo-500/25 cursor-pointer group"
+                      className="flex-1 py-3.5 px-6 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-sm flex items-center justify-center gap-2.5 shadow-lg shadow-indigo-500/25 cursor-pointer group"
                     >
-                      <span>Открыть HR-панель поиска (База 50 000+ атлетов)</span>
+                      <Building2 className="w-4 h-4" />
+                      <span>Панель работодателя</span>
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </button>
 
@@ -442,10 +395,10 @@ public class Solution {
                         if (onOpenLogin) onOpenLogin();
                         else onSelectRole('employer');
                       }}
-                      className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-purple-600/15 to-indigo-600/15 hover:from-purple-600/25 hover:to-indigo-600/25 border border-purple-500/30 text-purple-200 text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm hover:scale-[1.01]"
+                      className="py-3.5 px-5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.12] text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm hover:scale-[1.02]"
                     >
                       <Key className="w-3.5 h-3.5 text-purple-400" />
-                      <span>Войти по логину и паролю (Тестовый аккаунт: employer@fsp.ru)</span>
+                      <span>Войти как компания</span>
                     </button>
                   </div>
                 </div>

@@ -25,7 +25,7 @@ INSERT INTO candidate_profiles (
     location, bio, is_fsp_verified, github_username, github_repos_count, github_commits_count,
     yandex_id, hh_resume_id
 ) VALUES (
-    'cp000000-0000-0000-0000-000000000001',
+    'ca000000-0000-0000-0000-000000000001',
     'c0000000-0000-0000-0000-000000000001',
     'FSP-RU-2026-0842',
     1200,
@@ -44,13 +44,13 @@ INSERT INTO candidate_profiles (
 ) ON CONFLICT (user_id) DO NOTHING;
 
 INSERT INTO candidate_skills (candidate_id, skill_name) VALUES
-    ('cp000000-0000-0000-0000-000000000001', 'Java'),
-    ('cp000000-0000-0000-0000-000000000001', 'Spring Boot'),
-    ('cp000000-0000-0000-0000-000000000001', 'PostgreSQL'),
-    ('cp000000-0000-0000-0000-000000000001', 'Docker'),
-    ('cp000000-0000-0000-0000-000000000001', 'REST API'),
-    ('cp000000-0000-0000-0000-000000000001', 'Git'),
-    ('cp000000-0000-0000-0000-000000000001', 'Hibernate')
+    ('ca000000-0000-0000-0000-000000000001', 'Java'),
+    ('ca000000-0000-0000-0000-000000000001', 'Spring Boot'),
+    ('ca000000-0000-0000-0000-000000000001', 'PostgreSQL'),
+    ('ca000000-0000-0000-0000-000000000001', 'Docker'),
+    ('ca000000-0000-0000-0000-000000000001', 'REST API'),
+    ('ca000000-0000-0000-0000-000000000001', 'Git'),
+    ('ca000000-0000-0000-0000-000000000001', 'Hibernate')
 ON CONFLICT DO NOTHING;
 
 -- 3. Insert Employer User & Profile (СберТех HR / ПАО Сбербанк)
@@ -72,7 +72,7 @@ SET password = EXCLUDED.password, full_name = EXCLUDED.full_name;
 INSERT INTO employer_profiles (
     id, user_id, company_name, company_logo, industry, description, website, is_fsp_partner, hh_employer_id
 ) VALUES (
-    'ep000000-0000-0000-0000-000000000001',
+    'ea000000-0000-0000-0000-000000000001',
     'e0000000-0000-0000-0000-000000000001',
     'ПАО Сбербанк (СберТех)',
     'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=150&auto=format&fit=crop&q=80',
@@ -88,8 +88,8 @@ INSERT INTO vacancies (
     id, employer_id, title, specialization, grade, salary_from, salary_to, min_fsp_elo,
     required_fsp_rank, location, work_format, description, is_active, hh_vacancy_id
 ) VALUES (
-    'v0000000-0000-0000-0000-000000000001',
-    'ep000000-0000-0000-0000-000000000001',
+    'ba000000-0000-0000-0000-000000000001',
+    'ea000000-0000-0000-0000-000000000001',
     'Senior Java / Highload Core Engineer',
     'BACKEND',
     'SENIOR',
@@ -105,9 +105,9 @@ INSERT INTO vacancies (
 ) ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO vacancy_skills (vacancy_id, skill_name) VALUES
-    ('v0000000-0000-0000-0000-000000000001', 'Java'),
-    ('v0000000-0000-0000-0000-000000000001', 'Spring Boot'),
-    ('v0000000-0000-0000-0000-000000000001', 'PostgreSQL'),
-    ('v0000000-0000-0000-0000-000000000001', 'Kafka'),
-    ('v0000000-0000-0000-0000-000000000001', 'Docker')
+    ('ba000000-0000-0000-0000-000000000001', 'Java'),
+    ('ba000000-0000-0000-0000-000000000001', 'Spring Boot'),
+    ('ba000000-0000-0000-0000-000000000001', 'PostgreSQL'),
+    ('ba000000-0000-0000-0000-000000000001', 'Kafka'),
+    ('ba000000-0000-0000-0000-000000000001', 'Docker')
 ON CONFLICT DO NOTHING;

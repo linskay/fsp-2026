@@ -26,6 +26,13 @@ public class VacancyService {
     private final EmployerProfileRepository employerRepository;
 
     @Transactional(readOnly = true)
+    public List<VacancyDto> getAllVacancies() {
+        return vacancyRepository.findByIsActiveTrue().stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
     public List<VacancyDto> searchVacancies(Specialization specialization, Grade grade, Integer maxRequiredElo) {
         return vacancyRepository.searchVacancies(specialization, grade, maxRequiredElo).stream()
                 .map(this::mapToDto)
