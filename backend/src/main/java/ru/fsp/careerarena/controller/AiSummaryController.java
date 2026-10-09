@@ -23,4 +23,10 @@ public class AiSummaryController {
     public ResponseEntity<AiSummaryDto> getAiSummary(@PathVariable UUID candidateId) {
         return ResponseEntity.ok(aiSummaryService.generateOrGetAiSummary(candidateId));
     }
+
+    @PostMapping("/generate")
+    @Operation(summary = "Генерация AI-Summary кандидата с указанием провайдера, модели и фокуса анализа")
+    public ResponseEntity<AiSummaryDto> generateAiSummary(@jakarta.validation.Valid @RequestBody ru.fsp.careerarena.dto.GenerateAiSummaryRequest request) {
+        return ResponseEntity.ok(aiSummaryService.generateAiSummary(request));
+    }
 }

@@ -11,6 +11,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import ru.fsp.careerarena.dto.AiSummaryDto;
+import ru.fsp.careerarena.dto.GenerateAiSummaryRequest;
 import ru.fsp.careerarena.entity.CandidateAiSummary;
 import ru.fsp.careerarena.entity.CandidateProfile;
 import ru.fsp.careerarena.entity.User;
@@ -79,9 +80,17 @@ class AiSummaryServiceTest {
                 .build();
 
         ReflectionTestUtils.setField(aiSummaryService, "aiApiUrl", "https://llm.api.cloud.yandex.net/foundationModels/v1/completion");
-        ReflectionTestUtils.setField(aiSummaryService, "aiProvider", "yandexgpt");
-        ReflectionTestUtils.setField(aiSummaryService, "aiModel", "yandexgpt");
+        ReflectionTestUtils.setField(aiSummaryService, "aiProvider", "gemini");
+        ReflectionTestUtils.setField(aiSummaryService, "aiModel", "gemini-1.5-flash");
         ReflectionTestUtils.setField(aiSummaryService, "folderId", "b1gmockfolderid");
+        ReflectionTestUtils.setField(aiSummaryService, "geminiApiKey", "mock-gemini-key");
+        ReflectionTestUtils.setField(aiSummaryService, "geminiApiUrl", "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions");
+        ReflectionTestUtils.setField(aiSummaryService, "geminiModel", "gemini-1.5-flash");
+        ReflectionTestUtils.setField(aiSummaryService, "openrouterApiKey", "mock-openrouter-key");
+        ReflectionTestUtils.setField(aiSummaryService, "openrouterApiUrl", "https://openrouter.ai/api/v1/chat/completions");
+        ReflectionTestUtils.setField(aiSummaryService, "openrouterModel", "meta-llama/llama-3.1-8b-instruct:free");
+        ReflectionTestUtils.setField(aiSummaryService, "ollamaApiUrl", "http://ollama:11434/v1/chat/completions");
+        ReflectionTestUtils.setField(aiSummaryService, "ollamaModel", "llama3:8b");
     }
 
     @Test
@@ -424,6 +433,185 @@ class AiSummaryServiceTest {
         assertThat(dto.getModelName()).isEqualTo("YandexGPT 3 Pro (Neural Profiler)");
     }
 
+    @Test
+    @DisplayName("Успешная генерация через Google Gemini API с валидным ответом и принудительным обновлением")
+    void generateAiSummary_geminiLiveApi_success() {
+        CandidateAiSummary oldSummary = CandidateAiSummary.builder()
+                .id(UUID.randomUUID())
+                .candidate(candidate)
+                .summaryText("Старое резюме")
+                .keyStrengths(List.of("Старый навык"))
+                .recommendationLevel("QUALIFIED")
+                .recommendedRoles(List.of("Junior Dev"))
+                .modelName("Old Model")
+                .build();
+
+        String geminiResponseBody = """
+                {
+                  "choices": [
+                    {
+                      "message": {
+                        "content": "```json\\n{\\n  \\"summaryText\\": \\"Высококлассный Java архитектор для HighLoad систем.\\",\\n  \\"keyStrengths\\": [\\"HighLoad архитектура\\", \\"Spring Cloud\\", \\"PostgreSQL\\", \\"Олимпиадные алгоритмы\\"],\\n  \\"recommendationLevel\\": \\"HIGHLY_RECOMMENDED\\",\\n  \\"recommendedRoles\\": [\\"HighLoad Architect\\", \\"Lead Java Developer\\"]\\n}\\n```"
+                      }
+                    }
+                  ]
+                }
+                """;
+
+        setupWebClientMock(geminiResponseBody);
+
+        when(candidateRepository.findById(candidateId)).thenReturn(Optional.of(candidate));
+        when(aiSummaryRepository.findByCandidateId(candidateId)).thenReturn(Optional.of(oldSummary));
+        when(aiSummaryRepository.save(any(CandidateAiSummary.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        GenerateAiSummaryRequest request = GenerateAiSummaryRequest.builder()
+                .candidateId(candidateId)
+                .provider("gemini")
+                .apiKey("AQ.real-gemini-key")
+                .focus("highload")
+                .forceRefresh(true)
+                .build();
+
+        AiSummaryDto dto = aiSummaryService.generateAiSummary(request);
+
+        assertThat(dto).isNotNull();
+        assertThat(dto.getSummaryText()).isEqualTo("Высококлассный Java архитектор для HighLoad систем.");
+        assertThat(dto.getModelName()).isEqualTo("Google Gemini gemini-1.5-flash (Live API)");
+        assertThat(dto.getRecommendationLevel()).isEqualTo("HIGHLY_RECOMMENDED");
+        assertThat(dto.getKeyStrengths()).contains("HighLoad архитектура", "Spring Cloud");
+        verify(aiSummaryRepository).save(any(CandidateAiSummary.class));
+    }
+
+    @Test
+    @DisplayName("Генерация через Google Gemini с mock-ключом приводит к вызову динамического профиля")
+    void generateAiSummary_geminiMockKey_dynamicFallback() {
+        when(candidateRepository.findById(candidateId)).thenReturn(Optional.of(candidate));
+        when(aiSummaryRepository.findByCandidateId(candidateId)).thenReturn(Optional.empty());
+        when(aiSummaryRepository.save(any(CandidateAiSummary.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        GenerateAiSummaryRequest request = GenerateAiSummaryRequest.builder()
+                .candidateId(candidateId)
+                .provider("gemini")
+                .apiKey("mock-demo-key")
+                .focus("balanced")
+                .build();
+
+        AiSummaryDto dto = aiSummaryService.generateAiSummary(request);
+
+        assertThat(dto).isNotNull();
+        assertThat(dto.getModelName()).isEqualTo("YandexGPT 3 Pro (Neural Profiler)");
+        assertThat(dto.getSummaryText()).contains("ТОП-1%");
+        verify(aiWebClient, never()).post();
+    }
+
+    @Test
+    @DisplayName("Успешная генерация через OpenRouter API с кастомной моделью и фокусом на алгоритмы")
+    void generateAiSummary_openRouterLiveApi_success() {
+        String openRouterResponseBody = """
+                {
+                  "choices": [
+                    {
+                      "message": {
+                        "content": "{\\"summaryText\\":\\"OpenRouter аналитика алгоритмической базы кандидата.\\",\\"keyStrengths\\":[\\"Графы\\",\\"Динамическое программирование\\"],\\"recommendationLevel\\":\\"HIGHLY_RECOMMENDED\\",\\"recommendedRoles\\":[\\"Algorithm Engineer\\"]}"
+                      }
+                    }
+                  ]
+                }
+                """;
+
+        setupWebClientMock(openRouterResponseBody);
+
+        when(candidateRepository.findById(candidateId)).thenReturn(Optional.of(candidate));
+        when(aiSummaryRepository.findByCandidateId(candidateId)).thenReturn(Optional.empty());
+        when(aiSummaryRepository.save(any(CandidateAiSummary.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        GenerateAiSummaryRequest request = GenerateAiSummaryRequest.builder()
+                .candidateId(candidateId)
+                .provider("openrouter")
+                .apiKey("sk-or-v1-real-key")
+                .model("meta-llama/llama-3.1-8b-instruct:free")
+                .focus("algo")
+                .build();
+
+        AiSummaryDto dto = aiSummaryService.generateAiSummary(request);
+
+        assertThat(dto).isNotNull();
+        assertThat(dto.getSummaryText()).isEqualTo("OpenRouter аналитика алгоритмической базы кандидата.");
+        assertThat(dto.getModelName()).isEqualTo("OpenRouter (meta-llama/llama-3.1-8b-instruct:free)");
+        assertThat(dto.getKeyStrengths()).contains("Графы", "Динамическое программирование");
+    }
+
+    @Test
+    @DisplayName("Генерация через локальный сервис Ollama Docker")
+    void generateAiSummary_ollamaLiveApi_success() {
+        String ollamaResponseBody = """
+                {
+                  "choices": [
+                    {
+                      "message": {
+                        "content": "{\\"summaryText\\":\\"Локальный Ollama анализ технических лидерских качеств.\\",\\"keyStrengths\\":[\\"Tech Leadership\\",\\"System Design\\"],\\"recommendationLevel\\":\\"RECOMMENDED\\",\\"recommendedRoles\\":[\\"Team Lead Backend\\"]}"
+                      }
+                    }
+                  ]
+                }
+                """;
+
+        setupWebClientMock(ollamaResponseBody);
+
+        when(candidateRepository.findById(candidateId)).thenReturn(Optional.of(candidate));
+        when(aiSummaryRepository.findByCandidateId(candidateId)).thenReturn(Optional.empty());
+        when(aiSummaryRepository.save(any(CandidateAiSummary.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        GenerateAiSummaryRequest request = GenerateAiSummaryRequest.builder()
+                .candidateId(candidateId)
+                .provider("ollama")
+                .endpointUrl("http://localhost:11434/v1/chat/completions")
+                .model("llama3:8b")
+                .focus("lead")
+                .build();
+
+        AiSummaryDto dto = aiSummaryService.generateAiSummary(request);
+
+        assertThat(dto).isNotNull();
+        assertThat(dto.getSummaryText()).isEqualTo("Локальный Ollama анализ технических лидерских качеств.");
+        assertThat(dto.getModelName()).isEqualTo("Ollama Local Docker (llama3:8b)");
+    }
+
+    @Test
+    @DisplayName("Генерация через кастомный OpenAI-совместимый провайдер")
+    void generateAiSummary_customOpenAiProvider_success() {
+        String customResponseBody = """
+                {
+                  "choices": [
+                    {
+                      "message": {
+                        "content": "{\\"summaryText\\":\\"Custom DeepSeek V3 аналитический профиль.\\",\\"keyStrengths\\":[\\"Java\\",\\"Architecture\\"],\\"recommendationLevel\\":\\"HIGHLY_RECOMMENDED\\",\\"recommendedRoles\\":[\\"Principal Engineer\\"]}"
+                      }
+                    }
+                  ]
+                }
+                """;
+
+        setupWebClientMock(customResponseBody);
+
+        when(candidateRepository.findById(candidateId)).thenReturn(Optional.of(candidate));
+        when(aiSummaryRepository.findByCandidateId(candidateId)).thenReturn(Optional.empty());
+        when(aiSummaryRepository.save(any(CandidateAiSummary.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        GenerateAiSummaryRequest request = GenerateAiSummaryRequest.builder()
+                .candidateId(candidateId)
+                .provider("deepseek")
+                .apiKey("sk-real-deepseek-key")
+                .model("deepseek-chat")
+                .build();
+
+        AiSummaryDto dto = aiSummaryService.generateAiSummary(request);
+
+        assertThat(dto).isNotNull();
+        assertThat(dto.getSummaryText()).isEqualTo("Custom DeepSeek V3 аналитический профиль.");
+        assertThat(dto.getModelName()).isEqualTo("deepseek deepseek-chat (Live API)");
+    }
+
     @SuppressWarnings("unchecked")
     private void setupWebClientMock(String responseBody) {
         WebClient.RequestBodyUriSpec uriSpec = mock(WebClient.RequestBodyUriSpec.class);
@@ -431,12 +619,12 @@ class AiSummaryServiceTest {
         WebClient.RequestHeadersSpec headersSpec = mock(WebClient.RequestHeadersSpec.class);
         WebClient.ResponseSpec responseSpec = mock(WebClient.ResponseSpec.class);
 
-        when(aiWebClient.post()).thenReturn(uriSpec);
-        when(uriSpec.uri(anyString())).thenReturn(bodySpec);
-        when(bodySpec.header(anyString(), anyString())).thenReturn(bodySpec);
-        when(bodySpec.contentType(any())).thenReturn(bodySpec);
-        when(bodySpec.bodyValue(any())).thenReturn(headersSpec);
-        when(headersSpec.retrieve()).thenReturn(responseSpec);
-        when(responseSpec.bodyToMono(String.class)).thenReturn(Mono.just(responseBody));
+        lenient().when(aiWebClient.post()).thenReturn(uriSpec);
+        lenient().when(uriSpec.uri(anyString())).thenReturn(bodySpec);
+        lenient().when(bodySpec.header(anyString(), anyString())).thenReturn(bodySpec);
+        lenient().when(bodySpec.contentType(any())).thenReturn(bodySpec);
+        lenient().when(bodySpec.bodyValue(any())).thenReturn(headersSpec);
+        lenient().when(headersSpec.retrieve()).thenReturn(responseSpec);
+        lenient().when(responseSpec.bodyToMono(String.class)).thenReturn(Mono.just(responseBody));
     }
 }
