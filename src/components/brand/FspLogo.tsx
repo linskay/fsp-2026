@@ -84,7 +84,7 @@ export const FspLogo: React.FC<FspLogoProps> = ({
   );
 };
 
-export const FspFooterPartners: React.FC = () => {
+export const FspFooterPartners: React.FC<{ onNavigate?: (role: any) => void }> = ({ onNavigate }) => {
   return (
     <footer className="border-t border-[#141b2e] bg-[#04060d] py-7 px-4 mt-auto">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5 text-xs text-slate-400 font-['JetBrains_Mono']">
@@ -122,8 +122,8 @@ export const FspFooterPartners: React.FC = () => {
         </div>
 
         {/* Right: Copyright */}
-        <div className="text-center md:text-right text-[11px] text-slate-400 font-mono font-bold">
-          No PHP - No Problems, 2026
+        <div className="flex items-center gap-3 text-center md:text-right text-[11px] text-slate-400 font-mono font-bold">
+          <span>ФСП Career Arena © 2026</span>
         </div>
 
       </div>

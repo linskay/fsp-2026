@@ -1,4 +1,5 @@
-import { AlgorithmTask, CandidateProfile, EmployerProfile, Invitation, Vacancy } from '../types';
+import { AlgorithmTask, CandidateProfile, EmployerProfile, Invitation, Vacancy, AssessmentAssignment } from '../types';
+import { PESTEREV_HH_CONFIRMED_SKILLS } from './mockOAuthData';
 
 export const INITIAL_TASKS: AlgorithmTask[] = [
   {
@@ -1275,10 +1276,209 @@ function maxFlow(n, source, sink, edges) {
 
 export const INITIAL_CANDIDATES: CandidateProfile[] = [
   {
+    id: 'cand-pesterev',
+    email: '89259112970@mail.ru',
+    fullName: 'Иван Пестерев',
+    city: 'Москва',
+    avatarUrl: '/avatars/user_pesterev.png',
+    title: 'Java-разработчик',
+    specialization: 'backend',
+    targetGrade: 'middle',
+    currentGradeAssigned: 'middle',
+    fspId: 'FSP-RU-2026-0842',
+    fspRank: 'Начинающий спортсмен (Junior)',
+    fspRating: 1200,
+    fspBadges: [
+      'ФСП Участник 2026',
+      'Java Backend Specialist',
+      'hh.ru Verified',
+      'Keycloak Verified'
+    ],
+    isVerified: true,
+    verifiedAt: '2026-01-15T12:00:00Z',
+    keycloakSub: 'fsp_sso_kc_ipesterev',
+    achievements: [
+      {
+        id: 'ach-pesterev-1',
+        title: 'Участник квалификационного отбора ФСП 2026',
+        year: 2026,
+        badge: 'Квалификация ФСП',
+        description: 'Регистрация в реестре спортсменов ФСП РФ и подключение верифицированного резюме HeadHunter.',
+        event: 'Федерация спортивного программирования России'
+      }
+    ],
+    skills: ['Java', 'Spring Boot', 'PostgreSQL', 'Docker', 'REST API', 'Git', 'Maven', 'Hibernate', 'JUnit', 'TypeScript'],
+    experienceYears: 5,
+    about: 'Java-разработчик с опытом коммерческой разработки 5 лет 1 месяц. Тип занятости: Постоянная работа, формат: Удалённо, командировки: Могу. Резюме верифицировано через hh.ru.',
+    githubUrl: 'https://github.com/ipesterev',
+    fspProfileUrl: 'https://fsp-russia.com/athletes/ipesterev',
+    leetcodeStats: undefined,
+    aiSummary: {
+      summaryText: 'Java-разработчик (@ipesterev) с опытом 5 лет 1 месяц (Spring Boot, PostgreSQL, Docker, REST API). Резюме верифицировано через hh.ru (120 000 ₽ на руки, удаленно). Алгоритмический профиль в ФСП готов к квалификации: решите задачи в Арене для подтверждения разряда.',
+      keyStrengths: [
+        'Опыт в разработке: 5 лет 1 месяц (Java-разработчик)',
+        'Стек: Java, Spring Boot, PostgreSQL, Docker, REST API',
+        'Желаемый оклад: 120 000 ₽ на руки (Удаленно)',
+        'Статус ФСП: Начинающий спортсмен (готов к матчам в Арене)'
+      ],
+      recommendedProjects: [
+        'Микросервисные бэкенды на Java и Spring Boot',
+        'Корпоративные платформы и интеграция реляционных СУБД',
+        'Высоконагруженные REST API сервисы'
+      ],
+      codeCleanlinessScore: 92,
+      averageSolveTimeMinutes: 18,
+      modelUsed: 'YandexGPT Pro',
+      generatedAt: new Date().toISOString()
+    },
+    solvedTasksCount: 0,
+    totalTasksAttempted: 0,
+    testScorePercent: 0,
+    avgExecutionTimeMs: 0,
+    memoryEfficiencyScore: 0,
+    lastTestingDate: '2026-03-15T10:00:00Z',
+    canRetakeAfterDate: '2026-06-15T10:00:00Z',
+    phoneMasked: '+7 (925) •••-••-70',
+    phoneReal: '+7 (925) 911-29-70',
+    telegramMasked: '@i•••••••v',
+    telegramReal: '@ipesterev_dev',
+    hhConfirmedSkills: [],
+    salaryExpectationMin: 108000,
+    salaryExpectationMax: 138000,
+    isLookingForJob: true,
+    preferredFormat: 'remote'
+  },
+  {
+    id: 'cand-alina',
+    email: 'alina.dev@mail.ru',
+    fullName: 'Алина',
+    city: 'Москва',
+    avatarUrl: '/avatars/user_alina.png',
+    title: 'Frontend / Algorithm Developer',
+    specialization: 'frontend',
+    targetGrade: 'middle',
+    currentGradeAssigned: 'middle',
+    fspId: 'FSP-RU-2026-1194',
+    fspRank: '1-й спортивный разряд',
+    fspRating: 2040,
+    fspBadges: [
+      'ФСП Атлет 2026',
+      'LeetCode 400+ Club',
+      'Knight (Top 4.2%)',
+      'GitHub Verified @alina-dev',
+      'Keycloak Verified'
+    ],
+    isVerified: true,
+    verifiedAt: '2026-02-01T10:00:00Z',
+    keycloakSub: 'fsp_sso_kc_alina',
+    achievements: [
+      {
+        id: 'ach-alina-1',
+        title: 'LeetCode 400 Problems Milestone (Knight Badge)',
+        year: 2026,
+        badge: 'LeetCode Knight 2040',
+        description: 'Подтвержденное решение 400 алгоритмических задач, включая 40 задач категории Hard.',
+        event: 'LeetCode Global Contests'
+      },
+      {
+        id: 'ach-alina-2',
+        title: 'Финалист Студенческой лиги ФСП по спортивному программированию',
+        year: 2025,
+        badge: 'Серебряный финалист ФСП',
+        description: 'Решение олимпиадных задач на графы, динамическое программирование и деревья отрезков.',
+        event: 'Федерация спортивного программирования России'
+      }
+    ],
+    skills: ['TypeScript', 'React', 'JavaScript', 'Algorithms & Data Structures', 'Python', 'TailwindCSS', 'Git', 'REST API'],
+    experienceYears: 0,
+    about: 'Разработчик с глубокой алгоритмической базой: 400 подтвержденных задач на LeetCode (Knight, Top 4.2% в мире). В резюме 0 лет коммерческого опыта, но подтвержден 1-й спортивный разряд ФСП (2040 ELO). Ищу работу Frontend / Fullstack разработчиком.',
+    githubUrl: 'https://github.com/alina-dev',
+    fspProfileUrl: 'https://fsp-russia.com/athletes/alina-dev',
+    leetcodeStats: {
+      username: 'alina_dev',
+      ranking: 28400,
+      totalSolved: 400,
+      totalQuestions: 3180,
+      easySolved: 180,
+      totalEasy: 830,
+      mediumSolved: 180,
+      totalMedium: 1710,
+      hardSolved: 40,
+      totalHard: 640,
+      acceptanceRate: 68.4,
+      contestRating: 2040,
+      contestGlobalRanking: 3200,
+      contestTopPercentage: 4.2,
+      badge: 'Knight',
+      syncedWithGithub: true,
+      syncedGithubRepo: 'alina-dev/alina-leetcode-vault',
+      lastSyncedAt: 'Сегодня, 11:40',
+      recentSubmissions: [
+        {
+          id: 'sub-lc-a-1',
+          title: 'Course Schedule II (Topological Sort)',
+          titleSlug: 'course-schedule-ii',
+          difficulty: 'Medium',
+          language: 'TypeScript',
+          runtimeBeatsPercent: 94.2,
+          memoryBeatsPercent: 91.0,
+          status: 'Accepted',
+          timestamp: '2 часа назад'
+        },
+        {
+          id: 'sub-lc-a-2',
+          title: 'Sliding Window Maximum (Monotonic Queue)',
+          titleSlug: 'sliding-window-maximum',
+          difficulty: 'Hard',
+          language: 'Python',
+          runtimeBeatsPercent: 96.8,
+          memoryBeatsPercent: 93.4,
+          status: 'Accepted',
+          timestamp: 'Вчера'
+        }
+      ]
+    },
+    aiSummary: {
+      summaryText: 'Уникальный кандидат платформы ФСП: классический HR-фильтр hh.ru отсеял бы резюме с 0 годами коммерческого опыта, однако алгоритмический аудит платформы выявил мощную базу из 400 задач LeetCode (40 Hard, ранг Knight, 2040 ELO). Высокая точность решений, присвоен 1-й спортивный разряд ФСП. Рекомендуется на Middle Frontend/Algorithm позиции с окладом от 160 000 ₽.',
+      keyStrengths: [
+        'LeetCode: 400 подтвержденных задач (Hard: 40)',
+        'Разряд ФСП: 1-й спортивный разряд (2040 ELO)',
+        'Стек: TypeScript, React, Algorithms, Python',
+        'Коммерческий опыт: 0 лет (Высокий потенциал роста)'
+      ],
+      recommendedProjects: [
+        'Сложные клиентские SPA с высокой вычислительной нагрузкой',
+        'Интерактивные движки визуализации и аналитики данных',
+        'Frontend ядра платформенных сервисов'
+      ],
+      codeCleanlinessScore: 96,
+      averageSolveTimeMinutes: 14,
+      modelUsed: 'YandexGPT Pro',
+      generatedAt: new Date().toISOString()
+    },
+    solvedTasksCount: 3,
+    totalTasksAttempted: 4,
+    testScorePercent: 97.4,
+    avgExecutionTimeMs: 12.1,
+    memoryEfficiencyScore: 94,
+    lastTestingDate: '2026-03-20T12:00:00Z',
+    canRetakeAfterDate: '2026-06-20T12:00:00Z',
+    phoneMasked: '+7 (916) •••-••-42',
+    phoneReal: '+7 (916) 742-11-42',
+    telegramMasked: '@a•••••v',
+    telegramReal: '@alina_frontend',
+    hhConfirmedSkills: [],
+    salaryExpectationMin: 80000,
+    salaryExpectationMax: 120000,
+    isLookingForJob: true,
+    preferredFormat: 'remote'
+  },
+  {
     id: 'cand-1',
     email: 'alex.belov.fsp@arena.pro',
     fullName: 'Александр Белов',
     city: 'Москва',
+    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
     title: 'Senior Backend Engineer / HighLoad & Algorithms Lead',
     specialization: 'backend',
     targetGrade: 'senior',
@@ -1326,6 +1526,61 @@ export const INITIAL_CANDIDATES: CandidateProfile[] = [
       { date: '2025-04', elo: 2650, event: 'Всероссийская Лига ФСП', change: 70 },
       { date: '2026-03', elo: 2740, event: 'Judge0 LeetCode Hard Benchmark', change: 90 }
     ],
+    leetcodeStats: {
+      username: 'alex_belov_fsp',
+      ranking: 14200,
+      totalSolved: 742,
+      totalQuestions: 3180,
+      easySolved: 215,
+      totalEasy: 830,
+      mediumSolved: 385,
+      totalMedium: 1710,
+      hardSolved: 142,
+      totalHard: 640,
+      acceptanceRate: 76.4,
+      contestRating: 2480,
+      contestGlobalRanking: 340,
+      contestTopPercentage: 0.8,
+      badge: 'Guardian',
+      syncedWithGithub: true,
+      syncedGithubRepo: 'alex-belov-fsp/leetcode-fsp-solutions',
+      lastSyncedAt: 'Сегодня, 14:20',
+      recentSubmissions: [
+        {
+          id: 'sub-lc-1',
+          title: 'Maximum Flow using Dinic Algorithm',
+          titleSlug: 'dinic-max-flow',
+          difficulty: 'Hard',
+          language: 'C++',
+          runtimeBeatsPercent: 99.2,
+          memoryBeatsPercent: 94.6,
+          status: 'Accepted',
+          timestamp: '2 часа назад'
+        },
+        {
+          id: 'sub-lc-2',
+          title: 'LRU Cache Design & Concurrent Access',
+          titleSlug: 'lru-cache',
+          difficulty: 'Medium',
+          language: 'Java 21',
+          runtimeBeatsPercent: 98.1,
+          memoryBeatsPercent: 96.0,
+          status: 'Accepted',
+          timestamp: 'Вчера'
+        },
+        {
+          id: 'sub-lc-3',
+          title: 'Trapping Rain Water II (3D Priority Queue)',
+          titleSlug: 'trapping-rain-water-ii',
+          difficulty: 'Hard',
+          language: 'Go',
+          runtimeBeatsPercent: 97.4,
+          memoryBeatsPercent: 91.8,
+          status: 'Accepted',
+          timestamp: '3 дня назад'
+        }
+      ]
+    },
     aiSummary: {
       summaryText: 'Сильный Backend-разработчик (Senior / Lead). Основной стек: Java 21, Spring Boot 3, Go, C++. По данным GitHub, активно развивает микросервисные архитектуры и алгоритмические библиотеки оптимизации потоков. Задачи уровня LeetCode Medium и Hard решает в среднем за 12 минут с чистотой кода 98/100. Имеет рейтинг ELO 2740 и официальный статус Мастера спорта РФ по спортивному программированию. Рекомендуется на ключевые Highload- и FinTech-проекты ядра.',
       keyStrengths: [
@@ -1344,8 +1599,8 @@ export const INITIAL_CANDIDATES: CandidateProfile[] = [
       modelUsed: 'YandexGPT Pro',
       generatedAt: '2026-03-12T14:30:00Z'
     },
-    solvedTasksCount: 428,
-    totalTasksAttempted: 432,
+    solvedTasksCount: 8,
+    totalTasksAttempted: 8,
     testScorePercent: 99.4,
     avgExecutionTimeMs: 6.8,
     memoryEfficiencyScore: 98,
@@ -1355,6 +1610,64 @@ export const INITIAL_CANDIDATES: CandidateProfile[] = [
     phoneReal: '+7 (916) 459-33-42',
     telegramMasked: '@a••••••••v',
     telegramReal: '@alex_belov_dev',
+    hhConfirmedSkills: [
+      {
+        id: 'hh-cs-b1',
+        skill: 'Алгоритмы и структуры данных',
+        level: 'Экспертный',
+        scorePercent: 100,
+        percentileRank: 'Топ-0.5% среди соискателей hh.ru',
+        confirmedAt: '12 февраля 2026 г.',
+        testTitle: 'Тестирование HeadHunter: Алгоритмические задачи и оптимизация сложности',
+        certificateId: 'HH-CERT-2026-ALGO-0042'
+      },
+      {
+        id: 'hh-cs-b2',
+        skill: 'Java 21 & Spring Boot 3',
+        level: 'Экспертный',
+        scorePercent: 99,
+        percentileRank: 'Топ-0.8% среди соискателей hh.ru',
+        confirmedAt: '20 января 2026 г.',
+        testTitle: 'Тестирование HeadHunter: Высоконагруженные сервисы на Java',
+        certificateId: 'HH-CERT-2026-JV-8812'
+      },
+      {
+        id: 'hh-cs-b3',
+        skill: 'PostgreSQL & Distributed DBs',
+        level: 'Экспертный',
+        scorePercent: 97,
+        percentileRank: 'Топ-1.2% среди соискателей hh.ru',
+        confirmedAt: '15 декабря 2025 г.',
+        testTitle: 'Тестирование HeadHunter: Оптимизация планов запросов и шардирование',
+        certificateId: 'HH-CERT-2025-DB-4410'
+      }
+    ],
+    githubSync: {
+      autoPushEnabled: true,
+      repoName: 'leetcode-fsp-solutions',
+      repoFullName: 'alex-belov-fsp/leetcode-fsp-solutions',
+      defaultBranch: 'main',
+      isPublicOnly: true,
+      lastSyncedAt: 'Сегодня, 09:15',
+      recentCommits: [
+        {
+          id: 'gh-cb-1',
+          taskTitle: 'LeetCode #239: Sliding Window Maximum',
+          taskSlug: 'sliding-window-maximum',
+          difficulty: 'Hard',
+          language: 'C++',
+          runtimeMs: 4.2,
+          runtimeBeatsPercent: 99.6,
+          memoryMb: 16.1,
+          memoryBeatsPercent: 98.2,
+          commitHash: 'a71e409',
+          commitMessage: 'feat(leetcode): solve #239 Sliding Window Maximum [Hard] - 4.2ms (beats 99.6%) 16.1MB (beats 98.2%)',
+          repoFullName: 'alex-belov-fsp/leetcode-fsp-solutions',
+          timestamp: '2 часа назад',
+          githubUrl: 'https://github.com/alex-belov-fsp/leetcode-fsp-solutions/commit/a71e409'
+        }
+      ]
+    },
     salaryExpectationMin: 420000,
     salaryExpectationMax: 550000,
     isLookingForJob: true,
@@ -1365,6 +1678,7 @@ export const INITIAL_CANDIDATES: CandidateProfile[] = [
     email: 'daria.morozova@fsp-athlete.ru',
     fullName: 'Дарья Морозова',
     city: 'Санкт-Петербург',
+    avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&auto=format&fit=crop&q=80',
     title: 'Middle+ / Senior Python & Data Engineer',
     specialization: 'backend',
     targetGrade: 'senior',
@@ -1395,8 +1709,70 @@ export const INITIAL_CANDIDATES: CandidateProfile[] = [
     experienceYears: 4,
     about: 'КМС по спортивному программированию. Разрабатываю асинхронные бэкенды и пайплайны обработки данных. Люблю оптимизировать сложные алгоритмические узкие места.',
     githubUrl: 'https://github.com/daria-morozova',
-    solvedTasksCount: 312,
-    totalTasksAttempted: 320,
+    leetcodeStats: {
+      username: 'daria_morozova',
+      ranking: 28400,
+      totalSolved: 584,
+      totalQuestions: 3180,
+      easySolved: 190,
+      totalEasy: 830,
+      mediumSolved: 284,
+      totalMedium: 1710,
+      hardSolved: 110,
+      totalHard: 640,
+      acceptanceRate: 74.2,
+      contestRating: 2190,
+      contestGlobalRanking: 1120,
+      contestTopPercentage: 2.1,
+      badge: 'Knight',
+      syncedWithGithub: true,
+      syncedGithubRepo: 'daria-morozova/leetcode-python-solutions',
+      lastSyncedAt: 'Вчера, 19:30',
+      recentSubmissions: [
+        {
+          id: 'sub-lc-d1',
+          title: 'Course Schedule II (Topological Sort)',
+          titleSlug: 'course-schedule-ii',
+          difficulty: 'Medium',
+          language: 'Python 3',
+          runtimeBeatsPercent: 96.5,
+          memoryBeatsPercent: 93.2,
+          status: 'Accepted',
+          timestamp: 'Вчера'
+        },
+        {
+          id: 'sub-lc-d2',
+          title: 'Longest Consecutive Sequence (Disjoint Set)',
+          titleSlug: 'longest-consecutive-sequence',
+          difficulty: 'Medium',
+          language: 'Python 3',
+          runtimeBeatsPercent: 98.0,
+          memoryBeatsPercent: 91.4,
+          status: 'Accepted',
+          timestamp: '3 дня назад'
+        }
+      ]
+    },
+    aiSummary: {
+      summaryText: 'Ведущий инженер данных и системный Python-разработчик (Senior). Кандидат в мастера спорта по СП (ELO 2490). Специализируется на высокопроизводительных асинхронных бэкендах (FastAPI, AsyncIO, ClickHouse) и алгоритмической оптимизации сложных графовых структур. Решила 584 задачи на LeetCode. Рекомендуется на архитектурные роли в области Big Data, Analytics и Highload пайплайнов.',
+      keyStrengths: [
+        'КМС по спортивному программированию (ELO 2490)',
+        'Глубокая экспертиза в AsyncIO, ClickHouse и Spark',
+        '584 решенные задачи на LeetCode (статус Knight)',
+        'Высокая математическая культура (МГУ ВМК)'
+      ],
+      recommendedProjects: [
+        'Real-time аналитические платформы',
+        'Highload ETL/ELT конвейеры потоковых данных',
+        'Графовые алгоритмы и рекомендательные системы'
+      ],
+      codeCleanlinessScore: 97,
+      averageSolveTimeMinutes: 14,
+      modelUsed: 'YandexGPT Pro',
+      generatedAt: '2026-03-10T12:00:00Z'
+    },
+    solvedTasksCount: 5,
+    totalTasksAttempted: 8,
     testScorePercent: 96.8,
     avgExecutionTimeMs: 11.2,
     memoryEfficiencyScore: 94,
@@ -1416,6 +1792,7 @@ export const INITIAL_CANDIDATES: CandidateProfile[] = [
     email: 'mikhail.sokolov@tech-fsp.org',
     fullName: 'Михаил Соколов',
     city: 'Новосибирск',
+    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop&q=80',
     title: 'Middle Fullstack / Frontend React & Go Developer',
     specialization: 'fullstack',
     targetGrade: 'middle',
@@ -1446,8 +1823,59 @@ export const INITIAL_CANDIDATES: CandidateProfile[] = [
     experienceYears: 3,
     about: '1-й спортивный разряд по спортивному программированию. Разрабатываю производительные веб-приложения с мгновенным откликом UI и чистым кодом.',
     githubUrl: 'https://github.com/misha-sokolov-dev',
-    solvedTasksCount: 195,
-    totalTasksAttempted: 210,
+    leetcodeStats: {
+      username: 'misha_sokolov',
+      ranking: 54100,
+      totalSolved: 395,
+      totalQuestions: 3180,
+      easySolved: 165,
+      totalEasy: 830,
+      mediumSolved: 190,
+      totalMedium: 1710,
+      hardSolved: 40,
+      totalHard: 640,
+      acceptanceRate: 72.8,
+      contestRating: 1940,
+      contestGlobalRanking: 3200,
+      contestTopPercentage: 5.4,
+      badge: 'Knight',
+      syncedWithGithub: true,
+      syncedGithubRepo: 'misha-sokolov-dev/algo-leetcode',
+      lastSyncedAt: '3 дня назад',
+      recentSubmissions: [
+        {
+          id: 'sub-lc-m1',
+          title: 'Implement Trie (Prefix Tree)',
+          titleSlug: 'implement-trie-prefix-tree',
+          difficulty: 'Medium',
+          language: 'TypeScript',
+          runtimeBeatsPercent: 95.2,
+          memoryBeatsPercent: 92.1,
+          status: 'Accepted',
+          timestamp: '3 дня назад'
+        }
+      ]
+    },
+    aiSummary: {
+      summaryText: 'Продуктивный Middle+ Fullstack разработчик (React 19, TypeScript, Go). Обладатель 1-го спортивного разряда ФСП (ELO 2180). Отличается умением быстро создавать интуитивные, адаптивные интерфейсы с чистой компонентной архитектурой и связывать их с микросервисами на Go. Решил 395 задач на LeetCode. Идеален для продуктовых команд.',
+      keyStrengths: [
+        '1-й разряд ФСП по СП (ELO 2180)',
+        'Стек React 19, Next.js, Go, Zustand',
+        '395 задач на LeetCode с упором на структуры данных',
+        'TDD и строгие интерфейсные контракты'
+      ],
+      recommendedProjects: [
+        'Интерактивные B2B SaaS веб-платформы',
+        'Real-time дашборды и аналитические интерфейсы',
+        'Микрофронтенды и дизайн-системы'
+      ],
+      codeCleanlinessScore: 96,
+      averageSolveTimeMinutes: 16,
+      modelUsed: 'YandexGPT Pro',
+      generatedAt: '2026-03-08T10:00:00Z'
+    },
+    solvedTasksCount: 3,
+    totalTasksAttempted: 8,
     testScorePercent: 92.0,
     avgExecutionTimeMs: 14.5,
     memoryEfficiencyScore: 90,
@@ -1467,6 +1895,7 @@ export const INITIAL_CANDIDATES: CandidateProfile[] = [
     email: 'ekaterina.orlova@devops-fsp.ru',
     fullName: 'Екатерина Орлова',
     city: 'Казань',
+    avatarUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&auto=format&fit=crop&q=80',
     title: 'Senior DevOps & Platform Engineer / Infrastructure Lead',
     specialization: 'devops',
     targetGrade: 'senior',
@@ -1497,8 +1926,59 @@ export const INITIAL_CANDIDATES: CandidateProfile[] = [
     experienceYears: 7,
     about: 'КМС ФСП. Строю отказоустойчивые Cloud-Native платформы с автоматическим масштабированием и мониторингом.',
     githubUrl: 'https://github.com/ekaterina-orlova-ops',
-    solvedTasksCount: 360,
-    totalTasksAttempted: 375,
+    leetcodeStats: {
+      username: 'kate_orlova_cloud',
+      ranking: 36200,
+      totalSolved: 482,
+      totalQuestions: 3180,
+      easySolved: 152,
+      totalEasy: 830,
+      mediumSolved: 230,
+      totalMedium: 1710,
+      hardSolved: 100,
+      totalHard: 640,
+      acceptanceRate: 75.1,
+      contestRating: 2210,
+      contestGlobalRanking: 980,
+      contestTopPercentage: 1.8,
+      badge: 'Knight',
+      syncedWithGithub: true,
+      syncedGithubRepo: 'ekaterina-orlova-ops/k8s-leetcode-sync',
+      lastSyncedAt: 'Позавчера, 22:15',
+      recentSubmissions: [
+        {
+          id: 'sub-lc-k1',
+          title: 'Design In-Memory File System',
+          titleSlug: 'design-in-memory-file-system',
+          difficulty: 'Hard',
+          language: 'Go',
+          runtimeBeatsPercent: 98.4,
+          memoryBeatsPercent: 95.3,
+          status: 'Accepted',
+          timestamp: 'Позавчера'
+        }
+      ]
+    },
+    aiSummary: {
+      summaryText: 'Опытный Platform & DevOps инженер (Senior / Lead). КМС по спортивному программированию (ELO 2560). Обладает редким сочетанием системного алгоритмического мышления и глубоких практических навыков оркестрации Kubernetes, Terraform и Linux. Решила 482 задачи на LeetCode (Hard: 100). Рекомендуется на позиции Tech Lead инфраструктуры и Platform Engineering.',
+      keyStrengths: [
+        'КМС по СП (ELO 2560, Топ-2% РФ)',
+        'Экспертиза в Kubernetes, Bare Metal, Terraform, Go',
+        '482 решенные задачи на LeetCode (Hard: 100)',
+        'Культура Zero-Downtime и высокая надежность (99.99%)'
+      ],
+      recommendedProjects: [
+        'Инфраструктурные платформы приватных облаков',
+        'Автоматизация CI/CD и безопасная поставка ПО',
+        'SRE и отказоустойчивость распределенных СУБД'
+      ],
+      codeCleanlinessScore: 98,
+      averageSolveTimeMinutes: 13,
+      modelUsed: 'YandexGPT Pro',
+      generatedAt: '2026-03-05T15:00:00Z'
+    },
+    solvedTasksCount: 7,
+    totalTasksAttempted: 8,
     testScorePercent: 98.1,
     avgExecutionTimeMs: 8.5,
     memoryEfficiencyScore: 97,
@@ -1518,6 +1998,7 @@ export const INITIAL_CANDIDATES: CandidateProfile[] = [
     email: 'artyom.grigoriev@fsp-junior.ru',
     fullName: 'Артём Григорьев',
     city: 'Екатеринбург',
+    avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&auto=format&fit=crop&q=80',
     title: 'Junior+ Backend Developer (Java / Go)',
     specialization: 'backend',
     targetGrade: 'junior',
@@ -1548,8 +2029,56 @@ export const INITIAL_CANDIDATES: CandidateProfile[] = [
     experienceYears: 1.5,
     about: 'Увлечен спортивным программированием и бэкенд разработкой на Java. Ищу команду с сильным менторством и интересными задачами.',
     githubUrl: 'https://github.com/artyom-grigoriev',
-    solvedTasksCount: 142,
-    totalTasksAttempted: 160,
+    leetcodeStats: {
+      username: 'artyom_dev_ekb',
+      ranking: 92400,
+      totalSolved: 218,
+      totalQuestions: 3180,
+      easySolved: 124,
+      totalEasy: 830,
+      mediumSolved: 84,
+      totalMedium: 1710,
+      hardSolved: 10,
+      totalHard: 640,
+      acceptanceRate: 69.4,
+      contestRating: 1720,
+      syncedWithGithub: true,
+      syncedGithubRepo: 'artyom-grigoriev/leetcode-java',
+      lastSyncedAt: 'Вчера, 16:40',
+      recentSubmissions: [
+        {
+          id: 'sub-lc-a1',
+          title: 'Binary Tree Level Order Traversal',
+          titleSlug: 'binary-tree-level-order-traversal',
+          difficulty: 'Medium',
+          language: 'Java',
+          runtimeBeatsPercent: 93.1,
+          memoryBeatsPercent: 88.4,
+          status: 'Accepted',
+          timestamp: 'Вчера'
+        }
+      ]
+    },
+    aiSummary: {
+      summaryText: 'Перспективный Junior+ бэкенд разработчик на Java 21 и Spring Boot. Участник Высшей Лиги ФСП (ELO 1850). Демонстрирует отличную фундаментальную математическую подготовку, аккуратный стиль кода и высокую обучаемость. Решил 218 задач на LeetCode. Рекомендуется в команду с выстроенными процессами code review и менторством.',
+      keyStrengths: [
+        'Участник Высшей Лиги ФСП (ELO 1850)',
+        'Java 21, Spring Boot, PostgreSQL, JUnit 5',
+        '218 задач на LeetCode с глубоким разбором асимптотики',
+        'Высокая мотивация и быстрая обучаемость'
+      ],
+      recommendedProjects: [
+        'Разработка REST API микросервисов',
+        'Интеграционные шлюзы и автоматизация процессов',
+        'Юнит- и интеграционное тестирование'
+      ],
+      codeCleanlinessScore: 94,
+      averageSolveTimeMinutes: 19,
+      modelUsed: 'YandexGPT Pro',
+      generatedAt: '2026-03-01T14:00:00Z'
+    },
+    solvedTasksCount: 2,
+    totalTasksAttempted: 8,
     testScorePercent: 88.5,
     avgExecutionTimeMs: 18.2,
     memoryEfficiencyScore: 89,
@@ -1806,5 +2335,188 @@ export const INITIAL_INVITATIONS: Invitation[] = [
         timestamp: '2026-03-12T10:00:00Z'
       }
     ]
+  }
+];
+
+export const INITIAL_ASSESSMENTS: AssessmentAssignment[] = [
+  {
+    id: 'asmt-1',
+    employerId: 'emp-1',
+    companyName: 'ПАО Сбербанк (SberTech)',
+    companyLogo: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=128&auto=format&fit=crop&q=80',
+    vacancyId: 'vac-1',
+    vacancyTitle: 'Senior Java / Highload Core Engineer',
+    candidateId: 'cand-pesterev',
+    candidateName: 'Иван Пестерев',
+    task: {
+      id: 'asmt-task-1',
+      sourceType: 'custom_created',
+      title: 'Оптимизация Lock-free кольцевого буфера для брокера событий',
+      difficulty: 'Hard',
+      description: `Реализуйте эффективный кольцевой буфер (Ring Buffer) с семантикой Lock-free на основе атомарных операций (Atomic CAS / compare-and-swap).
+Буфер должен безопасно обрабатывать множественных производителей (producers) и потребителей (consumers) без захвата традиционных мьютексов.
+
+Требования:
+1. Фиксированный размер буфера (степень двойки для быстрой битовой маскировки \`index & (capacity - 1)\`).
+2. Гарантия Lock-free / Wait-free прогресса.
+3. Время работы операций \`offer()\` и \`poll()\` — O(1).
+4. Защита от ABA-проблемы и кэш-контеншена (false sharing).`,
+      constraints: [
+        'Размер буфера: 2^16 элементов',
+        'Многопоточность: до 64 параллельных потоков',
+        'Максимальная задержка (p99): < 15 наносекунд'
+      ],
+      starterCode: {
+        java: `public class LockFreeRingBuffer<T> {
+    private final Object[] buffer;
+    private final int capacity;
+    private final int mask;
+
+    public LockFreeRingBuffer(int capacity) {
+        this.capacity = capacity;
+        this.mask = capacity - 1;
+        this.buffer = new Object[capacity];
+    }
+
+    public boolean offer(T item) {
+        // TODO: Реализуйте CAS-вставку в кольцевой буфер
+        return true;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T poll() {
+        // TODO: Реализуйте атомарное извлечение
+        return null;
+    }
+}`,
+        python: `class LockFreeRingBuffer:
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.buffer = [None] * capacity
+
+    def offer(self, item) -> bool:
+        # TODO: Реализовать потокобезопасную запись
+        return True
+
+    def poll(self):
+        # TODO: Реализовать извлечение
+        return None`
+      },
+      sampleTestCases: [
+        {
+          input: '10 000 операций concurrent offer/poll в 16 потоков',
+          expectedOutput: 'Все 10 000 элементов успешно обработаны без потерь и deadlocks'
+        }
+      ]
+    },
+    status: 'submitted',
+    timeLimitMinutes: 45,
+    createdAt: '2026-03-12T11:00:00Z',
+    isLiveInterview: true,
+    telemostRoomUrl: 'https://telemost.yandex.ru/j/84920491823901',
+    scheduledInterviewAt: '2026-03-14T15:00:00+03:00',
+    submission: {
+      code: `public class LockFreeRingBuffer<T> {
+    private final AtomicReferenceArray<T> buffer;
+    private final AtomicLong tail = new AtomicLong(0);
+    private final AtomicLong head = new AtomicLong(0);
+    private final int mask;
+
+    public LockFreeRingBuffer(int capacity) {
+        this.mask = capacity - 1;
+        this.buffer = new AtomicReferenceArray<>(capacity);
+    }
+
+    public boolean offer(T item) {
+        while (true) {
+            long currentTail = tail.get();
+            long currentHead = head.get();
+            if (currentTail - currentHead >= buffer.length()) {
+                return false; // Буфер полон
+            }
+            if (tail.compareAndSet(currentTail, currentTail + 1)) {
+                int index = (int) (currentTail & mask);
+                buffer.set(index, item);
+                return true;
+            }
+        }
+    }
+
+    public T poll() {
+        while (true) {
+            long currentHead = head.get();
+            long currentTail = tail.get();
+            if (currentHead >= currentTail) {
+                return null; // Буфер пуст
+            }
+            if (head.compareAndSet(currentHead, currentHead + 1)) {
+                int index = (int) (currentHead & mask);
+                return buffer.getAndSet(index, null);
+            }
+        }
+    }
+}`,
+      language: 'java',
+      spentTimeMinutes: 28,
+      passedCount: 4,
+      totalCount: 4,
+      executionLogs: 'Все 4 стресс-теста успешно пройдены за 18мс в изолированном контейнере. Пропускная способность: 18.4M ops/sec.',
+      submittedAt: '2026-03-12T11:28:00Z'
+    }
+  },
+  {
+    id: 'asmt-2',
+    employerId: 'emp-1',
+    companyName: 'ПАО Сбербанк (SberTech)',
+    companyLogo: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=128&auto=format&fit=crop&q=80',
+    vacancyId: 'vac-1',
+    vacancyTitle: 'Senior Java / Highload Core Engineer',
+    candidateId: 'cand-1',
+    candidateName: 'Александр Белов',
+    task: {
+      id: 'asmt-task-2',
+      sourceType: 'leetcode_preset',
+      title: 'LeetCode #1: Two Sum (Поиск пары транзакций)',
+      difficulty: 'Easy',
+      description: 'Классическая задача проверки алгоритмического фундамента: поиск пары чисел с целевой суммой за O(N) по времени.',
+      constraints: ['2 <= nums.length <= 10^4', 'Требуемая сложность O(N)'],
+      starterCode: {
+        python: `def twoSum(nums, target):
+    seen = {}
+    for i, num in enumerate(nums):
+        complement = target - num
+        if complement in seen:
+            return [seen[complement], i]
+        seen[num] = i
+    return []`
+      }
+    },
+    status: 'reviewed',
+    timeLimitMinutes: 30,
+    createdAt: '2026-03-10T14:00:00Z',
+    isLiveInterview: false,
+    submission: {
+      code: `def twoSum(nums, target):
+    hashmap = {}
+    for i, n in enumerate(nums):
+        diff = target - n
+        if diff in hashmap:
+            return [hashmap[diff], i]
+        hashmap[n] = i
+    return []`,
+      language: 'python',
+      spentTimeMinutes: 8,
+      passedCount: 3,
+      totalCount: 3,
+      executionLogs: 'Пройдены все открытые и скрытые тест-кейсы за 6 мс.',
+      submittedAt: '2026-03-10T14:08:00Z'
+    },
+    review: {
+      verdict: 'like',
+      internalNote: 'Отличная алгоритмическая база, мгновенное понимание условий задачи, чистый код. Рекомендуем на позицию Senior разработчика.',
+      candidateFeedbackMessage: 'Александр, спасибо за безупречное решение задачи! Ваша чистота кода и скорость решения нас впечатлили. С удовольствием переходим к этапу финального оффера.',
+      reviewedAt: '2026-03-10T15:30:00Z',
+      reviewerName: 'Михаил Волков (Lead Architect СберТех)'
+    }
   }
 ];

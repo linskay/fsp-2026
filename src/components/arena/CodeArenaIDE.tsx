@@ -27,11 +27,15 @@ import {
   Layers,
   HelpCircle,
   Maximize2,
-  Minimize2
+  Minimize2,
+  Github,
+  FolderGit2,
+  ExternalLink
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { AlgorithmTask, Grade, SubmissionResult } from '../../types';
+import { AlgorithmTask, Grade, SubmissionResult, CandidateProfile, GitHubSyncCommit, GitHubSyncSettings } from '../../types';
 import { LeetCodeImportModal } from './LeetCodeImportModal';
+import { GitHubRepoSyncModal } from './GitHubRepoSyncModal';
 import { api } from '../../services/api';
 
 interface CodeArenaIDEProps {
@@ -39,13 +43,17 @@ interface CodeArenaIDEProps {
   onTaskSolved: (result: SubmissionResult) => void;
   onImportCustomTask?: (task: AlgorithmTask) => void;
   onClose?: () => void;
+  candidate?: CandidateProfile;
+  onUpdateCandidate?: (updated: Partial<CandidateProfile>) => void;
 }
 
 export const CodeArenaIDE: React.FC<CodeArenaIDEProps> = ({
   tasks,
   onTaskSolved,
   onImportCustomTask,
-  onClose
+  onClose,
+  candidate,
+  onUpdateCandidate
 }) => {
   const [selectedTask, setSelectedTask] = useState<AlgorithmTask>(tasks[0]);
   const [language, setLanguage] = useState<'javascript' | 'python' | 'java' | 'cpp' | 'go'>('javascript');
@@ -86,6 +94,14 @@ export const CodeArenaIDE: React.FC<CodeArenaIDEProps> = ({
 
   const [submissionVerdict, setSubmissionVerdict] = useState<SubmissionResult | null>(null);
   const [revealedHints, setRevealedHints] = useState<{ [idx: number]: boolean }>({});
+  const [isGitHubSyncModalOpen, setIsGitHubSyncModalOpen] = useState(false);
+  const [lastAutoPushCommit, setLastAutoPushCommit] = useState<GitHubSyncCommit | null>(null);
+  const [lastBenchmarkStats, setLastBenchmarkStats] = useState<{
+    runtimeMs: number;
+    runtimeBeats: number;
+    memoryMb: number;
+    memoryBeats: number;
+  } | null>(null);
 
   useEffect(() => {
     setCode(selectedTask.starterCode[language] || selectedTask.starterCode.javascript);
@@ -444,6 +460,58 @@ export const CodeArenaIDE: React.FC<CodeArenaIDEProps> = ({
     setIsSubmitting(false);
 
     if (isAccepted) {
+      const rtBeats = Number((Math.min(99.6, Math.max(88.0, 99.4 - (execTime * 0.15) + (Math.random() * 0.4)))).toFixed(1));
+      const memBeats = Number((Math.min(98.9, Math.max(85.0, 97.2 - (mem * 0.12) + (Math.random() * 0.4)))).toFixed(1));
+      
+      setLastBenchmarkStats({
+        runtimeMs: execTime,
+        runtimeBeats: rtBeats,
+        memoryMb: mem,
+        memoryBeats: memBeats
+      });
+
+      // LeetHub / FSP-Hub Auto-Push to candidate's public GitHub repo
+      if (candidate?.githubSync?.autoPushEnabled !== false) {
+        const repoFullName = candidate?.githubSync?.repoFullName || `${candidate?.githubUrl?.split('/').pop() || 'ipesterev'}/fsp-leetcode-solutions`;
+        const taskNumMatch = selectedTask.title.match(/#(\d+)/);
+        const taskNum = taskNumMatch ? taskNumMatch[1] : '42';
+        const cleanTitle = selectedTask.title.split(':')[1]?.split('(')[0]?.trim() || selectedTask.title;
+
+        const newCommit: GitHubSyncCommit = {
+          id: `gh-c-${Date.now()}`,
+          taskTitle: selectedTask.title.split(':')[0] || selectedTask.title,
+          taskSlug: selectedTask.id,
+          difficulty: selectedTask.difficulty,
+          language: language.toUpperCase(),
+          runtimeMs: execTime,
+          runtimeBeatsPercent: rtBeats,
+          memoryMb: mem,
+          memoryBeatsPercent: memBeats,
+          commitHash: Math.random().toString(16).substring(2, 9),
+          commitMessage: `feat(leetcode): solve #${taskNum} ${cleanTitle} [${selectedTask.difficulty}] - ${execTime}ms (beats ${rtBeats}%) ${mem}MB (beats ${memBeats}%)`,
+          repoFullName,
+          timestamp: 'Только что',
+          githubUrl: `https://github.com/${repoFullName}`
+        };
+
+        setLastAutoPushCommit(newCommit);
+
+        if (onUpdateCandidate && candidate) {
+          const prevCommits = candidate.githubSync?.recentCommits || [];
+          onUpdateCandidate({
+            githubSync: {
+              autoPushEnabled: candidate.githubSync?.autoPushEnabled ?? true,
+              repoName: candidate.githubSync?.repoName || 'fsp-leetcode-solutions',
+              repoFullName,
+              defaultBranch: candidate.githubSync?.defaultBranch || 'main',
+              isPublicOnly: true,
+              lastSyncedAt: 'Только что',
+              recentCommits: [newCommit, ...prevCommits.filter(c => c.taskTitle !== newCommit.taskTitle).slice(0, 9)]
+            }
+          });
+        }
+      }
+
       try {
         confetti({
           particleCount: 80,
@@ -526,8 +594,24 @@ export const CodeArenaIDE: React.FC<CodeArenaIDEProps> = ({
           </span>
         </div>
 
-        {/* Language Selector & Reset */}
+        {/* Language Selector & GitHub Auto-Push Button */}
         <div className="flex items-center gap-2">
+          {/* GitHub Auto-Push Sync Button */}
+          <button
+            onClick={() => setIsGitHubSyncModalOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0e1428] hover:bg-[#141d3b] text-slate-200 border border-[#2b35ff]/40 hover:border-[#00f0ff] text-xs font-medium transition-all shadow-sm"
+            title="Настройки автопуша решений в публичный репозиторий GitHub"
+          >
+            <Github className="w-3.5 h-3.5 text-white" />
+            <span className="text-[11px] font-mono text-slate-300 hidden md:inline">
+              {candidate?.githubSync?.repoName || 'fsp-leetcode-solutions'}
+            </span>
+            <span className={`w-2 h-2 rounded-full ${candidate?.githubSync?.autoPushEnabled !== false ? 'bg-emerald-400 animate-pulse' : 'bg-slate-500'}`} />
+            <span className="text-[10px] text-emerald-400 font-bold hidden lg:inline">
+              {candidate?.githubSync?.autoPushEnabled !== false ? 'Автопуш: ВКЛ' : 'ВЫКЛ'}
+            </span>
+          </button>
+
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value as any)}
@@ -549,6 +633,37 @@ export const CodeArenaIDE: React.FC<CodeArenaIDEProps> = ({
           </button>
         </div>
 
+      </div>
+
+      {/* LeetCode Live Quick-Bar (Все задачи LeetCode) */}
+      <div className="flex items-center gap-2 px-4 py-2 bg-[#070b16] border-b border-[#141b2e] overflow-x-auto text-xs font-mono">
+        <span className="text-amber-400 font-black text-[11px] flex items-center gap-1.5 shrink-0">
+          <span className="w-4 h-4 rounded bg-amber-500/20 text-amber-400 flex items-center justify-center text-[9px] font-bold">LC</span>
+          <span>LeetCode Live:</span>
+        </span>
+        <div className="flex items-center gap-1.5 shrink-0">
+          {tasks.map((t) => {
+            const isCurrent = t.id === selectedTask.id;
+            const shortName = t.title.split(':')[0].replace('LeetCode ', '').replace('ФСП Чемпионат', 'Dinic Flow');
+            return (
+              <button
+                key={t.id}
+                onClick={() => setSelectedTask(t)}
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all flex items-center gap-1.5 shrink-0 ${
+                  isCurrent
+                    ? 'bg-[#2b35ff] text-white shadow-sm border border-[#00f0ff]/50'
+                    : 'bg-[#0d1224] text-slate-400 hover:text-white hover:bg-[#151c36] border border-[#17203a]'
+                }`}
+              >
+                <span className={`w-1.5 h-1.5 rounded-full ${
+                  t.difficulty === 'Easy' ? 'bg-emerald-400' :
+                  t.difficulty === 'Medium' ? 'bg-amber-400' : 'bg-rose-400'
+                }`} />
+                <span>{shortName}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Main Split Grid */}
@@ -945,28 +1060,179 @@ export const CodeArenaIDE: React.FC<CodeArenaIDEProps> = ({
                 )}
 
                 {submissionVerdict && (
-                  <div className="bg-gradient-to-r from-[#0d1e38] via-[#0b1022] to-[#072428] rounded-2xl p-3.5 border border-[#00f0ff]/40 shadow-xl space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Trophy className="w-5 h-5 text-yellow-400" />
+                  <div className="bg-gradient-to-br from-[#071b1e] via-[#091124] to-[#080d1e] rounded-2xl p-4 border border-emerald-500/40 shadow-2xl space-y-3.5">
+                    {/* Verdict Title */}
+                    <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[#14233c]">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center font-black">
+                          <CheckCircle2 className="w-5 h-5" />
+                        </div>
                         <div>
-                          <h4 className="text-xs sm:text-sm font-bold text-white flex items-center gap-1.5">
-                            Вердикт Judge0: ACCEPTED (100% Тестов Пройдено)
-                            <Sparkles className="w-3.5 h-3.5 text-[#00f0ff]" />
-                          </h4>
-                          <p className="text-[11px] text-emerald-300">
-                            Решение занесено в реестр ФСП. Присвоен грейд {submissionVerdict.gradeCalculated.toUpperCase()}.
-                          </p>
+                          <div className="flex items-center gap-2">
+                            <span className="text-base sm:text-lg font-black text-emerald-400 tracking-wide font-mono">
+                              Accepted
+                            </span>
+                            <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-bold">
+                              100% Тестов
+                            </span>
+                          </div>
+                          <span className="text-[11px] text-slate-400">
+                            {selectedTask.title} • Язык: <strong className="text-white">{language.toUpperCase()}</strong>
+                          </span>
                         </div>
                       </div>
-                      <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
-                        +{submissionVerdict.fspRatingEarned} ELO
-                      </span>
+
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-black px-3 py-1 rounded-xl bg-cyan-500/20 text-[#00f0ff] border border-cyan-500/40 font-mono">
+                          +{submissionVerdict.fspRatingEarned} ELO
+                        </span>
+                        <span className="text-xs font-black px-2.5 py-1 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-500/40 font-mono">
+                          ГРЕЙД: {submissionVerdict.gradeCalculated.toUpperCase()}
+                        </span>
+                      </div>
                     </div>
 
-                    <pre className="text-[10px] text-slate-300 font-mono bg-black/60 p-2.5 rounded-xl max-h-20 overflow-y-auto border border-[#1b233a]">
-                      {submissionVerdict.logOutput}
-                    </pre>
+                    {/* LeetCode Distribution Benchmark Cards */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {/* Runtime Card */}
+                      <div className="p-3 rounded-xl bg-[#070b18] border border-[#172545] space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                            <Clock className="w-3.5 h-3.5 text-emerald-400" />
+                            <span>Время (Runtime)</span>
+                          </span>
+                          <span className="text-base font-black text-white font-mono">
+                            {lastBenchmarkStats?.runtimeMs || submissionVerdict.executionTimeMs} ms
+                          </span>
+                        </div>
+
+                        <div className="text-xs text-emerald-400 font-semibold font-mono">
+                          Beats <strong className="text-white text-sm">{lastBenchmarkStats?.runtimeBeats || 98.4}%</strong> of {language} submissions
+                        </div>
+
+                        {/* Visual Bell Curve */}
+                        <div className="relative pt-1">
+                          <svg className="w-full h-8" viewBox="0 0 100 24" preserveAspectRatio="none">
+                            <path
+                              d="M 0 22 Q 20 22 35 15 Q 50 2 65 14 Q 80 22 100 22"
+                              fill="none"
+                              stroke="#1e293b"
+                              strokeWidth="2"
+                            />
+                            <path
+                              d="M 0 22 Q 20 22 35 15 Q 50 2 65 14 Q 80 22 100 22 L 100 24 L 0 24 Z"
+                              fill="url(#runtimeGradient)"
+                              opacity="0.3"
+                            />
+                            <defs>
+                              <linearGradient id="runtimeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stopColor="#10b981" />
+                                <stop offset="100%" stopColor="#065f46" />
+                              </linearGradient>
+                            </defs>
+                            {/* User marker pin at top percentile */}
+                            <circle cx="20" cy="18" r="3" fill="#10b981" />
+                            <line x1="20" y1="5" x2="20" y2="22" stroke="#10b981" strokeWidth="1.5" strokeDasharray="2 1" />
+                          </svg>
+                          <div className="flex justify-between text-[9px] text-slate-500 font-mono mt-0.5">
+                            <span>0ms (Топ)</span>
+                            <span className="text-emerald-400 font-bold">Вы здесь ({lastBenchmarkStats?.runtimeMs || submissionVerdict.executionTimeMs}ms)</span>
+                            <span>150ms</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Memory Card */}
+                      <div className="p-3 rounded-xl bg-[#070b18] border border-[#172545] space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                            <Cpu className="w-3.5 h-3.5 text-[#00f0ff]" />
+                            <span>Память (Memory)</span>
+                          </span>
+                          <span className="text-base font-black text-white font-mono">
+                            {lastBenchmarkStats?.memoryMb || submissionVerdict.memoryMb} MB
+                          </span>
+                        </div>
+
+                        <div className="text-xs text-[#00f0ff] font-semibold font-mono">
+                          Beats <strong className="text-white text-sm">{lastBenchmarkStats?.memoryBeats || 95.1}%</strong> of {language} submissions
+                        </div>
+
+                        {/* Visual Memory Bell Curve */}
+                        <div className="relative pt-1">
+                          <svg className="w-full h-8" viewBox="0 0 100 24" preserveAspectRatio="none">
+                            <path
+                              d="M 0 22 Q 25 22 45 10 Q 55 4 70 16 Q 85 22 100 22"
+                              fill="none"
+                              stroke="#1e293b"
+                              strokeWidth="2"
+                            />
+                            <path
+                              d="M 0 22 Q 25 22 45 10 Q 55 4 70 16 Q 85 22 100 22 L 100 24 L 0 24 Z"
+                              fill="url(#memGradient)"
+                              opacity="0.3"
+                            />
+                            <defs>
+                              <linearGradient id="memGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stopColor="#00f0ff" />
+                                <stop offset="100%" stopColor="#0369a1" />
+                              </linearGradient>
+                            </defs>
+                            <circle cx="28" cy="16" r="3" fill="#00f0ff" />
+                            <line x1="28" y1="5" x2="28" y2="22" stroke="#00f0ff" strokeWidth="1.5" strokeDasharray="2 1" />
+                          </svg>
+                          <div className="flex justify-between text-[9px] text-slate-500 font-mono mt-0.5">
+                            <span>10MB (Топ)</span>
+                            <span className="text-[#00f0ff] font-bold">Вы здесь ({lastBenchmarkStats?.memoryMb || submissionVerdict.memoryMb}MB)</span>
+                            <span>45MB</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* GitHub Auto-Push Box (LeetHub v3 Integration) */}
+                    {lastAutoPushCommit && (
+                      <div className="p-3 rounded-xl bg-[#091124] border border-[#2b35ff]/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className="p-2 rounded-xl bg-[#2b35ff]/20 text-[#00f0ff] border border-[#2b35ff]/30 shrink-0">
+                            <Github className="w-4 h-4 text-white" />
+                          </div>
+                          <div className="space-y-0.5 min-w-0">
+                            <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                              <span>🚀 Автопуш в GitHub: коммит успешно отправлен</span>
+                              <span className="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 text-[9px] font-mono border border-emerald-500/30">
+                                public_repo
+                              </span>
+                            </div>
+                            <p className="text-[10px] text-slate-300 font-mono truncate">
+                              {lastAutoPushCommit.commitMessage}
+                            </p>
+                          </div>
+                        </div>
+
+                        <a
+                          href={lastAutoPushCommit.githubUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-3 py-1.5 rounded-xl bg-[#141e3d] hover:bg-[#1d2c5a] text-[#00f0ff] text-xs font-bold font-mono shrink-0 flex items-center justify-center gap-1.5 border border-[#2b35ff]/40 transition-colors"
+                        >
+                          <span>@{lastAutoPushCommit.repoFullName}</span>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                      </div>
+                    )}
+
+                    {/* Judge0 Execution Log Details */}
+                    <div className="pt-1">
+                      <details className="text-[11px] text-slate-400">
+                        <summary className="cursor-pointer hover:text-slate-200 font-mono text-[10px]">
+                          Подробный лог выполнения песочницы Judge0 Linux Kernel
+                        </summary>
+                        <pre className="text-[10px] text-slate-300 font-mono bg-black/70 p-2.5 rounded-xl max-h-24 overflow-y-auto border border-[#1b233a] mt-2">
+                          {submissionVerdict.logOutput}
+                        </pre>
+                      </details>
+                    </div>
                   </div>
                 )}
               </div>
@@ -1135,6 +1401,29 @@ export const CodeArenaIDE: React.FC<CodeArenaIDEProps> = ({
           }
           setSelectedTask(imported);
           setIsLeetCodeImportOpen(false);
+        }}
+      />
+
+      {/* GitHub Repo Sync Modal (LeetHub v3 Auto-Push) */}
+      <GitHubRepoSyncModal
+        isOpen={isGitHubSyncModalOpen}
+        onClose={() => setIsGitHubSyncModalOpen(false)}
+        candidateUsername={candidate?.githubUrl?.split('/').pop() || 'ipesterev'}
+        syncSettings={candidate?.githubSync || {
+          autoPushEnabled: true,
+          repoName: 'fsp-leetcode-solutions',
+          repoFullName: `${candidate?.githubUrl?.split('/').pop() || 'ipesterev'}/fsp-leetcode-solutions`,
+          defaultBranch: 'main',
+          isPublicOnly: true,
+          lastSyncedAt: 'Сегодня',
+          recentCommits: []
+        }}
+        onUpdateSettings={(newSettings) => {
+          if (onUpdateCandidate && candidate) {
+            onUpdateCandidate({
+              githubSync: newSettings
+            });
+          }
         }}
       />
 

@@ -10,7 +10,8 @@ import {
   INITIAL_EMPLOYERS, 
   INITIAL_INVITATIONS, 
   INITIAL_TASKS,
-  INITIAL_VACANCIES
+  INITIAL_VACANCIES,
+  INITIAL_ASSESSMENTS
 } from './data/mockData';
 import { 
   AlgorithmTask, 
@@ -21,9 +22,22 @@ import {
   UserRole, 
   Vacancy,
   GitHubProfileData,
-  HhResumeData
+  HhResumeData,
+  FspRank,
+  AssessmentAssignment,
+  EmployerAssessmentReview,
+  CandidateAssessmentSubmission
 } from './types';
-import { MOCK_GITHUB_PROFILE, MOCK_HH_RESUME } from './data/mockOAuthData';
+import { 
+  MOCK_GITHUB_PROFILE, 
+  PESTEREV_GITHUB_PROFILE, 
+  ALINA_GITHUB_PROFILE,
+  MOCK_HH_RESUME, 
+  PESTEREV_HH_RESUME, 
+  ALINA_HH_RESUME,
+  DARIA_HH_RESUME, 
+  SOKOLOV_HH_RESUME 
+} from './data/mockOAuthData';
 import { Navbar } from './components/Navbar';
 import { CandidateDashboard } from './components/candidate/CandidateDashboard';
 import { EmployerDashboard } from './components/employer/EmployerDashboard';
@@ -32,8 +46,12 @@ import { SwaggerApiView } from './components/swagger/SwaggerApiView';
 import { ArchitectureView } from './components/architecture/ArchitectureView';
 import { RoadmapPresentation } from './components/roadmap/RoadmapPresentation';
 import { LandingPage } from './components/landing/LandingPage';
+import { NotFoundPage } from './components/common/NotFoundPage';
 import { OAuthModal } from './components/auth/OAuthModal';
+import { LoginModal } from './components/auth/LoginModal';
+import { AuthLoginResponse } from './services/api';
 import { FspFooterPartners } from './components/brand/FspLogo';
+import { calculateDynamicStats } from './utils/ratingEngine';
 import { Sparkles, Trophy, Bell, CheckCircle2, ShieldCheck, ArrowRight, X } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -44,23 +62,36 @@ export default function App() {
   const [vacancies, setVacancies] = useState<Vacancy[]>(INITIAL_VACANCIES);
   const [invitations, setInvitations] = useState<Invitation[]>(INITIAL_INVITATIONS);
   const [tasks, setTasks] = useState<AlgorithmTask[]>(INITIAL_TASKS);
+  const [assessments, setAssessments] = useState<AssessmentAssignment[]>(INITIAL_ASSESSMENTS);
+
+  // Authentication & Test Users State
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
+  const [currentUser, setCurrentUser] = useState<{
+    email: string;
+    fullName: string;
+    role: 'CANDIDATE' | 'EMPLOYER';
+    avatarUrl?: string;
+  } | null>({
+    email: 'candidate@fsp.ru',
+    fullName: 'Иван Пестерев',
+    role: 'CANDIDATE',
+    avatarUrl: '/avatars/user_pesterev.png'
+  });
 
   // OAuth Integrations State
-  const [githubData, setGithubData] = useState<GitHubProfileData | null>(MOCK_GITHUB_PROFILE);
-  const [hhData, setHhData] = useState<HhResumeData | null>(MOCK_HH_RESUME);
+  const [githubData, setGithubData] = useState<GitHubProfileData | null>(PESTEREV_GITHUB_PROFILE);
+  const [hhData, setHhData] = useState<HhResumeData | null>(PESTEREV_HH_RESUME);
   const [yandexConnected, setYandexConnected] = useState<boolean>(true);
+  const [yandexEmail, setYandexEmail] = useState<string | null>('ivan.pesterev@yandex.ru');
   const [isOAuthModalOpen, setIsOAuthModalOpen] = useState<boolean>(false);
 
   // Active current user contexts
-  const [activeCandidateId, setActiveCandidateId] = useState<string>('cand-1');
+  const [activeCandidateId, setActiveCandidateId] = useState<string>('cand-pesterev');
   const currentCandidate = candidates.find(c => c.id === activeCandidateId) || candidates[0];
   const currentEmployer = employers[0];
 
   // Toast notification
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'fsp' } | null>({
-    message: 'Добро пожаловать в FSP Career Arena! Вы вошли как Александр Белов (Мастер спорта РФ по СП, ELO 2740). GitHub и hh.ru синхронизированы.',
-    type: 'fsp'
-  });
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'fsp' } | null>(null);
 
   const showToast = (message: string, type: 'success' | 'info' | 'fsp' = 'info') => {
     setToast({ message, type });
@@ -95,22 +126,89 @@ export default function App() {
     loadBackendData();
   }, []);
 
+  // Handle URL hash routing (e.g. #404, #candidate, #employer, #arena, #roadmap)
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '').toLowerCase();
+      if (!hash) return;
+      if (['landing', 'candidate', 'employer', 'arena', 'swagger', 'architecture', 'roadmap'].includes(hash)) {
+        setCurrentRole(hash as UserRole);
+      } else if (hash === '404' || hash === 'not_found') {
+        setCurrentRole('not_found');
+      } else {
+        setCurrentRole('not_found');
+      }
+    };
+
+    handleHashChange();
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  const handleRoleChange = (role: UserRole) => {
+    if (role === 'landing') {
+      window.location.hash = '';
+    } else {
+      window.location.hash = role;
+    }
+    setCurrentRole(role);
+  };
+
   const handleConnectGitHub = (data: GitHubProfileData) => {
     setGithubData(data);
-    // Enrich candidate skills
-    setCandidates(prev =>
-      prev.map(c => {
-        if (c.id === activeCandidateId) {
-          const combinedSkills = Array.from(new Set([...c.skills, 'C++', 'Java 21', 'Spring Boot 3', 'Highload']));
+    const isIvan = data.username.toLowerCase().includes('pesterev');
+    const targetCandidateId = isIvan ? 'cand-pesterev' : activeCandidateId;
+
+    setCandidates(prev => {
+      return prev.map(c => {
+        if (c.id === targetCandidateId || (isIvan && c.id === 'cand-pesterev') || (!isIvan && c.id === activeCandidateId)) {
+          const repoLangs = data.topRepos.map(r => r.language).filter(Boolean);
+          const newSkills = isIvan
+            ? ['TypeScript', 'React 19', 'Python 3.12', 'FastAPI', 'Java 21', 'Spring Boot 3', 'Docker', 'PostgreSQL', 'TailwindCSS', 'Highload']
+            : Array.from(new Set([...c.skills, ...repoLangs, 'CI/CD']));
+
           return {
             ...c,
-            skills: combinedSkills
+            fullName: isIvan ? 'Иван Пестерев' : (data.username === 'alex-belov-fsp' ? c.fullName : `@${data.username}`),
+            avatarUrl: data.avatarUrl || c.avatarUrl,
+            title: isIvan ? (c.title || 'Java-разработчик') : c.title,
+            about: isIvan
+              ? 'Java-разработчик с опытом коммерческой разработки 5 лет 1 месяц. Синхронизировано 842 публичных коммита на GitHub (@ipesterev). Резюме верифицировано через hh.ru, приватные репозитории защищены политикой 152-ФЗ.'
+              : `${c.about} • Подтверждено ${data.commitsCountYear} публичных коммитов в открытых репозиториях GitHub (@${data.username}). Приватные репозитории защищены регламентом 152-ФЗ.`,
+            githubUrl: `https://github.com/${data.username}`,
+            skills: newSkills,
+            fspBadges: Array.from(new Set([...c.fspBadges, `GitHub Verified: @${data.username}`, 'Public Repos Sync'])),
+            aiSummary: {
+              summaryText: isIvan
+                ? 'Java-разработчик (@ipesterev) с 5 годами опыта и спортивным рейтингом 2540 ELO. Стек: Java, Spring Boot, PostgreSQL, Docker, REST API. Профиль верифицирован через hh.ru (120 000 ₽ на руки, удаленно, постоянная занятость).'
+                : `Сильный инженер (@${data.username}). Подтвержденный стек: ${newSkills.slice(0, 5).join(', ')}. Активность на GitHub: ${data.commitsCountYear} публичных коммитов в открытых репозиториях (приватные скрыты регламентом 152-ФЗ).`,
+              keyStrengths: [
+                `Высокая подтвержденная активность (${data.commitsCountYear} публичных коммитов)`,
+                `Кросс-функциональный стек: ${data.mainLanguage}`,
+                'Чистая модульная архитектура и покрытие тестами',
+                'Строгое соблюдение стандартов информационной безопасности (152-ФЗ: без доступа к private repo)'
+              ],
+              recommendedProjects: [
+                'Высоконагруженные платформы обратного найма',
+                'Корпоративные FinTech и GovTech экосистемы',
+                'Микросервисные асинхронные ядра'
+              ],
+              codeCleanlinessScore: 98,
+              averageSolveTimeMinutes: 11,
+              modelUsed: 'YandexGPT Pro' as const,
+              generatedAt: new Date().toISOString()
+            }
           };
         }
         return c;
-      })
-    );
-    showToast(`GitHub аккаунт @${data.username} успешно подключен через Spring Security OAuth2! Подтянуто ${data.topRepos.length} репозитория и ${data.commitsCountYear} коммитов.`, 'success');
+      });
+    });
+
+    if (isIvan) {
+      setActiveCandidateId('cand-pesterev');
+    }
+
+    showToast(`Данные соискателя (@${data.username}) синхронизированы в профиль: имя, аватар, стек и ИИ-портрет обновлены! Закрытые репозитории защищены (public_repo).`, 'success');
   };
 
   const handleConnectHh = (data: HhResumeData) => {
@@ -118,30 +216,52 @@ export default function App() {
     setCandidates(prev =>
       prev.map(c => {
         if (c.id === activeCandidateId) {
+          const updatedSkills = Array.from(new Set([...c.skills, ...data.skills]));
+          const updatedConfirmedSkills = data.confirmedSkills && data.confirmedSkills.length > 0 ? data.confirmedSkills : c.hhConfirmedSkills;
+          
+          const dynamic = calculateDynamicStats({
+            solvedArenaTasksCount: c.solvedTasksCount,
+            leetcodeStats: c.leetcodeStats,
+            experienceYears: data.experienceYears,
+            title: data.title,
+            desiredSalary: data.desiredSalary,
+            skills: updatedSkills
+          });
+
           return {
             ...c,
             title: data.title,
             experienceYears: data.experienceYears,
-            salaryExpectationMin: data.desiredSalary * 0.9,
-            salaryExpectationMax: data.desiredSalary * 1.2,
-            skills: Array.from(new Set([...c.skills, ...data.skills]))
+            salaryExpectationMin: dynamic.salaryMin,
+            salaryExpectationMax: dynamic.salaryMax,
+            skills: updatedSkills,
+            hhConfirmedSkills: updatedConfirmedSkills,
+            about: data.about || c.about,
+            fspRating: dynamic.elo,
+            fspRank: dynamic.rank,
+            currentGradeAssigned: dynamic.grade,
+            aiSummary: dynamic.aiSummary
           };
         }
         return c;
       })
     );
-    showToast(`Резюме с hh.ru (${data.title}) успешно распарсено: опыт ${data.experienceYears} лет, оклад ${data.desiredSalary.toLocaleString('ru-RU')} ₽!`, 'success');
+    showToast(`✅ Резюме с hh.ru (${data.title}, #${data.resumeId.slice(0, 14)}...) синхронизировано в профиль: ${data.experienceYears} лет, ${data.desiredSalary.toLocaleString('ru-RU')} ₽!`, 'success');
   };
 
   const handleConnectYandex = (email: string) => {
     setYandexConnected(true);
+    setYandexEmail(email);
     showToast(`Яндекс ID (${email}) успешно подтвержден через Passport OAuth2!`, 'success');
   };
 
   const handleDisconnectProvider = (provider: 'github' | 'hh' | 'yandex') => {
     if (provider === 'github') setGithubData(null);
     if (provider === 'hh') setHhData(null);
-    if (provider === 'yandex') setYandexConnected(false);
+    if (provider === 'yandex') {
+      setYandexConnected(false);
+      setYandexEmail(null);
+    }
     showToast(`Интеграция с ${provider.toUpperCase()} отключена.`, 'info');
   };
 
@@ -278,30 +398,136 @@ export default function App() {
   };
 
   const handleTaskSolved = (submission: SubmissionResult) => {
-    // Update candidate ELO and solved count
     setCandidates(prev =>
       prev.map(c => {
         if (c.id === activeCandidateId) {
+          const newSolvedCount = Math.min(c.solvedTasksCount + 1, tasks.length);
+          const newElo = c.fspRating + submission.fspRatingEarned;
+
+          const dynamic = calculateDynamicStats({
+            solvedArenaTasksCount: newSolvedCount,
+            arenaEloEarned: (newElo - (c.leetcodeStats ? (c.leetcodeStats.totalSolved >= 400 ? 2040 : 1200) : 1200)),
+            leetcodeStats: c.leetcodeStats,
+            experienceYears: c.experienceYears,
+            title: c.title,
+            skills: c.skills
+          });
+
+          const isRankUp = dynamic.rank !== c.fspRank;
+          if (isRankUp) {
+            try {
+              confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+              });
+            } catch (e) {}
+            showToast(`🏆 Поздравляем! Вам присвоен ${dynamic.rank} (${dynamic.elo} ELO)!`, 'fsp');
+          } else {
+            showToast(`Тест принят! Получено +${submission.fspRatingEarned} ELO очков (${dynamic.elo} ELO).`, 'fsp');
+          }
+
+          const newAchievements = [...c.achievements];
+          if (c.solvedTasksCount === 0) {
+            newAchievements.unshift({
+              id: 'ach-arena-' + Date.now(),
+              title: `Первая победа в Арене ФСП (${submission.taskTitle})`,
+              year: 2026,
+              badge: 'Дебют в Арене ФСП',
+              description: `Успешное прохождение тестового набора в Judge0 Sandbox за ${submission.executionTimeMs} мс.`,
+              event: 'Алгоритмическая Арена ФСП'
+            });
+          }
+
           return {
             ...c,
-            fspRating: c.fspRating + submission.fspRatingEarned,
-            solvedTasksCount: c.solvedTasksCount + 1,
-            currentGradeAssigned: submission.gradeCalculated,
+            fspRating: dynamic.elo,
+            fspRank: dynamic.rank,
+            solvedTasksCount: newSolvedCount,
+            totalTasksAttempted: Math.max(c.totalTasksAttempted, tasks.length),
+            currentGradeAssigned: dynamic.grade,
+            aiSummary: dynamic.aiSummary,
+            achievements: newAchievements,
             lastTestingDate: new Date().toISOString()
           };
         }
         return c;
       })
     );
+  };
 
-    showToast(`Тест принят! Получено +${submission.fspRatingEarned} ELO очков. Присвоен верифицированный грейд ${submission.gradeCalculated.toUpperCase()}.`, 'fsp');
+  const handleAssignTest = (newAssessment: AssessmentAssignment) => {
+    setAssessments(prev => [newAssessment, ...prev]);
+    showToast(`Тестирование «${newAssessment.task.title}» успешно назначено соискателю ${newAssessment.candidateName}!${newAssessment.isLiveInterview ? ' Ссылка на Яндекс Телемост прикреплена.' : ''}`, 'success');
+  };
+
+  const handleSubmitAssessment = (assessmentId: string, submission: CandidateAssessmentSubmission) => {
+    setAssessments(prev =>
+      prev.map(a => {
+        if (a.id === assessmentId) {
+          return {
+            ...a,
+            status: 'submitted',
+            submission
+          };
+        }
+        return a;
+      })
+    );
+    try {
+      confetti({
+        particleCount: 80,
+        spread: 60,
+        origin: { y: 0.6 }
+      });
+    } catch (e) {}
+    showToast('Решение задачи успешно отправлено на код-ревью работодателю!', 'fsp');
+  };
+
+  const handleReviewAssessment = (assessmentId: string, review: EmployerAssessmentReview) => {
+    setAssessments(prev =>
+      prev.map(a => {
+        if (a.id === assessmentId) {
+          return {
+            ...a,
+            status: 'reviewed',
+            review
+          };
+        }
+        return a;
+      })
+    );
+    showToast(`Оценка решения (${review.verdict === 'like' ? '👍 Лайк' : '👎 Дизлайк'}) сохранена, а фидбек отправлен соискателю!`, 'success');
   };
 
   const handleUpdateCandidate = (updated: Partial<CandidateProfile>) => {
     setCandidates(prev =>
-      prev.map(c => c.id === activeCandidateId ? { ...c, ...updated } : c)
+      prev.map(c => {
+        if (c.id === activeCandidateId) {
+          const merged = { ...c, ...updated };
+          const dynamic = calculateDynamicStats({
+            solvedArenaTasksCount: merged.solvedTasksCount,
+            leetcodeStats: merged.leetcodeStats,
+            experienceYears: merged.experienceYears,
+            title: merged.title,
+            desiredSalary: merged.salaryExpectationMin ? Math.round(merged.salaryExpectationMin / 0.9) : undefined,
+            skills: merged.skills
+          });
+
+          return {
+            ...merged,
+            fspRating: dynamic.elo,
+            fspRank: dynamic.rank,
+            currentGradeAssigned: dynamic.grade,
+            aiSummary: dynamic.aiSummary,
+            salaryExpectationMin: dynamic.salaryMin,
+            salaryExpectationMax: dynamic.salaryMax
+          };
+        }
+        return c;
+      })
     );
-    showToast('Профиль соискателя обновлен и синхронизирован с реестром ФСП.', 'success');
+    showToast('Профиль соискателя обновлен: рейтинг, разряд, грейд и ИИ-портрет пересчитаны!', 'success');
   };
 
   // Demo Walkthrough helper
@@ -322,36 +548,96 @@ export default function App() {
   const candidateInvitationsCount = invitations.filter(i => i.candidateId === activeCandidateId && i.status === 'sent').length;
   const acceptedOffersCount = invitations.filter(i => i.status === 'accepted').length;
 
+  // Handle Login from Modal
+  const handleLoginSuccess = (authResp: AuthLoginResponse) => {
+    setCurrentUser({
+      email: authResp.email,
+      fullName: authResp.fullName,
+      role: authResp.role,
+      avatarUrl: authResp.avatarUrl
+    });
+
+    if (authResp.role === 'CANDIDATE') {
+      setCurrentRole('candidate');
+      if (authResp.candidateId) {
+        setActiveCandidateId(authResp.candidateId);
+      }
+      showToast(`Успешный вход в систему! Добро пожаловать, ${authResp.fullName} (Кандидат)`, 'fsp');
+    } else if (authResp.role === 'EMPLOYER') {
+      setCurrentRole('employer');
+      showToast(`Успешный вход в систему! Добро пожаловать, ${authResp.fullName} (${authResp.companyName || 'ПАО Сбербанк'})`, 'fsp');
+    }
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    setCurrentRole('landing');
+    showToast('Вы вышли из учетной записи', 'info');
+  };
+
+  if (currentRole === 'not_found') {
+    return (
+      <div className="min-h-screen bg-[#04060d]">
+        <NotFoundPage
+          onNavigate={handleRoleChange}
+          onOpenOAuth={() => setIsOAuthModalOpen(true)}
+        />
+        <OAuthModal
+          isOpen={isOAuthModalOpen}
+          onClose={() => setIsOAuthModalOpen(false)}
+          candidate={currentCandidate}
+          githubData={githubData}
+          hhData={hhData}
+          yandexConnected={yandexConnected}
+          yandexEmail={yandexEmail}
+          onConnectGitHub={handleConnectGitHub}
+          onConnectHh={handleConnectHh}
+          onConnectYandex={handleConnectYandex}
+          onDisconnectProvider={handleDisconnectProvider}
+        />
+        <LoginModal
+          isOpen={isLoginModalOpen}
+          onClose={() => setIsLoginModalOpen(false)}
+          onLoginSuccess={handleLoginSuccess}
+        />
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-[#060811] text-slate-100 flex flex-col selection:bg-[#2b35ff] selection:text-white font-['JetBrains_Mono']">
+    <div className="min-h-screen bg-[#04060d] text-slate-100 flex flex-col selection:bg-[#2b35ff] selection:text-white font-sans antialiased">
       
       {/* Top Navigation */}
       <Navbar
         currentRole={currentRole}
-        onRoleChange={(role) => setCurrentRole(role)}
+        onRoleChange={handleRoleChange}
         invitationsCount={candidateInvitationsCount}
         acceptedOffersCount={acceptedOffersCount}
         onOpenOAuthModal={() => setIsOAuthModalOpen(true)}
+        onOpenLoginModal={() => setIsLoginModalOpen(true)}
         isOAuthConnected={!!(githubData || hhData || yandexConnected)}
+        candidate={currentCandidate}
+        currentUser={currentUser}
+        onLogout={handleLogout}
       />
 
       {/* Toast Notification Bar */}
       {toast && (
-        <div className="fixed bottom-6 right-6 z-50 max-w-md animate-bounce-short">
-          <div className={`p-4 rounded-2xl border shadow-2xl flex items-start gap-3 backdrop-blur-md ${
+        <div className="fixed bottom-6 right-6 z-50 max-w-sm animate-bounce-short">
+          <div className={`p-4 rounded-2xl border shadow-2xl flex items-start gap-3 backdrop-blur-xl ${
             toast.type === 'fsp'
-              ? 'bg-[#0a1226]/95 border-[#2b35ff]/60 text-blue-100 shadow-[0_0_25px_rgba(43,53,255,0.25)]'
+              ? 'bg-[#090e24]/95 border-[#2b35ff]/50 text-blue-100 shadow-[0_10px_35px_rgba(43,53,255,0.25)]'
               : toast.type === 'success'
-              ? 'bg-[#091f1a]/95 border-emerald-500/60 text-emerald-100 shadow-[0_0_25px_rgba(16,185,129,0.2)]'
-              : 'bg-[#0d1326]/95 border-[#1e294b] text-slate-200'
+              ? 'bg-[#061814]/95 border-emerald-500/50 text-emerald-100 shadow-[0_10px_35px_rgba(16,185,129,0.2)]'
+              : 'bg-[#090d1e]/95 border-white/10 text-slate-200'
           }`}>
-            <div className="p-1.5 rounded-xl bg-[#2b35ff]/20 text-[#00f0ff] shrink-0 mt-0.5 border border-[#2b35ff]/30">
-              {toast.type === 'fsp' ? <Trophy className="w-4 h-4 text-yellow-400" /> : <CheckCircle2 className="w-4 h-4 text-emerald-400" />}
+            <div className="p-1.5 rounded-xl bg-white/5 shrink-0 mt-0.5 border border-white/10">
+              {toast.type === 'fsp' ? <Trophy className="w-4 h-4 text-amber-400" /> : <CheckCircle2 className="w-4 h-4 text-emerald-400" />}
             </div>
-            <p className="text-xs leading-relaxed flex-1 font-medium">{toast.message}</p>
+            <p className="text-xs leading-relaxed flex-1 font-medium text-slate-200">{toast.message}</p>
             <button
               onClick={() => setToast(null)}
-              className="text-slate-400 hover:text-white shrink-0 p-1"
+              className="text-slate-400 hover:text-white shrink-0 p-1 rounded-lg hover:bg-white/5 transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -363,21 +649,56 @@ export default function App() {
       <main className="flex-1 pb-12">
         {currentRole === 'landing' && (
           <LandingPage
-            onSelectRole={(role) => setCurrentRole(role)}
+            onSelectRole={handleRoleChange}
             onOpenOAuth={(provider) => {
               setIsOAuthModalOpen(true);
             }}
+            onOpenLogin={() => setIsLoginModalOpen(true)}
+            candidate={currentCandidate}
+            hhData={hhData}
+            githubData={githubData}
           />
         )}
 
         {currentRole === 'candidate' && (
           <CandidateDashboard
             candidate={currentCandidate}
+            allCandidates={candidates}
+            onSelectCandidate={(id) => {
+              setActiveCandidateId(id);
+              if (id === 'cand-pesterev') {
+                setGithubData(PESTEREV_GITHUB_PROFILE);
+                setHhData(PESTEREV_HH_RESUME);
+                setYandexEmail('ivan.pesterev@yandex.ru');
+              } else if (id === 'cand-alina') {
+                setGithubData(ALINA_GITHUB_PROFILE);
+                setHhData(ALINA_HH_RESUME);
+                setYandexEmail('alina.dev@yandex.ru');
+              } else if (id === 'cand-1') {
+                setGithubData(MOCK_GITHUB_PROFILE);
+                setHhData(MOCK_HH_RESUME);
+                setYandexEmail('alexander.belov@yandex.ru');
+              } else if (id === 'cand-2') {
+                setHhData(DARIA_HH_RESUME);
+                setYandexEmail('daria.morozova@yandex.ru');
+              } else if (id === 'cand-3') {
+                setHhData(SOKOLOV_HH_RESUME);
+                setYandexEmail('mikhail.sokolov@yandex.ru');
+              } else {
+                const found = candidates.find(c => c.id === id);
+                if (found) {
+                  setYandexEmail(`${found.email.split('@')[0]}@yandex.ru`);
+                }
+              }
+            }}
             invitations={invitations}
             tasks={tasks}
+            assessments={assessments}
+            onSubmitAssessment={handleSubmitAssessment}
             githubData={githubData}
             hhData={hhData}
             yandexConnected={yandexConnected}
+            yandexEmail={yandexEmail}
             onOpenOAuthModal={() => setIsOAuthModalOpen(true)}
             onAcceptInvitation={handleAcceptInvitation}
             onDeclineInvitation={handleDeclineInvitation}
@@ -393,9 +714,17 @@ export default function App() {
             candidates={candidates}
             vacancies={vacancies}
             invitations={invitations}
+            assessments={assessments}
+            tasks={tasks}
             onSendOffer={handleSendOffer}
             onAddVacancy={handleAddVacancy}
             onSendMessage={handleSendMessage}
+            onAssignTest={handleAssignTest}
+            onReviewTest={handleReviewAssessment}
+            onUpdateCandidate={(id, updated) => {
+              setCandidates(prev => prev.map(c => c.id === id ? { ...c, ...updated } : c));
+              showToast('ИИ-портрет кандидата успешно обновлен!', 'success');
+            }}
           />
         )}
 
@@ -432,7 +761,7 @@ export default function App() {
 
         {currentRole === 'roadmap' && (
           <RoadmapPresentation
-            onNavigateToRole={(r) => setCurrentRole(r)}
+            onNavigateToRole={handleRoleChange}
             onRunDemoScenario={runDemoScenario}
           />
         )}
@@ -446,14 +775,22 @@ export default function App() {
         githubData={githubData}
         hhData={hhData}
         yandexConnected={yandexConnected}
+        yandexEmail={yandexEmail}
         onConnectGitHub={handleConnectGitHub}
         onConnectHh={handleConnectHh}
         onConnectYandex={handleConnectYandex}
         onDisconnectProvider={handleDisconnectProvider}
       />
 
+      {/* Test Users & Credentials Login Modal */}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        onLoginSuccess={handleLoginSuccess}
+      />
+
       {/* Footer with clean ministry & partner attribution */}
-      <FspFooterPartners />
+      <FspFooterPartners onNavigate={handleRoleChange} />
     </div>
   );
 }

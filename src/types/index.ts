@@ -1,9 +1,12 @@
-export type UserRole = 'landing' | 'candidate' | 'employer' | 'arena' | 'swagger' | 'architecture' | 'roadmap';
+export type UserRole = 'landing' | 'candidate' | 'employer' | 'arena' | 'swagger' | 'architecture' | 'roadmap' | 'not_found';
 
 export type FspRank =
   | 'Мастер спорта РФ'
   | 'Кандидат в мастера спорта (КМС)'
   | '1-й спортивный разряд'
+  | '2-й спортивный разряд'
+  | '3-й спортивный разряд'
+  | 'Начинающий спортсмен (Junior)'
   | 'Победитель Чемпионата РФ'
   | 'Призер Кубка ФСП'
   | 'Участник Высшей Лиги ФСП'
@@ -40,10 +43,46 @@ export interface CandidateAiSummary {
   summaryText: string;
   keyStrengths: string[];
   recommendedProjects: string[];
+  recommendedRoles?: string[];
+  recommendationLevel?: 'HIGHLY_RECOMMENDED' | 'RECOMMENDED' | 'ACCEPTABLE';
   codeCleanlinessScore: number;
   averageSolveTimeMinutes: number;
-  modelUsed: 'YandexGPT Pro' | 'GigaChat Max' | 'Gemini 2.5 Flash';
+  modelUsed: 'YandexGPT Pro' | 'GigaChat Max' | 'Gemini 2.5 Flash' | 'Spring Boot AI Service';
   generatedAt: string;
+}
+
+export interface LeetCodeSubmissionItem {
+  id: string;
+  title: string;
+  titleSlug: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+  timestamp: string;
+  language: string;
+  runtimeBeatsPercent: number;
+  memoryBeatsPercent: number;
+  status: 'Accepted' | 'Time Limit Exceeded' | 'Wrong Answer';
+}
+
+export interface LeetCodeProfileStats {
+  username: string;
+  ranking: number;
+  totalSolved: number;
+  totalQuestions: number;
+  easySolved: number;
+  totalEasy: number;
+  mediumSolved: number;
+  totalMedium: number;
+  hardSolved: number;
+  totalHard: number;
+  acceptanceRate: number;
+  contestRating?: number;
+  contestGlobalRanking?: number;
+  contestTopPercentage?: number;
+  badge?: string;
+  syncedWithGithub: boolean;
+  syncedGithubRepo?: string;
+  recentSubmissions: LeetCodeSubmissionItem[];
+  lastSyncedAt: string;
 }
 
 export interface CandidateProfile {
@@ -75,6 +114,7 @@ export interface CandidateProfile {
   githubUrl?: string;
   fspProfileUrl?: string;
   aiSummary?: CandidateAiSummary;
+  leetcodeStats?: LeetCodeProfileStats;
 
   // Алгоритмическое тестирование
   solvedTasksCount: number;
@@ -90,6 +130,10 @@ export interface CandidateProfile {
   phoneReal: string;
   telegramMasked: string;
   telegramReal: string;
+
+  // HeadHunter & GitHub расширенные интеграции
+  hhConfirmedSkills?: HhConfirmedSkill[];
+  githubSync?: GitHubSyncSettings;
 
   // Зарплатные ожидания
   salaryExpectationMin: number;
@@ -278,16 +322,55 @@ export interface HhWorkHistoryItem {
   description: string;
 }
 
+export interface HhConfirmedSkill {
+  id: string;
+  skill: string;
+  level: 'Базовый' | 'Продвинутый' | 'Экспертный' | 'Expert' | 'Advanced' | 'Intermediate';
+  scorePercent: number; // 0-100%
+  percentileRank: string; // e.g. "Топ-1% среди 48 000 соискателей"
+  confirmedAt: string; // e.g. "14 января 2026 г."
+  testTitle: string; // e.g. "Тестирование HeadHunter: Алгоритмы и структуры данных"
+  certificateId: string; // e.g. "HH-CERT-2026-88421"
+}
+
 export interface HhResumeData {
   resumeId: string;
   title: string;
   experienceYears: number;
   desiredSalary: number;
   skills: string[];
+  confirmedSkills?: HhConfirmedSkill[];
   workHistory: HhWorkHistoryItem[];
   about: string;
   education: string;
   connectedAt: string;
+}
+
+export interface GitHubSyncCommit {
+  id: string;
+  taskTitle: string;
+  taskSlug?: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+  language: string;
+  runtimeMs: number;
+  runtimeBeatsPercent: number;
+  memoryMb: number;
+  memoryBeatsPercent: number;
+  commitHash: string;
+  commitMessage: string;
+  repoFullName: string;
+  timestamp: string;
+  githubUrl: string;
+}
+
+export interface GitHubSyncSettings {
+  autoPushEnabled: boolean;
+  repoName: string;
+  repoFullName: string;
+  defaultBranch: string;
+  isPublicOnly: boolean; // строго 152-ФЗ
+  lastSyncedAt?: string;
+  recentCommits: GitHubSyncCommit[];
 }
 
 export interface HhEmployerVacancy {
@@ -301,5 +384,76 @@ export interface HhEmployerVacancy {
   skills: string[];
   description: string;
   imported: boolean;
+}
+
+export type AssessmentTaskSource = 'leetcode_preset' | 'custom_created';
+
+export interface EmployerAssessmentTask {
+  id: string;
+  sourceType: AssessmentTaskSource;
+  title: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+  description: string;
+  constraints?: string[];
+  starterCode?: {
+    javascript?: string;
+    python?: string;
+    java?: string;
+    cpp?: string;
+    go?: string;
+  };
+  sampleTestCases?: Array<{
+    input: string;
+    expectedOutput: string;
+  }>;
+}
+
+export type AssessmentStatus = 'pending' | 'in_progress' | 'submitted' | 'reviewed';
+
+export interface CandidateAssessmentSubmission {
+  code: string;
+  language: string;
+  executionLogs?: string;
+  passedCount?: number;
+  totalCount?: number;
+  spentTimeMinutes?: number;
+  submittedAt: string;
+}
+
+export interface EmployerAssessmentReview {
+  verdict: 'like' | 'dislike';
+  internalNote: string; // Внутренний комментарий для компании (скрыт от соискателя по 152-ФЗ)
+  candidateFeedbackMessage: string; // Сообщение соискателю
+  reviewedAt: string;
+  reviewerName: string;
+}
+
+export interface AssessmentAssignment {
+  id: string;
+  employerId: string;
+  companyName: string;
+  companyLogo: string;
+  vacancyId?: string;
+  vacancyTitle?: string;
+  candidateId: string;
+  candidateName: string;
+  
+  task: EmployerAssessmentTask;
+  status: AssessmentStatus;
+  
+  timeLimitMinutes: number;
+  createdAt: string;
+  deadlineAt?: string;
+  
+  // Яндекс Телемост интеграция
+  isLiveInterview: boolean;
+  telemostRoomUrl?: string;
+  scheduledInterviewAt?: string;
+
+  // Решение кандидата
+  submission?: CandidateAssessmentSubmission;
+
+  // Оценка и комментарии работодателя
+  review?: EmployerAssessmentReview;
 }
 

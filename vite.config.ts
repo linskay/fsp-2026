@@ -19,6 +19,24 @@ export default defineConfig(() => {
           target: 'http://localhost:8080',
           changeOrigin: true,
         },
+        '/proxy-leetcode': {
+          target: 'https://leetcode.com',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/proxy-leetcode/, ''),
+          headers: {
+            'Referer': 'https://leetcode.com',
+            'Origin': 'https://leetcode.com',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+          }
+        },
+        '/proxy-github': {
+          target: 'https://api.github.com',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/proxy-github/, ''),
+          headers: {
+            'User-Agent': 'FSP-Career-Arena/1.0'
+          }
+        },
       },
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
       // Do not modify—file watching is disabled to prevent flickering during agent edits.
