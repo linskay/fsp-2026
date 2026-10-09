@@ -25,7 +25,8 @@ import {
   FolderGit2,
   Bot,
   RefreshCw,
-  Github
+  Github,
+  Code2
 } from 'lucide-react';
 import { CandidateProfile, EmployerProfile, Grade, Invitation, Specialization, Vacancy, CandidateAiSummary, AssessmentAssignment, EmployerAssessmentReview, AlgorithmTask } from '../../types';
 import { SendOfferModal } from './SendOfferModal';
