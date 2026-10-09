@@ -1,0 +1,60 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    database-platform: org.hibernate.dialect.H2Dialect
+  flyway:
+    enabled: false
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: test-github
+            client-secret: test-secret
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+          yandex:
+            client-id: test-yandex
+            client-secret: test-secret
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+          hh:
+            client-id: test-hh
+            client-secret: test-secret
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+        provider:
+          yandex:
+            authorization-uri: https://oauth.yandex.ru/authorize
+            token-uri: https://oauth.yandex.ru/token
+            user-info-uri: https://login.yandex.ru/info
+            user-name-attribute: id
+          hh:
+            authorization-uri: https://hh.ru/oauth/authorize
+            token-uri: https://hh.ru/oauth/token
+            user-info-uri: https://api.hh.ru/me
+            user-name-attribute: id
+
+integrations:
+  leetcode:
+    graphql-url: https://leetcode.com/graphql
+  judge0:
+    api-url: https://judge0-test.rapidapi.com
+    api-key: test-judge0-key
+  ai:
+    provider: yandexgpt
+    api-key: mock-ai-key
+    folder-id: test-folder
+    api-url: https://llm.api.cloud.yandex.net/foundationModels/v1/completion
+    model: yandexgpt
+
+jwt:
+  secret: test_fsp_career_arena_ultra_secure_jwt_secret_key_2026_at_least_256_bits_long!
+  expiration-ms: 86400000
