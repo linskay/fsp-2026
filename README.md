@@ -16,8 +16,23 @@
 ## Демонстрационные стенды (Live Demo)
 
 - **Облачный веб-стенд платформы (24/7):** [https://huggingface.co/spaces/Linskay/demo-2026](https://huggingface.co/spaces/Linskay/demo-2026)
-- **Прямой адрес интерфейса:** [https://linskay-demo-2026.hf.space](https://linskay-demo-2026.hf.space)
+- **Прямой адрес веб-интерфейса:** [https://linskay-demo-2026.hf.space](https://linskay-demo-2026.hf.space)
+- **Интерактивная документация (Mintlify-портал):** [https://linskay-demo-2026.hf.space/docs/](https://linskay-demo-2026.hf.space/docs/)
 - **Интерактивная API спецификация (Swagger UI):** [https://linskay-demo-2026.hf.space/swagger](https://linskay-demo-2026.hf.space/swagger)
+
+---
+
+## 📸 Галерея интерфейса (Screenshots)
+
+| 🏠 Главная страница (Обратный найм) | 🏅 Личный кабинет атлета (Паспорт ФСП) |
+| :---: | :---: |
+| [![Главная страница](docs/images/landing_preview.png)](docs/images/landing_preview.png) | [![Кабинет кандидата](docs/images/candidate_dashboard.png)](docs/images/candidate_dashboard.png) |
+| *Модель Reverse Recruiting и прямой коннект к Spring Boot 3* | *ELO 1420 pts, разряды ЕВСК, LeetCode, GitHub и AI-портрет* |
+
+| 💻 Интерактивная Code Arena IDE | 🏢 Дашборд работодателя («Слепой» наем) |
+| :---: | :---: |
+| [![Code Arena](docs/images/code_arena.png)](docs/images/code_arena.png) | [![Панель работодателя](docs/images/employer_dashboard.png)](docs/images/employer_dashboard.png) |
+| *Monaco Editor, запуск тестов Judge0, подсказки и вердикты* | *ATS-поиск по ELO, Zero-Bias режим «Слепого» найма, 152-ФЗ* |
 
 ---
 
@@ -71,17 +86,27 @@ docker compose up -d
 
 ---
 
-## Проектная документация (Манифест ТЗ 3.4)
+## Проектная документация (Манифест ТЗ 3.4 & Mintlify)
 
-Полная техническая документация с компонентными схемами, детальным описанием алгоритма ELO-ранжирования, защитой от утечки тестов, ролевой моделью и соответствием 152-ФЗ РФ представлена в сопроводительном документе:
+Полная техническая документация с компонентными схемами, детальным описанием алгоритма ELO-ранжирования, защитой от утечки тестов, ролевой моделью и соответствием 152-ФЗ РФ представлена в следующих форматах:
 
-- **Онлайн-версия (Markdown):** [Сопроводительный документ (Манифест проекта)](docs/MANIFEST.md)
-- **Интерактивный веб-портал документации:** [https://linskay-demo-2026.hf.space/docs/](https://linskay-demo-2026.hf.space/docs/) *(локально: [http://localhost:3000/docs/](http://localhost:3000/docs/))*
+- **Интерактивный Mintlify-портал документации:** [https://linskay-demo-2026.hf.space/docs/](https://linskay-demo-2026.hf.space/docs/) *(локально: [http://localhost:3000/docs/](http://localhost:3000/docs/))*
 - **Официальный релизный PDF (на русском языке):** [docs/MANIFEST.pdf](docs/MANIFEST.pdf)
+- **Исходный Манифест (Markdown):** [docs/MANIFEST.md](docs/MANIFEST.md)
 
 [![Скачать Манифест в PDF](https://img.shields.io/badge/📥_Скачать_Манифест_в_PDF-docs%2FMANIFEST.pdf-0369a1?style=for-the-badge)](docs/MANIFEST.pdf)
 
-Дополнительные материалы:
+### 🌿 Поддержка Mintlify CLI & Mintlify Cloud
+Каталог [`docs/`](docs/) полностью соответствует стандарту **Mintlify** (`docs/mint.json` + MDX-страницы):
+- **Локальный предпросмотр через Mintlify CLI**:
+  ```bash
+  cd docs
+  npx mintlify dev
+  ```
+- **Облачное развертывание на Mintlify.com**:
+  При подключении репозитория к сервису [Mintlify](https://mintlify.com), документация автоматически компилируется и хостится на вашем поддомене.
+
+Дополнительные разделы документации:
 - [Архитектурный обзор и безопасность](docs/architecture/overview.mdx)
 - [Полная спецификация REST API (все 9 групп эндпоинтов)](docs/api-reference/endpoints.mdx)
 - [Спецификация мобильного клиента Android](docs/architecture/mobile.mdx)

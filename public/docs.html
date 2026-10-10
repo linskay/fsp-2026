@@ -1,363 +1,807 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="utf-8">
-<title>FSP Career Arena 2026 — Документация & Регламент</title>
-<style>
-@page { size: A4; margin: 20mm; }
-body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #0F172A; line-height: 1.6; max-width: 820px; margin: 0 auto; padding: 24px; }
-h1 { color: #0369A1; border-bottom: 2px solid #00E5FF; padding-bottom: 8px; margin-top: 40px; page-break-before: always; }
-h1:first-of-type { page-break-before: avoid; margin-top: 10px; }
-h2, h3 { color: #1E293B; margin-top: 24px; }
-.cover { text-align: center; padding: 100px 20px; page-break-after: always; }
-.cover h1 { font-size: 36px; border: none; color: #0284C7; margin-bottom: 12px; }
-.cover .badge { display: inline-block; padding: 8px 18px; background: #E0F2FE; color: #0284C7; border: 1px solid #00E5FF; border-radius: 20px; font-weight: 700; font-size: 13px; margin-bottom: 24px; }
-.cover .team { margin-top: 50px; font-weight: 700; font-size: 20px; color: #0F172A; }
-pre, code { background: #F1F5F9; border-radius: 6px; font-family: "JetBrains Mono", Consolas, monospace; font-size: 13px; }
-pre { padding: 14px; overflow-x: auto; border: 1px solid #E2E8F0; }
-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-th, td { border: 1px solid #CBD5E1; padding: 10px 14px; text-align: left; }
-th { background: #F8FAFC; font-weight: 600; }
-.card-group { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
-.card { border: 1px solid #E2E8F0; border-radius: 8px; padding: 16px; background: #F8FAFC; }
-.callout { padding: 14px 18px; border-left: 4px solid #00E5FF; background: #F0F9FF; margin: 20px 0; border-radius: 0 8px 8px 0; }
-@media print { .no-print { display: none; } body { padding: 0; max-width: 100%; } }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FSP Career Arena 2026 — Интерактивная документация и регламент</title>
+  <link rel="icon" type="image/svg+xml" href="/logo/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      mermaid.initialize({ startOnLoad: true, theme: 'dark', fontFamily: 'JetBrains Mono, monospace' });
+    });
+  </script>
+  <style>
+    :root {
+      --bg-main: #0b111e;
+      --bg-surface: #10192d;
+      --bg-card: #15223c;
+      --border: #1e2e4f;
+      --border-accent: #00e5ff;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent-cyan: #00e5ff;
+      --accent-blue: #38bdf8;
+      --accent-emerald: #10b981;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.65;
+      font-size: 15px;
+    }
+
+    /* Header Nav */
+    header.fsp-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(11, 17, 30, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #fff;
+    }
+
+    .brand-logo-badge {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #00e5ff, #2563eb);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 14px;
+      color: #0b111e;
+    }
+
+    .brand-title {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+    }
+
+    .brand-sub {
+      font-size: 12px;
+      color: var(--accent-cyan);
+      font-weight: 600;
+      margin-left: 6px;
+    }
+
+    .header-links {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .btn-header {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-header-ghost {
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+    }
+    .btn-header-ghost:hover {
+      color: #fff;
+      border-color: var(--accent-cyan);
+    }
+
+    .btn-header-primary {
+      background: linear-gradient(135deg, #00e5ff, #0284c7);
+      color: #0b111e;
+      border: none;
+      font-weight: 800;
+    }
+    .btn-header-primary:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+
+    /* Layout Split */
+    .doc-layout {
+      display: flex;
+      max-width: 1400px;
+      margin: 0 auto;
+      min-height: calc(100vh - 65px);
+    }
+
+    /* Sidebar */
+    aside.doc-sidebar {
+      width: 300px;
+      position: sticky;
+      top: 65px;
+      height: calc(100vh - 65px);
+      overflow-y: auto;
+      padding: 24px 18px;
+      border-right: 1px solid var(--border);
+      background: var(--bg-main);
+      flex-shrink: 0;
+    }
+
+    .sidebar-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      padding-left: 8px;
+    }
+
+    .sidebar-nav {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .sidebar-nav a {
+      display: block;
+      padding: 8px 12px;
+      border-radius: 8px;
+      color: #cbd5e1;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.15s ease;
+      border: 1px solid transparent;
+    }
+
+    .sidebar-nav a:hover {
+      background: var(--bg-surface);
+      color: var(--accent-cyan);
+      border-color: var(--border);
+    }
+
+    /* Main Content */
+    main.doc-content {
+      flex: 1;
+      padding: 36px 48px;
+      max-width: 980px;
+    }
+
+    /* Typography & Markdown styling */
+    h1 {
+      font-size: 28px;
+      font-weight: 800;
+      color: #fff;
+      margin-top: 20px;
+      margin-bottom: 14px;
+      line-height: 1.3;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 10px;
+    }
+
+    h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #f8fafc;
+      margin-top: 32px;
+      margin-bottom: 14px;
+    }
+
+    h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #e2e8f0;
+      margin-top: 24px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      margin-bottom: 16px;
+      color: #cbd5e1;
+    }
+
+    strong {
+      color: #fff;
+      font-weight: 600;
+    }
+
+    a {
+      color: var(--accent-cyan);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    ul, ol {
+      margin-bottom: 18px;
+      padding-left: 24px;
+      color: #cbd5e1;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    /* Pre & Code */
+    pre {
+      background: #080d19 !important;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      overflow-x: auto;
+      margin: 18px 0;
+      font-family: 'JetBrains Mono', Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', Consolas, monospace;
+      font-size: 13px;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #38bdf8;
+    }
+
+    pre code {
+      background: transparent;
+      padding: 0;
+      color: #e2e8f0;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 22px 0;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      font-size: 13.5px;
+    }
+
+    th {
+      background: #0f192f;
+      color: #fff;
+      text-align: left;
+      padding: 12px 14px;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 11px 14px;
+      border-bottom: 1px solid var(--border);
+      color: #cbd5e1;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr:nth-child(even) td { background: rgba(255, 255, 255, 0.015); }
+
+    /* Custom Component Cards */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin: 22px 0;
+    }
+
+    .doc-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      transition: all 0.2s ease;
+    }
+
+    .doc-card:hover {
+      border-color: var(--accent-cyan);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px -8px rgba(0, 229, 255, 0.15);
+    }
+
+    .doc-card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .doc-card-body {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Callouts */
+    .callout {
+      border-left: 4px solid var(--accent-cyan);
+      background: rgba(0, 229, 255, 0.06);
+      border-radius: 0 12px 12px 0;
+      padding: 14px 18px;
+      margin: 20px 0;
+      font-size: 14px;
+      color: #e2e8f0;
+    }
+
+    .callout.tip {
+      border-left-color: #10b981;
+      background: rgba(16, 185, 129, 0.06);
+    }
+
+    /* Accordions */
+    .doc-accordion {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+
+    .doc-accordion-summary {
+      padding: 14px 18px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #fff;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .doc-accordion-summary:hover {
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--accent-cyan);
+    }
+
+    .doc-accordion-content {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.15);
+      font-size: 13.5px;
+    }
+
+    /* Images and Screenshots */
+    .doc-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.7);
+      margin: 20px 0 28px 0;
+      display: block;
+      transition: all 0.2s ease;
+    }
+
+    .doc-content img:hover {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 20px 48px -10px rgba(0, 229, 255, 0.2);
+    }
+
+    /* Divider */
+    .doc-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 48px 0;
+    }
+
+    /* Print styles */
+    @media print {
+      header.fsp-header, aside.doc-sidebar, .header-links { display: none !important; }
+      body { background: #fff !important; color: #000 !important; }
+      main.doc-content { max-width: 100% !important; padding: 0 !important; }
+      pre, code { background: #f8fafc !important; color: #000 !important; border: 1px solid #ccc !important; }
+      table, th, td { border-color: #ccc !important; color: #000 !important; }
+      th { background: #eee !important; }
+      .doc-card { border-color: #ccc !important; background: #fff !important; }
+      .doc-card-title { color: #000 !important; }
+      h1, h2, h3 { color: #000 !important; }
+    }
+
+    @media (max-width: 900px) {
+      aside.doc-sidebar { display: none; }
+      main.doc-content { padding: 24px 20px; }
+    }
+  </style>
 </head>
 <body>
-<div class="cover">
-<div class="badge">ФЕДЕРАЦИЯ СПОРТИВНОГО ПРОГРАММИРОВАНИЯ РФ</div>
-<h1>FSP Career Arena 2026</h1>
-<p style="font-size: 18px; color: #64748B;">Официальная техническая документация и архитектурный регламент платформы</p>
-<div class="team">👥 Команда разработчиков: «NO PHP — NO PROBLEMS — 2026»</div>
-<p style="color: #94A3B8; margin-top: 50px;">Версия 1.0.0 • Октябрь 2026</p>
-</div>
-<section>
 
-# FSP Career Arena 2026
+  <header class="fsp-header">
+    <a href="/" class="brand-group">
+      <div class="brand-logo-badge">ФСП</div>
+      <div>
+        <span class="brand-title">Карьерная Арена 2026</span>
+        <span class="brand-sub">Документация</span>
+      </div>
+    </a>
+    <div class="header-links">
+      <a href="https://huggingface.co/spaces/Linskay/demo-2026" target="_blank" class="btn-header btn-header-ghost">🚀 Живое демо</a>
+      <a href="https://linskay-demo-2026.hf.space/swagger" target="_blank" class="btn-header btn-header-ghost">📚 Swagger UI</a>
+      <a href="/docs/MANIFEST.pdf" target="_blank" class="btn-header btn-header-primary">📥 Скачать PDF Манифест</a>
+    </div>
+  </header>
 
-<div className="flex items-center gap-2 mb-6">
-  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">Java 21</span>
-  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-purple-500/10 text-purple-400 border border-purple-500/30">Kotlin 2.0</span>
-  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/30">React 19</span>
-  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">Android Compose</span>
-</div>
+  <div class="doc-layout">
+    <aside class="doc-sidebar">
+      <div class="sidebar-title">Содержание документации</div>
+      <ul class="sidebar-nav">
+        <li><a href="#introduction">Введение в FSP Career Arena</a></li>
+        <li><a href="#quickstart">Быстрый старт</a></li>
+        <li><a href="#arch-overview">Архитектура платформы</a></li>
+        <li><a href="#arch-backend">Бэкенд (Java 21 & Kotlin 2.0)</a></li>
+        <li><a href="#arch-mobile">Мобильное приложение (Android)</a></li>
+        <li><a href="#arch-ai">ИИ-движок оценки кандидатов</a></li>
+        <li><a href="#api-endpoints">Эндпоинты платформы</a></li>
+        <li><a href="#team">Команда проекта</a></li>
+      </ul>
+      <div style="margin-top: 36px; padding: 16px; border-radius: 12px; background: rgba(0, 229, 255, 0.05); border: 1px solid rgba(0, 229, 255, 0.2); font-size: 11.5px; color: #94a3b8;">
+        <strong style="color: #00e5ff; display: block; margin-bottom: 4px;">Пункт 3.4 ТЗ ФСП РФ</strong>
+        Полное закрытие требований жюри по архитектуре, валидации, защите от слива тестов и 152-ФЗ.
+      </div>
+    </aside>
 
-**FSP Career Arena** — это инновационная цифровая платформа, объединяющая соискателей в сфере программной инженерии, ведущих работодателей и Федерацию спортивного программирования России.
-
-Платформа решает ключевую проблему современного ИТ-рекрутинга: **достоверность практических навыков кандидата**. Вместо нерепрезентативных резюме система предоставляет верифицированный цифровой паспорт со спортивными разрядами ФСП, рейтингом ELO, алгоритмическими испытаниями в реальном времени и мультипровайдерным ИИ-скорингом.
-
----
-
-## 🌟 Ключевые возможности
-
-<div class="card-group">
-  <div class="card"><h3>Верифицированный профиль ФСП</h3>
-    Официальные спортивные разряды (1-й, 2-й, КМС, МС), динамический ELO-рейтинг (1200–2800) и история официальных турниров Федерации.
-  </div>
-  <div class="card"><h3>Code Arena IDE</h3>
-    Интерактивная среда тестирования кода с компиляцией и оценкой решений алгоритмических задач в реальном времени.
-  </div>
-  <div class="card"><h3>Мультипровайдерный ИИ-анализ</h3>
-    Единый промпт ФСП и переключение между Gemini, OpenRouter, Ollama и YandexGPT для глубокой оценки стека соискателя.
-  </div>
-  <div class="card"><h3>Нативное мобильное приложение</h3>
-    Полнофункциональный мобильный клиент на **Kotlin 2.0 + Jetpack Compose + Clean Architecture** для соискателей и рекрутеров.
-  </div>
-  <div class="card"><h3>«Слепой» наем (Blind Hiring Mode)</h3>
-    Zero-Bias режим работодателя: временное скрытие ФИО и фотографий до взаимного оффера с фокусом на ELO, разрядах ЕВСК и решенных задачах.
-  </div>
-  <div class="card"><h3>Веб-хуки интеграций (Webhooks)</h3>
-    Асинхронная отправка событий в ATS компании (Сбер, Яндекс, Huntflow) при принятии офферов с подписью HMAC-SHA256.
-  </div>
-</div>
-
----
-
-## 🎯 Цели и назначение проекта
-
-1. **Для соискателей**:
-   - Автоматический импорт живого профиля GitHub с парсингом контрибьюций и репозиториев;
-   - Подтверждение спортивных разрядов и соревновательного опыта ФСП;
-   - Прямой чат с работодателями без спама и посредников;
-   - Защита персональных данных в соответствии с Федеральным законом **152-ФЗ**.
-
-2. **Для работодателей и HR**:
-   - Поиск кандидатов с гарантированными техническими компетенциями;
-   - Автоматический ИИ-скоринг соответствия профиля открытой вакансии;
-   - Управление откликами, приглашениями на собеседования (Яндекс Телемост) и офферами.
-
-3. **Для Федерации спортивного программирования**:
-   - Единая экосистема для трекинга спортивных достижений программистов РФ;
-   - Содействие трудоустройству победителей и призёров чемпионатов в ключевые ИТ-компании страны.
-
+    <main class="doc-content">
+      
+      <article id="introduction" class="doc-section">
+        <div class="doc-section-anchor"></div>
+        <h1>FSP Career Arena 2026</h1>
+<div class="flex items-center gap-2 mb-6">
+  <span class="px-3 py-1 rounded-full text-xs font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">Java 21</span>
+  <span class="px-3 py-1 rounded-full text-xs font-semibold bg-purple-500/10 text-purple-400 border border-purple-500/30">Kotlin 2.0</span>
+  <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/30">React 19</span>
+  <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">Android Compose</span>
+</div><p><strong>FSP Career Arena</strong> — это инновационная цифровая платформа, объединяющая соискателей в сфере программной инженерии, ведущих работодателей и Федерацию спортивного программирования России.</p>
+<p>Платформа решает ключевую проблему современного ИТ-рекрутинга: <strong>достоверность практических навыков кандидата</strong>. Вместо нерепрезентативных резюме система предоставляет верифицированный цифровой паспорт со спортивными разрядами ФСП, рейтингом ELO, алгоритмическими испытаниями в реальном времени и мультипровайдерным ИИ-скорингом.</p>
+<hr>
+<h2>🌟 Ключевые возможности</h2>
+<div class="card-grid">
+  <div class="doc-card"><div class="doc-card-title">Верифицированный профиль ФСП</div><div class="doc-card-body">Официальные спортивные разряды (1-й, 2-й, КМС, МС), динамический ELO-рейтинг (1200–2800) и история официальных турниров Федерации.</div></div>
+  <div class="doc-card"><div class="doc-card-title">Code Arena IDE</div><div class="doc-card-body">Интерактивная среда тестирования кода с компиляцией и оценкой решений алгоритмических задач в реальном времени.</div></div>
+  <div class="doc-card"><div class="doc-card-title">Мультипровайдерный ИИ-анализ</div><div class="doc-card-body">Единый промпт ФСП и переключение между Gemini, OpenRouter, Ollama и YandexGPT для глубокой оценки стека соискателя.</div></div>
+  <div class="doc-card"><div class="doc-card-title">Нативное мобильное приложение</div><div class="doc-card-body">Полнофункциональный мобильный клиент на **Kotlin 2.0 + Jetpack Compose + Clean Architecture** для соискателей и рекрутеров.</div></div>
+  <div class="doc-card"><div class="doc-card-title">«Слепой» наем (Blind Hiring Mode)</div><div class="doc-card-body">Zero-Bias режим работодателя: временное скрытие ФИО и фотографий до взаимного оффера с фокусом на ELO, разрядах ЕВСК и решенных задачах.</div></div>
+  <div class="doc-card"><div class="doc-card-title">Веб-хуки интеграций (Webhooks)</div><div class="doc-card-body">Асинхронная отправка событий в ATS компании (Сбер, Яндекс, Huntflow) при принятии офферов с подписью HMAC-SHA256.</div></div>
+</div><hr>
+<h2>📸 Интерфейс платформы</h2>
+<h3>1. Главная страница и модель обратного найма</h3>
+<p>Цифровой портал обратного рекрутинга с прозрачными рублевыми вилками и автоматической проверкой статуса бэкенда в реальном времени.</p>
+<p><img src="/docs/images/landing_preview.png" alt="Главная страница FSP Career Arena"></p>
+<h3>2. Личный кабинет атлета и официальный паспорт ФСП</h3>
+<p>Подтвержденный профиль кандидата с ELO-рейтингом, спортивным разрядом (КМС/МС), динамикой киберспортивных турниров, верификацией коммитов GitHub и мультипровайдерным ИИ-портретом.</p>
+<p><img src="/docs/images/candidate_dashboard.png" alt="Личный кабинет кандидата"></p>
+<h3>3. Интерактивная среда Code Arena IDE (LeetCode &amp; ФСП)</h3>
+<p>Встроенная веб-IDE на базе Monaco Editor с запуском тестов, подсветкой синтаксиса, получением подсказок и автоматической фиксацией результатов в паспорте спортсмена.</p>
+<p><img src="/docs/images/code_arena.png" alt="Code Arena IDE"></p>
+<h3>4. Рабочее место работодателя и режим «Слепого» найма</h3>
+<p>Панель рекрутера с умным ATS-поиском по ELO, Explainable Match соответствием, фильтром по победам в официальных турнирах и переключателем Zero-Bias (скрытие персональных данных до оффера).</p>
+<p><img src="/docs/images/employer_dashboard.png" alt="Рабочее место работодателя"></p>
+<hr>
+<h2>🎯 Цели и назначение проекта</h2>
+<ol>
+<li><p><strong>Для соискателей</strong>:</p>
+<ul>
+<li>Автоматический импорт живого профиля GitHub с парсингом контрибьюций и репозиториев;</li>
+<li>Подтверждение спортивных разрядов и соревновательного опыта ФСП;</li>
+<li>Прямой чат с работодателями без спама и посредников;</li>
+<li>Защита персональных данных в соответствии с Федеральным законом <strong>152-ФЗ</strong>.</li>
+</ul>
+</li>
+<li><p><strong>Для работодателей и HR</strong>:</p>
+<ul>
+<li>Поиск кандидатов с гарантированными техническими компетенциями;</li>
+<li>Автоматический ИИ-скоринг соответствия профиля открытой вакансии;</li>
+<li>Управление откликами, приглашениями на собеседования (Яндекс Телемост) и офферами.</li>
+</ul>
+</li>
+<li><p><strong>Для Федерации спортивного программирования</strong>:</p>
+<ul>
+<li>Единая экосистема для трекинга спортивных достижений программистов РФ;</li>
+<li>Содействие трудоустройству победителей и призёров чемпионатов в ключевые ИТ-компании страны.</li>
+</ul>
+</li>
+</ol>
 <div class="callout tip"><strong>Совет:</strong> 
 Платформа разработана командой **«NO PHP — NO PROBLEMS — 2026»** с использованием самых передовых инженерных практик, Clean Architecture и стандартов безопасности.
 </div>
 
-</section>
+      </article>
+      <hr class="doc-divider" />
+    
 
-<section>
-
-# Быстрый запуск системы
-
-Платформу можно запустить за считанные секунды с помощью готовых Docker-контейнеров или автономного дистрибутива.
-
----
-
-## 🐳 Запуск через Docker Compose (Рекомендуемый)
-
-Убедитесь, что на вашей машине установлен Docker и Docker Compose.
-
-```bash
-# 1. Клонирование репозитория
+      <article id="quickstart" class="doc-section">
+        <div class="doc-section-anchor"></div>
+        <h1>Быстрый запуск системы</h1>
+<p>Платформу можно запустить за считанные секунды с помощью готовых Docker-контейнеров или автономного дистрибутива.</p>
+<hr>
+<h2>🐳 Запуск через Docker Compose (Рекомендуемый)</h2>
+<p>Убедитесь, что на вашей машине установлен Docker и Docker Compose.</p>
+<pre><code class="language-bash"># 1. Клонирование репозитория
 git clone https://github.com/linskay/fsp-2026.git
 cd fsp-2026
 
 # 2. Быстрый запуск production-окружения
 docker compose -f docker-compose.prod.yml up -d
-```
-
-После старта контейнеров сервисы доступны по адресам:
-- 🌐 **Веб-интерфейс (React 19)**: [http://localhost:3000](http://localhost:3000)
-- ⚙️ **REST API & Swagger (Spring Boot 3)**: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
-- 🗄️ **PostgreSQL 16**: `localhost:5432` (db: `career_arena`, user: `fsp_user`)
-
----
-
-## 👥 Предустановленные тестовые аккаунты
-
-Для мгновенной проверки сценариев авторизации и функционала всех трёх ролей используйте следующие учётные записи:
-
-| Роль | Email | Пароль | Описание профиля |
-| :--- | :--- | :--- | :--- |
-| **Кандидат** | `ivan@fsp.ru` | `candidate123` | Иван Пестерев (1-й разряд ФСП, ELO 2540) |
-| **Работодатель** | `hr@sber.ru` | `employer123` | HR Сбер / Т-Банк (управление вакансиями) |
-| **Администратор** | `admin@fsp.ru` | `admin123` | Модератор турниров и верификатор ФСП |
-
+</code></pre>
+<p>После старта контейнеров сервисы доступны по адресам:</p>
+<ul>
+<li>🌐 <strong>Веб-интерфейс (React 19)</strong>: <a href="http://localhost:3000">http://localhost:3000</a></li>
+<li>⚙️ <strong>REST API &amp; Swagger (Spring Boot 3)</strong>: <a href="http://localhost:8080/swagger-ui.html">http://localhost:8080/swagger-ui.html</a></li>
+<li>🗄️ <strong>PostgreSQL 16</strong>: <code>localhost:5432</code> (db: <code>career_arena</code>, user: <code>fsp_user</code>)</li>
+</ul>
+<hr>
+<h2>👥 Предустановленные тестовые аккаунты</h2>
+<p>Для мгновенной проверки сценариев авторизации и функционала всех трёх ролей используйте следующие учётные записи:</p>
+<table>
+<thead>
+<tr>
+<th align="left">Роль</th>
+<th align="left">Email</th>
+<th align="left">Пароль</th>
+<th align="left">Описание профиля</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>Кандидат</strong></td>
+<td align="left"><code>ivan@fsp.ru</code></td>
+<td align="left"><code>candidate123</code></td>
+<td align="left">Иван Пестерев (1-й разряд ФСП, ELO 2540)</td>
+</tr>
+<tr>
+<td align="left"><strong>Работодатель</strong></td>
+<td align="left"><code>hr@sber.ru</code></td>
+<td align="left"><code>employer123</code></td>
+<td align="left">HR Сбер / Т-Банк (управление вакансиями)</td>
+</tr>
+<tr>
+<td align="left"><strong>Администратор</strong></td>
+<td align="left"><code>admin@fsp.ru</code></td>
+<td align="left"><code>admin123</code></td>
+<td align="left">Модератор турниров и верификатор ФСП</td>
+</tr>
+</tbody></table>
 <div class="callout note"><strong>Примечание:</strong> 
 Вы также можете войти через **GitHub**, указав любой реальный никнейм (например, `torvalds` или ваш собственный). Система в реальном времени подгрузит ваши реальные коммиты, репозитории и аватарку!
-</div>
-
----
-
-## 📱 Запуск мобильного приложения (Android)
-
-Проект мобильного приложения расположен в папке `mobile/`.
-
-```bash
-# Запуск валидации и сборки мобильного клиента
+</div><hr>
+<h2>📱 Запуск мобильного приложения (Android)</h2>
+<p>Проект мобильного приложения расположен в папке <code>mobile/</code>.</p>
+<pre><code class="language-bash"># Запуск валидации и сборки мобильного клиента
 python scripts/bootstrap_mobile.py
 
 # Сборка debug APK через Gradle
 cd mobile
 ./gradlew assembleDebug
-```
+</code></pre>
+<hr>
+<h2>☁️ Облачный стенд (Hugging Face ZeroGPU)</h2>
+<p>Для быстрого ознакомления без локального развёртывания доступен публичный облачный стенд:<br>👉 <a href="https://huggingface.co/spaces/Linskay/demo-2026">https://huggingface.co/spaces/Linskay/demo-2026</a></p>
 
----
+      </article>
+      <hr class="doc-divider" />
+    
 
-## ☁️ Облачный стенд (Hugging Face ZeroGPU)
-
-Для быстрого ознакомления без локального развёртывания доступен публичный облачный стенд:
-👉 [https://huggingface.co/spaces/Linskay/demo-2026](https://huggingface.co/spaces/Linskay/demo-2026)
-
-</section>
-
-<section>
-
-# Архитектура решения
-
-Экосистема **FSP Career Arena** спроектирована по модульной микро-монолитной архитектуре с чётким разделением ответственности, высокой отказоустойчивостью и поддержкой бесшовного масштабирования.
-
-```mermaid
-flowchart TD
-    subgraph Clients["Клиентский слой"]
-        WEB["React 19 Web App\n(TypeScript + Vite + Tailwind)"]
-        MOB["Native Android App\n(Kotlin 2.0 + Jetpack Compose)"]
+      <article id="arch-overview" class="doc-section">
+        <div class="doc-section-anchor"></div>
+        <h1>Архитектура решения</h1>
+<p>Экосистема <strong>FSP Career Arena</strong> спроектирована по модульной микро-монолитной архитектуре с чётким разделением ответственности, высокой отказоустойчивостью и поддержкой бесшовного масштабирования.</p>
+<pre><code class="language-mermaid">flowchart TD
+    subgraph Clients[&quot;Клиентский слой&quot;]
+        WEB[&quot;React 19 Web App\n(TypeScript + Vite + Tailwind)&quot;]
+        MOB[&quot;Native Android App\n(Kotlin 2.0 + Jetpack Compose)&quot;]
     end
 
-    subgraph Gateway["Сетевой периметр"]
-        NGINX["Nginx Reverse Proxy\n(SSL / Compression / Cache)"]
+    subgraph Gateway[&quot;Сетевой периметр&quot;]
+        NGINX[&quot;Nginx Reverse Proxy\n(SSL / Compression / Cache)&quot;]
     end
 
-    subgraph CoreBackend["Бэкенд-сервисы (Java 21 + Kotlin 2.0)"]
-        API["Spring Boot 3 REST API"]
-        AUTH["JWT & OAuth Security\n(152-ФЗ ПДн)"]
-        ARENA_ENGINE["Code Arena Runner\n(Изолированная песочница)"]
-        MOBILE_API["Kotlin Mobile Gateway\n(/api/v1/mobile)"]
+    subgraph CoreBackend[&quot;Бэкенд-сервисы (Java 21 + Kotlin 2.0)&quot;]
+        API[&quot;Spring Boot 3 REST API&quot;]
+        AUTH[&quot;JWT &amp; OAuth Security\n(152-ФЗ ПДн)&quot;]
+        ARENA_ENGINE[&quot;Code Arena Runner\n(Изолированная песочница)&quot;]
+        MOBILE_API[&quot;Kotlin Mobile Gateway\n(/api/v1/mobile)&quot;]
     end
 
-    subgraph Intelligence["Слой Искусственного Интеллекта"]
-        AI_ROUTER["Multi-Provider Switcher\n(Gemini / OpenRouter / Ollama)"]
+    subgraph Intelligence[&quot;Слой Искусственного Интеллекта&quot;]
+        AI_ROUTER[&quot;Multi-Provider Switcher\n(Gemini / OpenRouter / Ollama)&quot;]
     end
 
-    subgraph Storage["Слой хранения данных"]
-        PG[("PostgreSQL 16\n(Транзакции, ELO, Вакансии)")]
-        REDIS[("Redis / Cache\n(Сессии, Токены)")]
+    subgraph Storage[&quot;Слой хранения данных&quot;]
+        PG[(&quot;PostgreSQL 16\n(Транзакции, ELO, Вакансии)&quot;)]
+        REDIS[(&quot;Redis / Cache\n(Сессии, Токены)&quot;)]
     end
 
-    WEB --> NGINX
-    MOB --> NGINX
-    NGINX --> API
-    NGINX --> MOBILE_API
+    WEB --&gt; NGINX
+    MOB --&gt; NGINX
+    NGINX --&gt; API
+    NGINX --&gt; MOBILE_API
 
-    API --> AUTH
-    API --> ARENA_ENGINE
-    API --> AI_ROUTER
-    MOBILE_API --> API
+    API --&gt; AUTH
+    API --&gt; ARENA_ENGINE
+    API --&gt; AI_ROUTER
+    MOBILE_API --&gt; API
 
-    API --> PG
-    API --> REDIS
-```
+    API --&gt; PG
+    API --&gt; REDIS
+</code></pre>
+<hr>
+<h2>🧱 Основные компоненты системы</h2>
+<h3>1. Серверная часть (Backend)</h3>
+<ul>
+<li><strong>Технологии</strong>: Java 21 LTS + Kotlin 2.0.20 + Spring Boot 3.3.4.</li>
+<li><strong>База данных</strong>: PostgreSQL 16 с версионированием миграций через Flyway.</li>
+<li><strong>Взаимодействие</strong>: Полная совместимость смешанного кода Java и Kotlin без накладных расходов во времени выполнения (Zero-overhead interoperability).</li>
+</ul>
+<h3>2. Веб-интерфейс (Frontend)</h3>
+<ul>
+<li><strong>Технологии</strong>: React 19 + TypeScript + Vite + Tailwind CSS.</li>
+<li><strong>Типографика</strong>: Фирменный моноширинный шрифт <strong>JetBrains Mono</strong> по официальному брендбуку ФСП.</li>
+<li><strong>Компоненты</strong>: Интерактивная Арена с подсветкой синтаксиса, дашборды для соискателей и рекрутеров, режим «Слепого» найма (Blind Hiring Zero-Bias), Explainable AI Match и модальные окна Телемоста.</li>
+</ul>
+<h3>3. Мобильный клиент (Android)</h3>
+<ul>
+<li><strong>Технологии</strong>: Kotlin 2.0 + Jetpack Compose (Material 3) + Clean Architecture + MVVM + StateFlow.</li>
+<li><strong>Сетевой слой</strong>: Retrofit 2 + Moshi + OkHttp.</li>
+</ul>
+<h3>4. Интеллектуальный анализатор (AI Engine)</h3>
+<ul>
+<li>Мультипровайдерная интеграция с поддержкой <strong>Google Gemini</strong>, <strong>OpenRouter</strong>, локальной <strong>Ollama</strong> и <strong>YandexGPT</strong>.</li>
+<li>Автоматический расчет соответствия кандидата техническим требованиям вакансии на основе структурированного JSON-промпта.</li>
+</ul>
 
----
+      </article>
+      <hr class="doc-divider" />
+    
 
-## 🧱 Основные компоненты системы
-
-### 1. Серверная часть (Backend)
-- **Технологии**: Java 21 LTS + Kotlin 2.0.20 + Spring Boot 3.3.4.
-- **База данных**: PostgreSQL 16 с версионированием миграций через Flyway.
-- **Взаимодействие**: Полная совместимость смешанного кода Java и Kotlin без накладных расходов во времени выполнения (Zero-overhead interoperability).
-
-### 2. Веб-интерфейс (Frontend)
-- **Технологии**: React 19 + TypeScript + Vite + Tailwind CSS.
-- **Типографика**: Фирменный моноширинный шрифт **JetBrains Mono** по официальному брендбуку ФСП.
-- **Компоненты**: Интерактивная Арена с подсветкой синтаксиса, дашборды для соискателей и рекрутеров, режим «Слепого» найма (Blind Hiring Zero-Bias), Explainable AI Match и модальные окна Телемоста.
-
-### 3. Мобильный клиент (Android)
-- **Технологии**: Kotlin 2.0 + Jetpack Compose (Material 3) + Clean Architecture + MVVM + StateFlow.
-- **Сетевой слой**: Retrofit 2 + Moshi + OkHttp.
-
-### 4. Интеллектуальный анализатор (AI Engine)
-- Мультипровайдерная интеграция с поддержкой **Google Gemini**, **OpenRouter**, локальной **Ollama** и **YandexGPT**.
-- Автоматический расчет соответствия кандидата техническим требованиям вакансии на основе структурированного JSON-промпта.
-
-</section>
-
-<section>
-
-# Серверная платформа
-
-Серверная часть платформы построена на современном стеке **Java 21 (Temurin)** и **Kotlin 2.0.20** под управлением **Spring Boot 3.3.4**.
-
----
-
-## ⚡ Гибридная компиляция Java + Kotlin (Best Practices)
-
-Для максимальной производительности и гибкости проект использует смешанную сборку (Mixed Compilation). Это позволяет существующим корпоративным Java-компонентам бесшовно вызывать современные Kotlin-контроллеры и Data Classes:
-
-```xml
-<!-- Настройка плагина в pom.xml -->
-<plugin>
-    <groupId>org.jetbrains.kotlin</groupId>
-    <artifactId>kotlin-maven-plugin</artifactId>
-    <version>2.0.20</version>
-    <configuration>
-        <jvmTarget>21</jvmTarget>
-        <compilerPlugins>
-            <plugin>spring</plugin>
-            <plugin>jpa</plugin>
-        </compilerPlugins>
-    </configuration>
-    <dependencies>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-maven-allopen</artifactId>
-            <version>2.0.20</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-maven-noarg</artifactId>
-            <version>2.0.20</version>
-        </dependency>
-    </dependencies>
-</plugin>
-```
-
----
-
-## 🛡️ Безопасность и соответствие 152-ФЗ
-
-- Хранение паролей с использованием адаптивного алгоритма `BCrypt` с солью;
-- Аутентификация на основе **JWT (JSON Web Tokens)** с разделением прав доступа по ролям (`ROLE_CANDIDATE`, `ROLE_EMPLOYER`, `ROLE_ADMIN`);
-- Полное соблюдение требований **152-ФЗ «О персональных данных»**: данные соискателей обрабатываются исключительно на серверах, расположенных на территории РФ, с возможностью отзыва согласия на обработку.
-
----
-
-## 📱 Высокопроизводительный Kotlin Mobile Controller
-
-Для обслуживания мобильных устройств выделен специализированный контроллер на Kotlin:
-
-```kotlin
-@RestController
-@RequestMapping("/api/v1/mobile")
-@Tag(name = "Mobile API (Kotlin)")
+      <article id="arch-backend" class="doc-section">
+        <div class="doc-section-anchor"></div>
+        <h1>Серверная платформа</h1>
+<p>Серверная часть платформы построена на современном стеке <strong>Java 21 (Temurin)</strong> и <strong>Kotlin 2.0.20</strong> под управлением <strong>Spring Boot 3.3.4</strong>.</p>
+<hr>
+<h2>⚡ Гибридная компиляция Java + Kotlin (Best Practices)</h2>
+<p>Для максимальной производительности и гибкости проект использует смешанную сборку (Mixed Compilation). Это позволяет существующим корпоративным Java-компонентам бесшовно вызывать современные Kotlin-контроллеры и Data Classes:</p>
+<pre><code class="language-xml">&lt;!-- Настройка плагина в pom.xml --&gt;
+&lt;plugin&gt;
+    &lt;groupId&gt;org.jetbrains.kotlin&lt;/groupId&gt;
+    &lt;artifactId&gt;kotlin-maven-plugin&lt;/artifactId&gt;
+    &lt;version&gt;2.0.20&lt;/version&gt;
+    &lt;configuration&gt;
+        &lt;jvmTarget&gt;21&lt;/jvmTarget&gt;
+        &lt;compilerPlugins&gt;
+            &lt;plugin&gt;spring&lt;/plugin&gt;
+            &lt;plugin&gt;jpa&lt;/plugin&gt;
+        &lt;/compilerPlugins&gt;
+    &lt;/configuration&gt;
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.jetbrains.kotlin&lt;/groupId&gt;
+            &lt;artifactId&gt;kotlin-maven-allopen&lt;/artifactId&gt;
+            &lt;version&gt;2.0.20&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.jetbrains.kotlin&lt;/groupId&gt;
+            &lt;artifactId&gt;kotlin-maven-noarg&lt;/artifactId&gt;
+            &lt;version&gt;2.0.20&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+&lt;/plugin&gt;
+</code></pre>
+<hr>
+<h2>🛡️ Безопасность и соответствие 152-ФЗ</h2>
+<ul>
+<li>Хранение паролей с использованием адаптивного алгоритма <code>BCrypt</code> с солью;</li>
+<li>Аутентификация на основе <strong>JWT (JSON Web Tokens)</strong> с разделением прав доступа по ролям (<code>ROLE_CANDIDATE</code>, <code>ROLE_EMPLOYER</code>, <code>ROLE_ADMIN</code>);</li>
+<li>Полное соблюдение требований <strong>152-ФЗ «О персональных данных»</strong>: данные соискателей обрабатываются исключительно на серверах, расположенных на территории РФ, с возможностью отзыва согласия на обработку.</li>
+</ul>
+<hr>
+<h2>📱 Высокопроизводительный Kotlin Mobile Controller</h2>
+<p>Для обслуживания мобильных устройств выделен специализированный контроллер на Kotlin:</p>
+<pre><code class="language-kotlin">@RestController
+@RequestMapping(&quot;/api/v1/mobile&quot;)
+@Tag(name = &quot;Mobile API (Kotlin)&quot;)
 class MobileApiController {
 
-    @GetMapping("/status")
-    fun getStatus(): ResponseEntity<Map<String, Any>> {
+    @GetMapping(&quot;/status&quot;)
+    fun getStatus(): ResponseEntity&lt;Map&lt;String, Any&gt;&gt; {
         return ResponseEntity.ok(
             mapOf(
-                "status" to "UP",
-                "engine" to "Kotlin 2.0 / Spring Boot 3",
-                "mobileSupported" to true,
-                "timestamp" to Instant.now().toString()
+                &quot;status&quot; to &quot;UP&quot;,
+                &quot;engine&quot; to &quot;Kotlin 2.0 / Spring Boot 3&quot;,
+                &quot;mobileSupported&quot; to true,
+                &quot;timestamp&quot; to Instant.now().toString()
             )
         )
     }
 
-    @PostMapping("/chat/send")
-    fun sendChatMessage(@RequestBody message: ChatMessageDto): ResponseEntity<ChatMessageDto> {
+    @PostMapping(&quot;/chat/send&quot;)
+    fun sendChatMessage(@RequestBody message: ChatMessageDto): ResponseEntity&lt;ChatMessageDto&gt; {
         return ResponseEntity.ok(message)
     }
 }
-```
+</code></pre>
 
-</section>
+      </article>
+      <hr class="doc-divider" />
+    
 
-<section>
-
-# Нативное Android-приложение
-
-Мобильное приложение **FSP Career Arena** разработано в соответствии с актуальными гайдлайнами Google Android и принципами **Clean Architecture**.
-
----
-
-## 🛠️ Архитектурный стек
-
-| Слой | Технологии | Назначение |
-| :--- | :--- | :--- |
-| **UI Layer** | **Jetpack Compose + Material 3** | Декларативный UI с киберспортивной темой ФСП (`#00E5FF`, `#0B111E`) |
-| **Presentation** | **MVVM + StateFlow + ViewModel** | Реактивное управление состоянием интерфейса без утечек памяти |
-| **Domain & Model** | **Kotlin Data Classes** | Чистые иммутабельные сущности кандидатов, чатов и задач Арены |
-| **Data Layer** | **Retrofit 2 + Moshi + OkHttp** | Асинхронное взаимодействие с REST API бэкенда |
-
----
-
-## 📱 Ключевые экраны приложения
-
-### 1. Профиль соискателя (`ProfileScreen.kt`)
-- Отображение верифицированного статуса Федерации спортивного программирования РФ;
-- Карточка официального спортивного разряда (1-й, 2-й, КМС, МС);
-- Динамический индикатор рейтинга ELO;
-- Чипы подтверждённого технологического стека (Java, Kotlin, Python, Docker, Spring Boot).
-
-### 2. Чат кандидатов и рекрутеров (`ChatScreen.kt`)
-- Двусторонняя переписка между соискателем и работодателем;
-- Быстрые шаблоны обсуждения оффера и приглашений на собеседования;
-- Автоматический скролл к последнему сообщению и временные метки.
-
-### 3. Мобильная Арена (`ArenaScreen.kt`)
-- Список активных соревновательных задач ФСП;
-- Описание ограничений по времени (Time Limit) и памяти (Memory Limit);
-- Просмотр условий и отправка решений на проверку.
-
----
-
-## 💻 Пример интерфейса Jetpack Compose
-
-```kotlin
-@Composable
+      <article id="arch-mobile" class="doc-section">
+        <div class="doc-section-anchor"></div>
+        <h1>Нативное Android-приложение</h1>
+<p>Мобильное приложение <strong>FSP Career Arena</strong> разработано в соответствии с актуальными гайдлайнами Google Android и принципами <strong>Clean Architecture</strong>.</p>
+<hr>
+<h2>🛠️ Архитектурный стек</h2>
+<table>
+<thead>
+<tr>
+<th align="left">Слой</th>
+<th align="left">Технологии</th>
+<th align="left">Назначение</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>UI Layer</strong></td>
+<td align="left"><strong>Jetpack Compose + Material 3</strong></td>
+<td align="left">Декларативный UI с киберспортивной темой ФСП (<code>#00E5FF</code>, <code>#0B111E</code>)</td>
+</tr>
+<tr>
+<td align="left"><strong>Presentation</strong></td>
+<td align="left"><strong>MVVM + StateFlow + ViewModel</strong></td>
+<td align="left">Реактивное управление состоянием интерфейса без утечек памяти</td>
+</tr>
+<tr>
+<td align="left"><strong>Domain &amp; Model</strong></td>
+<td align="left"><strong>Kotlin Data Classes</strong></td>
+<td align="left">Чистые иммутабельные сущности кандидатов, чатов и задач Арены</td>
+</tr>
+<tr>
+<td align="left"><strong>Data Layer</strong></td>
+<td align="left"><strong>Retrofit 2 + Moshi + OkHttp</strong></td>
+<td align="left">Асинхронное взаимодействие с REST API бэкенда</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>📱 Ключевые экраны приложения</h2>
+<h3>1. Профиль соискателя (<code>ProfileScreen.kt</code>)</h3>
+<ul>
+<li>Отображение верифицированного статуса Федерации спортивного программирования РФ;</li>
+<li>Карточка официального спортивного разряда (1-й, 2-й, КМС, МС);</li>
+<li>Динамический индикатор рейтинга ELO;</li>
+<li>Чипы подтверждённого технологического стека (Java, Kotlin, Python, Docker, Spring Boot).</li>
+</ul>
+<h3>2. Чат кандидатов и рекрутеров (<code>ChatScreen.kt</code>)</h3>
+<ul>
+<li>Двусторонняя переписка между соискателем и работодателем;</li>
+<li>Быстрые шаблоны обсуждения оффера и приглашений на собеседования;</li>
+<li>Автоматический скролл к последнему сообщению и временные метки.</li>
+</ul>
+<h3>3. Мобильная Арена (<code>ArenaScreen.kt</code>)</h3>
+<ul>
+<li>Список активных соревновательных задач ФСП;</li>
+<li>Описание ограничений по времени (Time Limit) и памяти (Memory Limit);</li>
+<li>Просмотр условий и отправка решений на проверку.</li>
+</ul>
+<hr>
+<h2>💻 Пример интерфейса Jetpack Compose</h2>
+<pre><code class="language-kotlin">@Composable
 fun FspRankBadge(rank: String, eLo: Int) {
     Card(
         colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
@@ -368,302 +812,155 @@ fun FspRankBadge(rank: String, eLo: Int) {
             Spacer(modifier = Modifier.width(12.dp))
             Column {
                 Text(text = rank, fontWeight = FontWeight.Bold, color = Color.White)
-                Text(text = "ELO Рейтинг: $eLo", color = Color(0xFF00E5FF))
+                Text(text = &quot;ELO Рейтинг: $eLo&quot;, color = Color(0xFF00E5FF))
             }
         }
     }
 }
-```
+</code></pre>
 
-</section>
+      </article>
+      <hr class="doc-divider" />
+    
 
-<section>
-
-# Интеллектуальный анализ кандидатов
-
-Для объективной и беспристрастной оценки квалификации соискателей платформа включает модуль интеллектуального скоринга на базе современных больших языковых моделей (LLM).
-
----
-
-## 🤖 Мультипровайдерная архитектура
-
-Система не зависит от конкретного поставщика ИИ и поддерживает горячее переключение между провайдерами:
-
-- **Google Gemini 1.5 Flash / Pro**: Высокая скорость и глубокий анализ сложных архитектурных навыков.
-- **OpenRouter (Meta Llama 3.3, Mistral, Qwen)**: Независимый шлюз для доступа к ведущим открытым моделям мира.
-- **Ollama (Локальный контур)**: Полная изоляция персональных данных и автономная работа на серверах внутри РФ.
-- **YandexGPT 3 / 4**: Отечественная языковая модель с отличным пониманием российской терминологии и специфики соревнований ФСП.
-
----
-
-## 🎯 Единый системный промпт ФСП
-
-Оценка формируется строго в структурированном формате JSON:
-
-```json
-{
-  "matchScore": 94,
-  "summary": "Кандидат обладает подтвержденным 1-м спортивным разрядом ФСП и глубокими знаниями Spring Boot и PostgreSQL.",
-  "strengths": [
-    "Опыт решения олимпиадных задач высокой сложности (ELO 2540)",
-    "Практический опыт с многопоточностью и смешанной сборкой Java/Kotlin"
+      <article id="arch-ai" class="doc-section">
+        <div class="doc-section-anchor"></div>
+        <h1>Интеллектуальный анализ кандидатов</h1>
+<p>Для объективной и беспристрастной оценки квалификации соискателей платформа включает модуль интеллектуального скоринга на базе современных больших языковых моделей (LLM).</p>
+<hr>
+<h2>🤖 Мультипровайдерная архитектура</h2>
+<p>Система не зависит от конкретного поставщика ИИ и поддерживает горячее переключение между провайдерами:</p>
+<ul>
+<li><strong>Google Gemini 1.5 Flash / Pro</strong>: Высокая скорость и глубокий анализ сложных архитектурных навыков.</li>
+<li><strong>OpenRouter (Meta Llama 3.3, Mistral, Qwen)</strong>: Независимый шлюз для доступа к ведущим открытым моделям мира.</li>
+<li><strong>Ollama (Локальный контур)</strong>: Полная изоляция персональных данных и автономная работа на серверах внутри РФ.</li>
+<li><strong>YandexGPT 3 / 4</strong>: Отечественная языковая модель с отличным пониманием российской терминологии и специфики соревнований ФСП.</li>
+</ul>
+<hr>
+<h2>🎯 Единый системный промпт ФСП</h2>
+<p>Оценка формируется строго в структурированном формате JSON:</p>
+<pre><code class="language-json">{
+  &quot;matchScore&quot;: 94,
+  &quot;summary&quot;: &quot;Кандидат обладает подтвержденным 1-м спортивным разрядом ФСП и глубокими знаниями Spring Boot и PostgreSQL.&quot;,
+  &quot;strengths&quot;: [
+    &quot;Опыт решения олимпиадных задач высокой сложности (ELO 2540)&quot;,
+    &quot;Практический опыт с многопоточностью и смешанной сборкой Java/Kotlin&quot;
   ],
-  "recommendations": [
-    "Рекомендовано первичное техническое интервью по проектированию распределённых очередей"
+  &quot;recommendations&quot;: [
+    &quot;Рекомендовано первичное техническое интервью по проектированию распределённых очередей&quot;
   ]
 }
-```
+</code></pre>
 
-</section>
+      </article>
+      <hr class="doc-divider" />
+    
 
-<section>
-
-# Спецификация REST API
-
-Платформа FSP Career Arena предоставляет полноценный REST API со строгой типизацией и поддержкой спецификации **OpenAPI 3.0 / Swagger**.
-
----
-
-## 🔑 Аутентификация
-
-Все защищённые эндпоинты требуют передачи JWT токена в заголовке `Authorization`:
-
-```http
-Authorization: Bearer <your_jwt_token>
-```
-
----
-
-## ⚡ Интерактивный Scalar & Swagger UI
-
-Документация и интерактивная песочница доступны на запущенном бэкенде:
-- **Swagger UI**: `http://localhost:8080/swagger-ui.html`
-- **OpenAPI Спецификация JSON**: `http://localhost:8080/v3/api-docs`
-
----
-
-## 🌐 Формат ответов
-
-Все ответы возвращаются в кодировке `UTF-8` в формате `application/json`:
-
-```json
-{
-  "status": "SUCCESS",
-  "data": { ... },
-  "timestamp": "2026-10-10T18:00:00Z"
-}
-```
-
-</section>
-
-<section>
-
-# Полная спецификация REST API платформы
-
-Интерактивная спецификация доступна в Swagger UI по адресу: **[/swagger-ui.html](https://linskay-demo-2026.hf.space/swagger)**  
-Машиночитаемый формат: **[/v3/api-docs](https://linskay-demo-2026.hf.space/v3/api-docs)**
-
----
-
-### 1. Аутентификация, SSO и 152-ФЗ
-
-<div class="accordions">
-  <div class="accordion"><h4>POST /api/v1/auth/login — Вход в систему (JWT)</h4>
-    Аутентифицирует пользователя по паре email + пароль и возвращает stateless JWT токен с ролевыми клеймами (`CANDIDATE` / `EMPLOYER`).
-  </div>
-  <div class="accordion"><h4>POST /api/v1/auth/register — Регистрация нового аккаунта</h4>
-    Регистрирует нового соискателя или компанию с фиксацией согласия на обработку ПДН (152-ФЗ).
-  </div>
-  <div class="accordion"><h4>GET /api/v1/auth/test-users — Тестовые доступы</h4>
-    Возвращает список предзаполненных аккаунтов (`candidate@fsp.ru`, `employer@fsp.ru`) для мгновенного входа в 1 клик.
-  </div>
-  <div class="accordion"><h4>GET /api/v1/auth/privacy-policy — Политика конфиденциальности</h4>
-    Возвращает текст и регламент обработки ПДН по стандарту Федерации спортивного программирования России.
-  </div>
-  <div class="accordion"><h4>GET /oauth2/authorization/{provider} — Spring Security OAuth2</h4>
-    Инициализирует вход через GitHub, Яндекс ID или HeadHunter OAuth2.
-  </div>
-</div>
-
----
-
-### 2. Профиль пользователя и управление ролями (RBAC)
-
-<div class="accordions">
-  <div class="accordion"><h4>GET /api/v1/users/me — Текущая сессия пользователя</h4>
-    Возвращает данные авторизованного пользователя: ID, email, роль, привязанный профиль атлета/рекрутера, текущий ELO и спортивный разряд.
-  </div>
-  <div class="accordion"><h4>PUT /api/v1/users/profile — Обновление профиля</h4>
-    Обновляет ФИО, аватар и параметры безопасности пользователя.
-  </div>
-</div>
-
----
-
-### 3. Соискатели и кандидаты ФСП
-
-<div class="accordions">
-  <div class="accordion"><h4>GET /api/v1/candidates — Поиск и фильтрация атлетов</h4>
-    Универсальный эндпоинт поиска кандидатов с фильтрацией по query-параметрам:
+      <article id="api-endpoints" class="doc-section">
+        <div class="doc-section-anchor"></div>
+        <h1>Полная спецификация REST API платформы</h1>
+<p>Интерактивная спецификация доступна в Swagger UI по адресу: <strong><a href="https://linskay-demo-2026.hf.space/swagger">/swagger-ui.html</a></strong><br>Машиночитаемый формат: <strong><a href="https://linskay-demo-2026.hf.space/v3/api-docs">/v3/api-docs</a></strong></p>
+<hr>
+<h3>1. Аутентификация, SSO и 152-ФЗ</h3>
+<div class="accordion-group">
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/auth/login — Вход в систему (JWT)</summary><div class="doc-accordion-content">Аутентифицирует пользователя по паре email + пароль и возвращает stateless JWT токен с ролевыми клеймами (`CANDIDATE` / `EMPLOYER`).</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/auth/register — Регистрация нового аккаунта</summary><div class="doc-accordion-content">Регистрирует нового соискателя или компанию с фиксацией согласия на обработку ПДН (152-ФЗ).</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/auth/test-users — Тестовые доступы</summary><div class="doc-accordion-content">Возвращает список предзаполненных аккаунтов (`candidate@fsp.ru`, `employer@fsp.ru`) для мгновенного входа в 1 клик.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/auth/privacy-policy — Политика конфиденциальности</summary><div class="doc-accordion-content">Возвращает текст и регламент обработки ПДН по стандарту Федерации спортивного программирования России.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /oauth2/authorization/{provider} — Spring Security OAuth2</summary><div class="doc-accordion-content">Инициализирует вход через GitHub, Яндекс ID или HeadHunter OAuth2.</div></details>
+</div><hr>
+<h3>2. Профиль пользователя и управление ролями (RBAC)</h3>
+<div class="accordion-group">
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/users/me — Текущая сессия пользователя</summary><div class="doc-accordion-content">Возвращает данные авторизованного пользователя: ID, email, роль, привязанный профиль атлета/рекрутера, текущий ELO и спортивный разряд.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">PUT /api/v1/users/profile — Обновление профиля</summary><div class="doc-accordion-content">Обновляет ФИО, аватар и параметры безопасности пользователя.</div></details>
+</div><hr>
+<h3>3. Соискатели и кандидаты ФСП</h3>
+<div class="accordion-group">
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/candidates — Поиск и фильтрация атлетов</summary><div class="doc-accordion-content">Универсальный эндпоинт поиска кандидатов с фильтрацией по query-параметрам:
     - `specialization`: BACKEND, FRONTEND, FULLSTACK, DEVOPS, HIGHLOAD
     - `grade`: JUNIOR, MIDDLE, SENIOR
     - `minElo`: минимальный ELO-рейтинг ФСП
-    - `fspRank`: спортивный разряд ЕВСК (1-й, 2-й, КМС, МС)
-  </div>
-  <div class="accordion"><h4>GET /api/v1/candidates/{id} — Карточка кандидата</h4>
-    Возвращает верифицированный профиль с историей турниров, стеком и LeetCode-метриками.
-  </div>
-  <div class="accordion"><h4>GET /api/v1/candidates/{id}/export-pdf — Официальный PDF-паспорт ФСП</h4>
-    Автогенерация стандартизированного PDF-документа с символикой Федерации, подтвержденным ELO и разрядом для HR-отчетов.
-  </div>
-  <div class="accordion"><h4>GET /api/v1/candidates/{id}/elo-history — История изменения ELO</h4>
-    Возвращает временной ряд точек изменения рейтинга для построения графика соревновательного прогресса.
-  </div>
+    - `fspRank`: спортивный разряд ЕВСК (1-й, 2-й, КМС, МС)</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/candidates/{id} — Карточка кандидата</summary><div class="doc-accordion-content">Возвращает верифицированный профиль с историей турниров, стеком и LeetCode-метриками.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/candidates/{id}/export-pdf — Официальный PDF-паспорт ФСП</summary><div class="doc-accordion-content">Автогенерация стандартизированного PDF-документа с символикой Федерации, подтвержденным ELO и разрядом для HR-отчетов.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/candidates/{id}/elo-history — История изменения ELO</summary><div class="doc-accordion-content">Возвращает временной ряд точек изменения рейтинга для построения графика соревновательного прогресса.</div></details>
+</div><hr>
+<h3>4. Вакансии работодателей</h3>
+<div class="accordion-group">
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/vacancies/search — Поиск вакансий</summary><div class="doc-accordion-content">Поиск открытых позиций с обязательной рублевой вилкой зарплат (без скрытых условий) и требованиями к ELO.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/vacancies — Создание вакансии (HR)</summary><div class="doc-accordion-content">Публикация новой потребности компании с автоматической активацией алгоритма Explainable Matching.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/employer/sync/hh-vacancies — Импорт вакансий из hh.ru</summary><div class="doc-accordion-content">Импорт вакансий компании из HeadHunter API в 1 клик через токен работодателя.</div></details>
+</div><hr>
+<h3>5. Офферы и Обратный найм (Reverse Recruiting)</h3>
+<div class="accordion-group">
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/offers — Отправка прямого оффера с вилкой</summary><div class="doc-accordion-content">Создает оффер от работодателя кандидату с поддержкой RFC 7231 ключа идемпотентности (`Idempotency-Key`) и защитой от дублирования.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/offers/candidate/{id} — Офферы соискателя</summary><div class="doc-accordion-content">Список полученных предложений кандидата со статусами (PENDING, ACCEPTED, DECLINED).</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">PUT /api/v1/offers/{id}/accept — Принятие оффера</summary><div class="doc-accordion-content">Кандидат принимает оффер: снимается маскирование контактов по 152-ФЗ и шлется веб-хук во внешнюю ATS работодателя.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">PUT /api/v1/offers/{id}/decline — Отклонение оффера</summary><div class="doc-accordion-content">Мягкое отклонение предложения кандидатом с фиксацией обратной связи.</div></details>
+</div><hr>
+<h3>6. Веб-хуки и корпоративные интеграции (Webhooks)</h3>
+<div class="accordion-group">
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/webhooks — Регистрация веб-хука для ATS</summary><div class="doc-accordion-content">Регистрирует URL для отправки нотификаций (Сбер, Яндекс, Huntflow, 1C:ЗУП, Telegram-боты). Защита заголовком `X-FSP-Signature` (HMAC-SHA256).</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/webhooks/employer/{id} — Список веб-хуков</summary><div class="doc-accordion-content">Возвращает зарегистрированные веб-хуки с HTTP-статусами последней доставки.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/webhooks/{id}/ping — Тестовый пинг</summary><div class="doc-accordion-content">Проверяет доступность эндпоинта компании с отправкой проверочного пакета PING.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">DELETE /api/v1/webhooks/{id} — Удаление веб-хука</summary><div class="doc-accordion-content">Отзывает регистрацию веб-хука.</div></details>
+</div><hr>
+<h3>7. ИИ-портреты соискателей (Multi-Model AI Summary)</h3>
+<div class="accordion-group">
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/ai/generate-summary — Мультимодельная генерация</summary><div class="doc-accordion-content">Использует паттерн Strategy для динамического переключения нейросетей (Google Gemini, YandexGPT, OpenRouter, Ollama) с системным фокусом (Highload, Алгоритмы, Тимлид).</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/ai/save-profile — Сохранение ИИ-резюме</summary><div class="doc-accordion-content">Фиксирует сформированное досье в базе данных PostgreSQL соискателя.</div></details>
+</div><hr>
+<h3>8. Изолированная песочница и тестирование (Judge0 / Docker)</h3>
+<div class="accordion-group">
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/sandbox/execute — Запуск кода в песочнице</summary><div class="doc-accordion-content">Изолированное выполнение решения в Docker-песочнице (`--net=none`, cgroups v2, лимиты памяти 256MB и времени 1000мс).</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/assessments/assign — Назначение тестового задания</summary><div class="doc-accordion-content">Работодатель назначает алгоритмическую задачу с дедлайном и ссылкой на Яндекс Телемост.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/assessments/review — Ревью и оценка решения</summary><div class="doc-accordion-content">HR/Техлид выставляет вердикт (👍 / 👎) и пишет закрытую внутреннюю заметку.</div></details>
+</div><hr>
+<h3>9. Хранилище файлов и мониторинг (S3 &amp; DevOps)</h3>
+<div class="accordion-group">
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/files/upload — Загрузка файлов (MultipartFile)</summary><div class="doc-accordion-content">Загрузка аватарок, логотипов компаний и PDF-резюме с валидацией размера и генерацией публичной ссылки.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/system/stats — Открытая статистика платформы</summary><div class="doc-accordion-content">Возвращает актуальные счетчики для главной страницы лендинга (число атлетов, вакансий, решенных задач, офферов).</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/audit/logs — Журнал аудита безопасности (152-ФЗ)</summary><div class="doc-accordion-content">Неизменяемый журнал всех обращений к персональным данным и действиям в системе.</div></details>
 </div>
 
----
+      </article>
+      <hr class="doc-divider" />
+    
 
-### 4. Вакансии работодателей
-
-<div class="accordions">
-  <div class="accordion"><h4>GET /api/v1/vacancies/search — Поиск вакансий</h4>
-    Поиск открытых позиций с обязательной рублевой вилкой зарплат (без скрытых условий) и требованиями к ELO.
-  </div>
-  <div class="accordion"><h4>POST /api/v1/vacancies — Создание вакансии (HR)</h4>
-    Публикация новой потребности компании с автоматической активацией алгоритма Explainable Matching.
-  </div>
-  <div class="accordion"><h4>POST /api/v1/employer/sync/hh-vacancies — Импорт вакансий из hh.ru</h4>
-    Импорт вакансий компании из HeadHunter API в 1 клик через токен работодателя.
-  </div>
-</div>
-
----
-
-### 5. Офферы и Обратный найм (Reverse Recruiting)
-
-<div class="accordions">
-  <div class="accordion"><h4>POST /api/v1/offers — Отправка прямого оффера с вилкой</h4>
-    Создает оффер от работодателя кандидату с поддержкой RFC 7231 ключа идемпотентности (`Idempotency-Key`) и защитой от дублирования.
-  </div>
-  <div class="accordion"><h4>GET /api/v1/offers/candidate/{id} — Офферы соискателя</h4>
-    Список полученных предложений кандидата со статусами (PENDING, ACCEPTED, DECLINED).
-  </div>
-  <div class="accordion"><h4>PUT /api/v1/offers/{id}/accept — Принятие оффера</h4>
-    Кандидат принимает оффер: снимается маскирование контактов по 152-ФЗ и шлется веб-хук во внешнюю ATS работодателя.
-  </div>
-  <div class="accordion"><h4>PUT /api/v1/offers/{id}/decline — Отклонение оффера</h4>
-    Мягкое отклонение предложения кандидатом с фиксацией обратной связи.
-  </div>
-</div>
-
----
-
-### 6. Веб-хуки и корпоративные интеграции (Webhooks)
-
-<div class="accordions">
-  <div class="accordion"><h4>POST /api/v1/webhooks — Регистрация веб-хука для ATS</h4>
-    Регистрирует URL для отправки нотификаций (Сбер, Яндекс, Huntflow, 1C:ЗУП, Telegram-боты). Защита заголовком `X-FSP-Signature` (HMAC-SHA256).
-  </div>
-  <div class="accordion"><h4>GET /api/v1/webhooks/employer/{id} — Список веб-хуков</h4>
-    Возвращает зарегистрированные веб-хуки с HTTP-статусами последней доставки.
-  </div>
-  <div class="accordion"><h4>POST /api/v1/webhooks/{id}/ping — Тестовый пинг</h4>
-    Проверяет доступность эндпоинта компании с отправкой проверочного пакета PING.
-  </div>
-  <div class="accordion"><h4>DELETE /api/v1/webhooks/{id} — Удаление веб-хука</h4>
-    Отзывает регистрацию веб-хука.
-  </div>
-</div>
-
----
-
-### 7. ИИ-портреты соискателей (Multi-Model AI Summary)
-
-<div class="accordions">
-  <div class="accordion"><h4>POST /api/v1/ai/generate-summary — Мультимодельная генерация</h4>
-    Использует паттерн Strategy для динамического переключения нейросетей (Google Gemini, YandexGPT, OpenRouter, Ollama) с системным фокусом (Highload, Алгоритмы, Тимлид).
-  </div>
-  <div class="accordion"><h4>POST /api/v1/ai/save-profile — Сохранение ИИ-резюме</h4>
-    Фиксирует сформированное досье в базе данных PostgreSQL соискателя.
-  </div>
-</div>
-
----
-
-### 8. Изолированная песочница и тестирование (Judge0 / Docker)
-
-<div class="accordions">
-  <div class="accordion"><h4>POST /api/v1/sandbox/execute — Запуск кода в песочнице</h4>
-    Изолированное выполнение решения в Docker-песочнице (`--net=none`, cgroups v2, лимиты памяти 256MB и времени 1000мс).
-  </div>
-  <div class="accordion"><h4>POST /api/v1/assessments/assign — Назначение тестового задания</h4>
-    Работодатель назначает алгоритмическую задачу с дедлайном и ссылкой на Яндекс Телемост.
-  </div>
-  <div class="accordion"><h4>POST /api/v1/assessments/review — Ревью и оценка решения</h4>
-    HR/Техлид выставляет вердикт (👍 / 👎) и пишет закрытую внутреннюю заметку.
-  </div>
-</div>
-
----
-
-### 9. Хранилище файлов и мониторинг (S3 & DevOps)
-
-<div class="accordions">
-  <div class="accordion"><h4>POST /api/v1/files/upload — Загрузка файлов (MultipartFile)</h4>
-    Загрузка аватарок, логотипов компаний и PDF-резюме с валидацией размера и генерацией публичной ссылки.
-  </div>
-  <div class="accordion"><h4>GET /api/v1/system/stats — Открытая статистика платформы</h4>
-    Возвращает актуальные счетчики для главной страницы лендинга (число атлетов, вакансий, решенных задач, офферов).
-  </div>
-  <div class="accordion"><h4>GET /api/v1/audit/logs — Журнал аудита безопасности (152-ФЗ)</h4>
-    Неизменяемый журнал всех обращений к персональным данным и действиям в системе.
-  </div>
-</div>
-
-</section>
-
-<section>
-
-# 👥 Команда разработчиков
-
-## «NO PHP — NO PROBLEMS — 2026»
-
-Проект разработан в рамках официального хакатона Федерации спортивного программирования России командой инженеров, объединенных общим манифестом качества кода и современных технологических стандартов.
-
----
-
-## 🏆 Манифест команды
-
-1. **Строгая статическая типизация**: Мы исключаем неопределенности в рантайме. Основа нашего стека — **Java 21**, **Kotlin 2.0** и **TypeScript**.
-2. **Чистая архитектура (Clean Architecture)**: Полное разделение слоев представления, бизнес-логики и данных на бэкенде, фронтенде и в мобильном клиенте.
-3. **Безопасность и соответствие закону**: Вся обработка персональных данных строго изолирована и соответствует **152-ФЗ**.
-4. **Инженерная эстетика**: Каждый элемент интерфейса платформы оформлен по официальному брендбуку ФСП с использованием моноширинной гарнитуры **JetBrains Mono**.
-
----
-
-## 🚀 Вклад и распределение ролей
-
-<div class="card-group">
-  <div class="card"><h3>Архитектура & Backend</h3>
-    Проектирование микро-монолита на Spring Boot 3, миграции PostgreSQL 16 Flyway, смешанная сборка Kotlin 2.0 + Java 21, безопасность JWT и 152-ФЗ.
-  </div>
-  <div class="card"><h3>Frontend & UX/UI</h3>
-    Реализация веб-приложения на React 19 + Vite, Code Arena IDE, интеграция с реальным API GitHub, аутентификация через Yandex / hh.ru.
-  </div>
-  <div class="card"><h3>Mobile App (Android)</h3>
-    Разработка нативного мобильного клиента на Kotlin 2.0 + Jetpack Compose + Material 3, Clean Architecture + MVVM + StateFlow.
-  </div>
-  <div class="card"><h3>DevOps & AI Engine</h3>
-    CI/CD автоматизация релизов на GitHub Actions, мультипровайдерный ИИ-скоринг (Gemini / OpenRouter / Ollama) и развертывание в облаке Hugging Face.
-  </div>
-</div>
-
----
-
+      <article id="team" class="doc-section">
+        <div class="doc-section-anchor"></div>
+        <h1>👥 Команда разработчиков</h1>
+<h2>«NO PHP — NO PROBLEMS — 2026»</h2>
+<p>Проект разработан в рамках официального хакатона Федерации спортивного программирования России командой инженеров, объединенных общим манифестом качества кода и современных технологических стандартов.</p>
+<hr>
+<h2>🏆 Манифест команды</h2>
+<ol>
+<li><strong>Строгая статическая типизация</strong>: Мы исключаем неопределенности в рантайме. Основа нашего стека — <strong>Java 21</strong>, <strong>Kotlin 2.0</strong> и <strong>TypeScript</strong>.</li>
+<li><strong>Чистая архитектура (Clean Architecture)</strong>: Полное разделение слоев представления, бизнес-логики и данных на бэкенде, фронтенде и в мобильном клиенте.</li>
+<li><strong>Безопасность и соответствие закону</strong>: Вся обработка персональных данных строго изолирована и соответствует <strong>152-ФЗ</strong>.</li>
+<li><strong>Инженерная эстетика</strong>: Каждый элемент интерфейса платформы оформлен по официальному брендбуку ФСП с использованием моноширинной гарнитуры <strong>JetBrains Mono</strong>.</li>
+</ol>
+<hr>
+<h2>🚀 Вклад и распределение ролей</h2>
+<div class="card-grid">
+  <div class="doc-card"><div class="doc-card-title">Архитектура & Backend</div><div class="doc-card-body">Проектирование микро-монолита на Spring Boot 3, миграции PostgreSQL 16 Flyway, смешанная сборка Kotlin 2.0 + Java 21, безопасность JWT и 152-ФЗ.</div></div>
+  <div class="doc-card"><div class="doc-card-title">Frontend & UX/UI</div><div class="doc-card-body">Реализация веб-приложения на React 19 + Vite, Code Arena IDE, интеграция с реальным API GitHub, аутентификация через Yandex / hh.ru.</div></div>
+  <div class="doc-card"><div class="doc-card-title">Mobile App (Android)</div><div class="doc-card-body">Разработка нативного мобильного клиента на Kotlin 2.0 + Jetpack Compose + Material 3, Clean Architecture + MVVM + StateFlow.</div></div>
+  <div class="doc-card"><div class="doc-card-title">DevOps & AI Engine</div><div class="doc-card-body">CI/CD автоматизация релизов на GitHub Actions, мультипровайдерный ИИ-скоринг (Gemini / OpenRouter / Ollama) и развертывание в облаке Hugging Face.</div></div>
+</div><hr>
 <div class="callout note"><strong>Примечание:</strong> 
 «NO PHP — NO PROBLEMS — 2026» — создаём цифровое будущее спортивного программирования России!
 </div>
 
-</section>
+      </article>
+      <hr class="doc-divider" />
+    
+      
+      <div style="text-align: center; padding: 30px 0; color: #64748b; font-size: 12px;">
+        © 2026 Федерация спортивного программирования России • Команда «NO PHP — NO PROBLEMS — 2026»
+      </div>
+    </main>
+  </div>
 
-</body></html>
+</body>
+</html>
