@@ -1,0 +1,40 @@
+---
+title: "Обзор REST API"
+description: "Стандарты взаимодействия, формат данных, аутентификация и документация OpenAPI 3.0"
+---
+
+# Спецификация REST API
+
+Платформа FSP Career Arena предоставляет полноценный REST API со строгой типизацией и поддержкой спецификации **OpenAPI 3.0 / Swagger**.
+
+---
+
+## 🔑 Аутентификация
+
+Все защищённые эндпоинты требуют передачи JWT токена в заголовке `Authorization`:
+
+```http
+Authorization: Bearer <your_jwt_token>
+```
+
+---
+
+## ⚡ Интерактивный Scalar & Swagger UI
+
+Документация и интерактивная песочница доступны на запущенном бэкенде:
+- **Swagger UI**: `http://localhost:8080/swagger-ui.html`
+- **OpenAPI Спецификация JSON**: `http://localhost:8080/v3/api-docs`
+
+---
+
+## 🌐 Формат ответов
+
+Все ответы возвращаются в кодировке `UTF-8` в формате `application/json`:
+
+```json
+{
+  "status": "SUCCESS",
+  "data": { ... },
+  "timestamp": "2026-10-10T18:00:00Z"
+}
+```

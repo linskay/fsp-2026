@@ -1,0 +1,71 @@
+---
+title: "Архитектура платформы"
+description: "Высокоуровневая архитектура, компоненты и схема взаимодействия экосистемы FSP Career Arena"
+---
+
+# Архитектура решения
+
+Экосистема **FSP Career Arena** спроектирована по модульной микро-монолитной архитектуре с чётким разделением ответственности, высокой отказоустойчивостью и поддержкой бесшовного масштабирования.
+
+```mermaid
+flowchart TD
+    subgraph Clients["Клиентский слой"]
+        WEB["React 19 Web App\n(TypeScript + Vite + Tailwind)"]
+        MOB["Native Android App\n(Kotlin 2.0 + Jetpack Compose)"]
+    end
+
+    subgraph Gateway["Сетевой периметр"]
+        NGINX["Nginx Reverse Proxy\n(SSL / Compression / Cache)"]
+    end
+
+    subgraph CoreBackend["Бэкенд-сервисы (Java 21 + Kotlin 2.0)"]
+        API["Spring Boot 3 REST API"]
+        AUTH["JWT & OAuth Security\n(152-ФЗ ПДн)"]
+        ARENA_ENGINE["Code Arena Runner\n(Изолированная песочница)"]
+        MOBILE_API["Kotlin Mobile Gateway\n(/api/v1/mobile)"]
+    end
+
+    subgraph Intelligence["Слой Искусственного Интеллекта"]
+        AI_ROUTER["Multi-Provider Switcher\n(Gemini / OpenRouter / Ollama)"]
+    end
+
+    subgraph Storage["Слой хранения данных"]
+        PG[("PostgreSQL 16\n(Транзакции, ELO, Вакансии)")]
+        REDIS[("Redis / Cache\n(Сессии, Токены)")]
+    end
+
+    WEB --> NGINX
+    MOB --> NGINX
+    NGINX --> API
+    NGINX --> MOBILE_API
+
+    API --> AUTH
+    API --> ARENA_ENGINE
+    API --> AI_ROUTER
+    MOBILE_API --> API
+
+    API --> PG
+    API --> REDIS
+```
+
+---
+
+## 🧱 Основные компоненты системы
+
+### 1. Серверная часть (Backend)
+- **Технологии**: Java 21 LTS + Kotlin 2.0.20 + Spring Boot 3.3.4.
+- **База данных**: PostgreSQL 16 с версионированием миграций через Flyway.
+- **Взаимодействие**: Полная совместимость смешанного кода Java и Kotlin без накладных расходов во времени выполнения (Zero-overhead interoperability).
+
+### 2. Веб-интерфейс (Frontend)
+- **Технологии**: React 19 + TypeScript + Vite + Tailwind CSS.
+- **Типографика**: Фирменный моноширинный шрифт **JetBrains Mono** по официальному брендбуку ФСП.
+- **Компоненты**: Интерактивная Арена с подсветкой синтаксиса, дашборды для соискателей и рекрутеров, модальные окна Телемоста.
+
+### 3. Мобильный клиент (Android)
+- **Технологии**: Kotlin 2.0 + Jetpack Compose (Material 3) + Clean Architecture + MVVM + StateFlow.
+- **Сетевой слой**: Retrofit 2 + Moshi + OkHttp.
+
+### 4. Интеллектуальный анализатор (AI Engine)
+- Мультипровайдерная интеграция с поддержкой **Google Gemini**, **OpenRouter**, локальной **Ollama** и **YandexGPT**.
+- Автоматический расчет соответствия кандидата техническим требованиям вакансии на основе структурированного JSON-промпта.

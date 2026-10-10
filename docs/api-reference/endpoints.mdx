@@ -1,0 +1,78 @@
+---
+title: "Эндпоинты платформы"
+description: "Детальное описание ключевых маршрутов API платформы FSP Career Arena"
+---
+
+# Маршруты и эндпоинты API
+
+---
+
+### 1. Соискатели и кандидаты ФСП
+
+<AccordionGroup>
+  <Accordion title="GET /api/v1/candidates — Список соискателей">
+    Возвращает постраничный список кандидатов с фильтрацией по разрядам ФСП, грейдам и стеку.
+    
+    **Пример ответа:**
+    ```json
+    [
+      {
+        "id": "cand-pesterev",
+        "fullName": "Иван Пестерев",
+        "fspRating": 2540,
+        "fspRank": "1-й спортивный разряд",
+        "isVerified": true,
+        "skills": ["Java", "Kotlin", "Spring Boot", "PostgreSQL"]
+      }
+    ]
+    ```
+  </Accordion>
+  <Accordion title="GET /api/v1/candidates/{id} — Профиль кандидата">
+    Возвращает детальную карточку кандидата с историей соревнований и подтверждёнными контрибьюциями.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+### 2. Вакансии работодателей
+
+<AccordionGroup>
+  <Accordion title="GET /api/v1/vacancies — Поиск вакансий">
+    Возвращает список открытых вакансий с требованиями по спортивному разряду ФСП и формату работы (Remote, Hybrid, Office).
+  </Accordion>
+  <Accordion title="POST /api/v1/vacancies — Создание вакансии (HR)">
+    Создаёт новую вакансию для компании с автоматическим подключением ИИ-скоринга откликов.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+### 3. Code Arena (Исполнение кода)
+
+<AccordionGroup>
+  <Accordion title="POST /api/v1/arena/execute — Проверка решения задачи">
+    Запускает отправленный код в изолированном Docker-контейнере с замером времени и памяти.
+    
+    **Тело запроса:**
+    ```json
+    {
+      "taskId": "task-quick-sort",
+      "language": "kotlin",
+      "sourceCode": "fun solve() { ... }"
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+---
+
+### 4. Мобильный API (Kotlin Gateway)
+
+<AccordionGroup>
+  <Accordion title="GET /api/v1/mobile/status — Статус мобильного шлюза">
+    Возвращает состояние бэкенда для нативного клиента.
+  </Accordion>
+  <Accordion title="POST /api/v1/mobile/chat/send — Отправка сообщения чата">
+    Принимает и валидирует сообщения чата от мобильного приложения.
+  </Accordion>
+</AccordionGroup>

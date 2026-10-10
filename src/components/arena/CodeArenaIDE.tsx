@@ -30,12 +30,14 @@ import {
   Minimize2,
   Github,
   FolderGit2,
-  ExternalLink
+  ExternalLink,
+  Bot
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { AlgorithmTask, Grade, SubmissionResult, CandidateProfile, GitHubSyncCommit, GitHubSyncSettings } from '../../types';
 import { LeetCodeImportModal } from './LeetCodeImportModal';
 import { GitHubRepoSyncModal } from './GitHubRepoSyncModal';
+import { AiTaskGeneratorModal } from './AiTaskGeneratorModal';
 import { api } from '../../services/api';
 
 interface CodeArenaIDEProps {
@@ -72,6 +74,7 @@ export const CodeArenaIDE: React.FC<CodeArenaIDEProps> = ({
   // Catalog & LeetCode Import modals
   const [isCatalogOpen, setIsCatalogOpen] = useState(false);
   const [isLeetCodeImportOpen, setIsLeetCodeImportOpen] = useState(false);
+  const [isAiTaskGenOpen, setIsAiTaskGenOpen] = useState(false);
   const [catalogFilterDifficulty, setCatalogFilterDifficulty] = useState<string>('all');
   const [catalogSearch, setCatalogSearch] = useState('');
 
@@ -551,11 +554,35 @@ export const CodeArenaIDE: React.FC<CodeArenaIDEProps> = ({
           </button>
 
           <button
+            onClick={() => setIsAiTaskGenOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/40 text-xs font-bold transition-all shadow-md shadow-purple-950/40"
+            title="Сгенерировать уникальный неповторяющийся билет через ИИ (Защита критерия 2)"
+          >
+            <Bot className="w-3.5 h-3.5 text-purple-400" />
+            <span>ИИ-Билет ФСП</span>
+          </button>
+
+          <button
+            onClick={() => {
+              const otherTasks = tasks.filter(x => x.id !== selectedTask.id);
+              if (otherTasks.length > 0) {
+                const randomPick = otherTasks[Math.floor(Math.random() * otherTasks.length)];
+                setSelectedTask(randomPick);
+              }
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-[#00f0ff] border border-cyan-500/30 text-xs font-bold transition-all"
+            title="Выдать случайный билет соревнований из пула задач (Античит ФСП)"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-[#00f0ff]" />
+            <span>Случайный билет</span>
+          </button>
+
+          <button
             onClick={() => setIsLeetCodeImportOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold transition-all"
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold transition-all"
           >
             <Zap className="w-3.5 h-3.5 text-amber-400" />
-            <span>GraphQL Импорт</span>
+            <span>GraphQL</span>
           </button>
 
           <select
@@ -1401,6 +1428,20 @@ export const CodeArenaIDE: React.FC<CodeArenaIDEProps> = ({
           }
           setSelectedTask(imported);
           setIsLeetCodeImportOpen(false);
+        }}
+      />
+
+      {/* AI Dynamic Task Generator Modal (Anti-Cheat & Anti-Leak) */}
+      <AiTaskGeneratorModal
+        isOpen={isAiTaskGenOpen}
+        onClose={() => setIsAiTaskGenOpen(false)}
+        candidateGrade={candidate?.targetGrade || 'senior'}
+        onTaskGenerated={(newTask) => {
+          if (onImportCustomTask) {
+            onImportCustomTask(newTask);
+          }
+          setSelectedTask(newTask);
+          setIsAiTaskGenOpen(false);
         }}
       />
 

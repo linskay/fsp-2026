@@ -1,0 +1,62 @@
+---
+title: "Мобильное приложение (Android)"
+description: "Нативная мобильная экосистема на Kotlin 2.0, Jetpack Compose и Clean Architecture"
+---
+
+# Нативное Android-приложение
+
+Мобильное приложение **FSP Career Arena** разработано в соответствии с актуальными гайдлайнами Google Android и принципами **Clean Architecture**.
+
+---
+
+## 🛠️ Архитектурный стек
+
+| Слой | Технологии | Назначение |
+| :--- | :--- | :--- |
+| **UI Layer** | **Jetpack Compose + Material 3** | Декларативный UI с киберспортивной темой ФСП (`#00E5FF`, `#0B111E`) |
+| **Presentation** | **MVVM + StateFlow + ViewModel** | Реактивное управление состоянием интерфейса без утечек памяти |
+| **Domain & Model** | **Kotlin Data Classes** | Чистые иммутабельные сущности кандидатов, чатов и задач Арены |
+| **Data Layer** | **Retrofit 2 + Moshi + OkHttp** | Асинхронное взаимодействие с REST API бэкенда |
+
+---
+
+## 📱 Ключевые экраны приложения
+
+### 1. Профиль соискателя (`ProfileScreen.kt`)
+- Отображение верифицированного статуса Федерации спортивного программирования РФ;
+- Карточка официального спортивного разряда (1-й, 2-й, КМС, МС);
+- Динамический индикатор рейтинга ELO;
+- Чипы подтверждённого технологического стека (Java, Kotlin, Python, Docker, Spring Boot).
+
+### 2. Чат кандидатов и рекрутеров (`ChatScreen.kt`)
+- Двусторонняя переписка между соискателем и работодателем;
+- Быстрые шаблоны обсуждения оффера и приглашений на собеседования;
+- Автоматический скролл к последнему сообщению и временные метки.
+
+### 3. Мобильная Арена (`ArenaScreen.kt`)
+- Список активных соревновательных задач ФСП;
+- Описание ограничений по времени (Time Limit) и памяти (Memory Limit);
+- Просмотр условий и отправка решений на проверку.
+
+---
+
+## 💻 Пример интерфейса Jetpack Compose
+
+```kotlin
+@Composable
+fun FspRankBadge(rank: String, eLo: Int) {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+            Icon(Icons.Default.Verified, contentDescription = null, tint = Color(0xFF00E5FF))
+            Spacer(modifier = Modifier.width(12.dp))
+            Column {
+                Text(text = rank, fontWeight = FontWeight.Bold, color = Color.White)
+                Text(text = "ELO Рейтинг: $eLo", color = Color(0xFF00E5FF))
+            }
+        }
+    }
+}
+```

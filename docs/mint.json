@@ -1,0 +1,66 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "FSP Career Arena 2026",
+  "logo": {
+    "dark": "/logo/logo_01.svg",
+    "light": "/logo/logo_01.svg"
+  },
+  "favicon": "/logo/favicon.svg",
+  "colors": {
+    "primary": "#00E5FF",
+    "light": "#38BDF8",
+    "dark": "#0284C7",
+    "background": {
+      "dark": "#0B111E",
+      "light": "#FFFFFF"
+    }
+  },
+  "topbarLinks": [
+    {
+      "name": "📄 Скачать PDF (Whitepaper)",
+      "url": "https://github.com/linskay/fsp-2026/releases/latest"
+    },
+    {
+      "name": "🚀 Живое демо",
+      "url": "https://huggingface.co/spaces/Linskay/demo-2026"
+    }
+  ],
+  "topbarCta": {
+    "name": "GitHub Репозиторий",
+    "url": "https://github.com/linskay/fsp-2026"
+  },
+  "navigation": [
+    {
+      "group": "Обзор платформы",
+      "pages": [
+        "introduction",
+        "quickstart"
+      ]
+    },
+    {
+      "group": "Архитектура & Технологии",
+      "pages": [
+        "architecture/overview",
+        "architecture/backend",
+        "architecture/mobile",
+        "architecture/ai-engine"
+      ]
+    },
+    {
+      "group": "Спецификация API",
+      "pages": [
+        "api-reference/overview",
+        "api-reference/endpoints"
+      ]
+    },
+    {
+      "group": "Команда проекта",
+      "pages": [
+        "team"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "github": "https://github.com/linskay/fsp-2026"
+  }
+}

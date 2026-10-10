@@ -1,0 +1,81 @@
+---
+title: "Бэкенд (Java 21 & Kotlin 2.0)"
+description: "Архитектура серверной части, гибридная компиляция Java 21 и Kotlin 2.0, Spring Boot 3"
+---
+
+# Серверная платформа
+
+Серверная часть платформы построена на современном стеке **Java 21 (Temurin)** и **Kotlin 2.0.20** под управлением **Spring Boot 3.3.4**.
+
+---
+
+## ⚡ Гибридная компиляция Java + Kotlin (Best Practices)
+
+Для максимальной производительности и гибкости проект использует смешанную сборку (Mixed Compilation). Это позволяет существующим корпоративным Java-компонентам бесшовно вызывать современные Kotlin-контроллеры и Data Classes:
+
+```xml
+<!-- Настройка плагина в pom.xml -->
+<plugin>
+    <groupId>org.jetbrains.kotlin</groupId>
+    <artifactId>kotlin-maven-plugin</artifactId>
+    <version>2.0.20</version>
+    <configuration>
+        <jvmTarget>21</jvmTarget>
+        <compilerPlugins>
+            <plugin>spring</plugin>
+            <plugin>jpa</plugin>
+        </compilerPlugins>
+    </configuration>
+    <dependencies>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-maven-allopen</artifactId>
+            <version>2.0.20</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-maven-noarg</artifactId>
+            <version>2.0.20</version>
+        </dependency>
+    </dependencies>
+</plugin>
+```
+
+---
+
+## 🛡️ Безопасность и соответствие 152-ФЗ
+
+- Хранение паролей с использованием адаптивного алгоритма `BCrypt` с солью;
+- Аутентификация на основе **JWT (JSON Web Tokens)** с разделением прав доступа по ролям (`ROLE_CANDIDATE`, `ROLE_EMPLOYER`, `ROLE_ADMIN`);
+- Полное соблюдение требований **152-ФЗ «О персональных данных»**: данные соискателей обрабатываются исключительно на серверах, расположенных на территории РФ, с возможностью отзыва согласия на обработку.
+
+---
+
+## 📱 Высокопроизводительный Kotlin Mobile Controller
+
+Для обслуживания мобильных устройств выделен специализированный контроллер на Kotlin:
+
+```kotlin
+@RestController
+@RequestMapping("/api/v1/mobile")
+@Tag(name = "Mobile API (Kotlin)")
+class MobileApiController {
+
+    @GetMapping("/status")
+    fun getStatus(): ResponseEntity<Map<String, Any>> {
+        return ResponseEntity.ok(
+            mapOf(
+                "status" to "UP",
+                "engine" to "Kotlin 2.0 / Spring Boot 3",
+                "mobileSupported" to true,
+                "timestamp" to Instant.now().toString()
+            )
+        )
+    }
+
+    @PostMapping("/chat/send")
+    fun sendChatMessage(@RequestBody message: ChatMessageDto): ResponseEntity<ChatMessageDto> {
+        return ResponseEntity.ok(message)
+    }
+}
+```
