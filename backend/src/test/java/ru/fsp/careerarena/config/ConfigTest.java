@@ -21,7 +21,7 @@ class ConfigTest {
 
         assertThat(openAPI).isNotNull();
         assertThat(openAPI.getInfo().getTitle()).isEqualTo("FSP Career Arena API");
-        assertThat(openAPI.getInfo().getVersion()).isEqualTo("1.0.0");
+        assertThat(openAPI.getInfo().getVersion()).isEqualTo("2.0.0");
         assertThat(openAPI.getInfo().getContact().getEmail()).isEqualTo("support@fsp-russia.ru");
         assertThat(openAPI.getComponents().getSecuritySchemes()).containsKey("Bearer Authentication");
     }

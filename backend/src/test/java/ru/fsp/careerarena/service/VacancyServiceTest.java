@@ -15,6 +15,9 @@ import ru.fsp.careerarena.entity.enums.FspRank;
 import ru.fsp.careerarena.entity.enums.Grade;
 import ru.fsp.careerarena.entity.enums.Specialization;
 import ru.fsp.careerarena.entity.enums.WorkFormat;
+import ru.fsp.careerarena.exception.BadRequestException;
+import ru.fsp.careerarena.exception.ResourceNotFoundException;
+import ru.fsp.careerarena.mapper.VacancyMapper;
 import ru.fsp.careerarena.repository.EmployerProfileRepository;
 import ru.fsp.careerarena.repository.VacancyRepository;
 
@@ -38,6 +41,9 @@ class VacancyServiceTest {
 
     @Mock
     private EmployerProfileRepository employerRepository;
+
+    @Mock
+    private VacancyMapper vacancyMapper;
 
     @InjectMocks
     private VacancyService vacancyService;
@@ -84,6 +90,13 @@ class VacancyServiceTest {
     void getAllVacancies_returnsActiveVacancyList() {
         when(vacancyRepository.findByIsActiveTrue()).thenReturn(List.of(vacancy));
 
+        VacancyDto expectedDto = VacancyDto.builder()
+                .id(vacancyId)
+                .companyName("Яндекс")
+                .title("Senior Java Developer")
+                .build();
+        when(vacancyMapper.toDto(vacancy)).thenReturn(expectedDto);
+
         List<VacancyDto> result = vacancyService.getAllVacancies();
 
         assertThat(result).hasSize(1);
@@ -100,6 +113,11 @@ class VacancyServiceTest {
         when(vacancyRepository.searchVacancies(Specialization.BACKEND, Grade.SENIOR, 1800))
                 .thenReturn(List.of(vacancy));
 
+        VacancyDto expectedDto = VacancyDto.builder()
+                .title("Senior Java Developer")
+                .build();
+        when(vacancyMapper.toDto(vacancy)).thenReturn(expectedDto);
+
         List<VacancyDto> result = vacancyService.searchVacancies(Specialization.BACKEND, Grade.SENIOR, 1800);
 
         assertThat(result).hasSize(1);
@@ -111,6 +129,11 @@ class VacancyServiceTest {
     @DisplayName("Получение вакансий по ID работодателя")
     void getVacanciesByEmployer_returnsEmployerVacancies() {
         when(vacancyRepository.findByEmployerId(employerId)).thenReturn(List.of(vacancy));
+
+        VacancyDto expectedDto = VacancyDto.builder()
+                .employerId(employerId)
+                .build();
+        when(vacancyMapper.toDto(vacancy)).thenReturn(expectedDto);
 
         List<VacancyDto> result = vacancyService.getVacanciesByEmployer(employerId);
 
@@ -145,6 +168,15 @@ class VacancyServiceTest {
             return v;
         });
 
+        VacancyDto expectedDto = VacancyDto.builder()
+                .title("Lead Java Architect")
+                .salaryFrom(400000)
+                .salaryTo(600000)
+                .minFspElo(2000)
+                .companyName("Яндекс")
+                .build();
+        when(vacancyMapper.toDto(any(Vacancy.class))).thenReturn(expectedDto);
+
         VacancyDto created = vacancyService.createVacancy(request);
 
         assertThat(created).isNotNull();
@@ -176,6 +208,9 @@ class VacancyServiceTest {
         when(employerRepository.findById(employerId)).thenReturn(Optional.of(employer));
         when(vacancyRepository.save(any(Vacancy.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
+        VacancyDto expectedDto = VacancyDto.builder().minFspElo(0).build();
+        when(vacancyMapper.toDto(any(Vacancy.class))).thenReturn(expectedDto);
+
         VacancyDto created = vacancyService.createVacancy(request);
 
         assertThat(created.getMinFspElo()).isEqualTo(0);
@@ -192,7 +227,7 @@ class VacancyServiceTest {
                 .build();
 
         assertThatThrownBy(() -> vacancyService.createVacancy(invalidRequest))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(BadRequestException.class)
                 .hasMessageContaining("Минимальная зарплата (от) не может превышать максимальную (до)");
     }
 
@@ -210,7 +245,7 @@ class VacancyServiceTest {
         when(employerRepository.findById(unknownEmpId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> vacancyService.createVacancy(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("не найден");
     }
 
@@ -232,10 +267,17 @@ class VacancyServiceTest {
                 .isActive(true)
                 .build();
 
+        VacancyDto expectedDto = VacancyDto.builder()
+                .employerId(null)
+                .companyName("Не указано")
+                .companyLogo(null)
+                .build();
+        when(vacancyMapper.toDto(v)).thenReturn(expectedDto);
+
         VacancyDto dto = vacancyService.mapToDto(v);
 
         assertThat(dto.getEmployerId()).isNull();
-        assertThat(dto.getCompanyName()).isEqualTo("Компания");
+        assertThat(dto.getCompanyName()).isEqualTo("Не указано");
         assertThat(dto.getCompanyLogo()).isNull();
     }
 }

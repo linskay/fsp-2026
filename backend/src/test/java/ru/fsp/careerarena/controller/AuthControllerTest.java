@@ -13,13 +13,18 @@ import ru.fsp.careerarena.entity.EmployerProfile;
 import ru.fsp.careerarena.entity.User;
 import ru.fsp.careerarena.entity.enums.FspRank;
 import ru.fsp.careerarena.entity.enums.UserRole;
+import ru.fsp.careerarena.exception.BadRequestException;
 import ru.fsp.careerarena.repository.CandidateProfileRepository;
 import ru.fsp.careerarena.repository.EmployerProfileRepository;
 import ru.fsp.careerarena.repository.UserRepository;
+import ru.fsp.careerarena.security.JwtService;
+import ru.fsp.careerarena.service.GithubOAuthService;
 
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,6 +39,12 @@ class AuthControllerTest {
 
     @Mock
     private EmployerProfileRepository employerProfileRepository;
+
+    @Mock
+    private GithubOAuthService githubOAuthService;
+
+    @Mock
+    private JwtService jwtService;
 
     @InjectMocks
     private AuthController authController;
@@ -50,14 +61,15 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("Вход с отсутствующим email или паролем возвращает статус 400 Bad Request")
+    @DisplayName("Вход с отсутствующим email или паролем выбрасывает исключение BadRequestException")
     void login_missingCredentials_returnsBadRequest() {
-        ResponseEntity<Map<String, Object>> responseEmailNull = authController.login(Collections.singletonMap("password", "123"));
-        assertThat(responseEmailNull.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(responseEmailNull.getBody()).containsEntry("error", "Email и пароль обязательны");
+        assertThatThrownBy(() -> authController.login(Collections.singletonMap("password", "123")))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessageContaining("Email и пароль обязательны");
 
-        ResponseEntity<Map<String, Object>> responsePassNull = authController.login(Collections.singletonMap("email", "test@test.ru"));
-        assertThat(responsePassNull.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThatThrownBy(() -> authController.login(Collections.singletonMap("email", "test@test.ru")))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessageContaining("Email и пароль обязательны");
     }
 
     @Test
@@ -83,6 +95,7 @@ class AuthControllerTest {
 
         when(userRepository.findByEmail("candidate@fsp.ru")).thenReturn(Optional.of(user));
         when(candidateProfileRepository.findByUserId(userId)).thenReturn(Optional.of(profile));
+        when(jwtService.generateToken(any(), any(), any(), any())).thenReturn("fsp-jwt-candidate-token");
 
         ResponseEntity<Map<String, Object>> response = authController.login(Map.of(
                 "email", "candidate@fsp.ru",
@@ -121,6 +134,7 @@ class AuthControllerTest {
 
         when(userRepository.findByEmail("employer@fsp.ru")).thenReturn(Optional.of(user));
         when(employerProfileRepository.findByUserId(userId)).thenReturn(Optional.of(employerProfile));
+        when(jwtService.generateToken(any(), any(), any(), any())).thenReturn("fsp-jwt-employer-token");
 
         ResponseEntity<Map<String, Object>> response = authController.login(Map.of(
                 "email", "employer@fsp.ru",
