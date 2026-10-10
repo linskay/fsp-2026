@@ -23,7 +23,7 @@ class ManifestPDF(FPDF):
         self.set_y(-15)
         self.set_font('DejaVu', '', 8)
         self.set_text_color(148, 163, 184)
-        self.cell(0, 10, f'Страница {self.page_no()} | Карьерная Арена ФСП — Проектная Документация (Пункт 3.4 ТЗ)', align='C')
+        self.cell(0, 10, f'Страница {self.page_no()} | Карьерная Арена ФСП — Официальный Архитектурный Манифест', align='C')
 
 def clean_text(text: str) -> str:
     # Удаляем эмодзи, которые отсутствуют в стандартных TrueType шрифтах
@@ -31,6 +31,60 @@ def clean_text(text: str) -> str:
     # Заменяем специальные спецсимволы
     text = text.replace('\u2022', '-').replace('\u2013', '-').replace('\u2014', ' - ')
     return text
+
+def render_table_block(pdf, table_lines, font_family):
+    rows = []
+    for line in table_lines:
+        if '---' in line:
+            continue
+        cols = [clean_text(c.strip()) for c in line.split('|')[1:-1]]
+        if cols and any(c for c in cols):
+            cleaned_cols = [re.sub(r'`(.*?)`', r'\1', re.sub(r'\*\*(.*?)\*\*', r'\1', c)) for c in cols]
+            rows.append(cleaned_cols)
+    if not rows:
+        return
+
+    num_cols = len(rows[0])
+    # Total printable width is 180 mm (210 - 15 - 15)
+    if num_cols == 5:
+        # Уровень | Разряд ФСП | ELO диапазон | Перцентиль | Требования
+        col_widths = (16, 48, 30, 26, 60)
+    elif num_cols == 3:
+        # Компонент | Вес | Описание  ИЛИ  Параметр | Значение | Назначение
+        col_widths = (38, 22, 120)
+    elif num_cols == 2:
+        # Слой | Технологии  ИЛИ  Грейд | Условия  ИЛИ  Этап | Видимость
+        col_widths = (35, 145)
+    elif num_cols == 4:
+        col_widths = (35, 45, 40, 60)
+    else:
+        col_widths = tuple([180 / num_cols] * num_cols)
+
+    pdf.set_font(font_family, '', 7.5)
+    pdf.set_text_color(30, 41, 59)
+    try:
+        with pdf.table(
+            col_widths=col_widths,
+            borders_layout="ALL",
+            line_height=4.6,
+            padding=1.5,
+        ) as table:
+            for row_idx, row in enumerate(rows):
+                padded_row = list(row)[:num_cols]
+                while len(padded_row) < num_cols:
+                    padded_row.append("")
+                table_row = table.row()
+                for c in padded_row:
+                    table_row.cell(c)
+        pdf.ln(2)
+    except Exception as e:
+        print(f"[WARN] pdf.table fallback: {e}")
+        for row in rows:
+            for idx, c in enumerate(row[:num_cols]):
+                w = col_widths[idx] if idx < len(col_widths) else (180 / num_cols)
+                pdf.cell(w, 5, c[:40], border=1)
+            pdf.ln()
+        pdf.ln(2)
 
 def create_manifest_pdf():
     root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -109,7 +163,9 @@ def create_manifest_pdf():
     in_code_block = False
     code_lines = []
 
-    for line in lines:
+    i = 0
+    while i < len(lines):
+        line = lines[i]
         stripped = line.strip()
 
         # Handle Code Blocks
@@ -126,18 +182,22 @@ def create_manifest_pdf():
             else:
                 in_code_block = True
                 code_lines = []
+            i += 1
             continue
 
         if in_code_block:
             code_lines.append(line)
+            i += 1
             continue
 
         if not stripped:
             pdf.ln(2)
+            i += 1
             continue
 
         # Headings
         if stripped.startswith('# '):
+            i += 1
             continue # Already handled in cover
         elif stripped.startswith('## '):
             heading_text = clean_text(stripped[3:].strip())
@@ -149,6 +209,7 @@ def create_manifest_pdf():
             pdf.set_fill_color(0, 229, 255)
             pdf.rect(pdf.get_x(), pdf.get_y(), 180, 0.5, 'F')
             pdf.ln(2)
+            i += 1
         elif stripped.startswith('### '):
             heading_text = clean_text(stripped[4:].strip())
             heading_text = re.sub(r'^[^\w\sА-Яа-яA-Za-z0-9]+', '', heading_text).strip()
@@ -157,26 +218,23 @@ def create_manifest_pdf():
             pdf.set_text_color(30, 41, 59)
             pdf.cell(0, 6, heading_text, ln=True)
             pdf.ln(1)
+            i += 1
         elif stripped.startswith('- ') or stripped.startswith('* '):
             item_text = clean_text(stripped[2:].strip())
             item_text = re.sub(r'\*\*(.*?)\*\*', r'\1', item_text)
+            item_text = re.sub(r'`(.*?)`', r'\1', item_text)
             pdf.set_font(font_family, '', 8.5)
             pdf.set_text_color(51, 65, 85)
             pdf.cell(5, 4.5, '-')
             pdf.multi_cell(175, 4.5, item_text)
+            i += 1
         elif stripped.startswith('|'):
-            if '---' in stripped:
-                continue
-            cols = [clean_text(c.strip()) for c in stripped.split('|')[1:-1]]
-            if not cols:
-                continue
-            pdf.set_font(font_family, '', 8)
-            pdf.set_text_color(30, 41, 59)
-            col_width = 180 / max(len(cols), 1)
-            for c in cols:
-                clean_c = re.sub(r'\*\*(.*?)\*\*', r'\1', c)
-                pdf.cell(col_width, 5.5, clean_c[:34], border=1)
-            pdf.ln()
+            # Collect entire markdown table block
+            table_raw = []
+            while i < len(lines) and lines[i].strip().startswith('|'):
+                table_raw.append(lines[i].strip())
+                i += 1
+            render_table_block(pdf, table_raw, font_family)
         else:
             p_text = clean_text(stripped)
             p_text = re.sub(r'\*\*(.*?)\*\*', r'\1', p_text)
@@ -185,6 +243,7 @@ def create_manifest_pdf():
             pdf.set_text_color(51, 65, 85)
             pdf.multi_cell(180, 4.5, p_text)
             pdf.ln(1.5)
+            i += 1
 
     pdf.output(pdf_out_path)
     pdf.output(dist_pdf_path)
