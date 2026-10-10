@@ -36,7 +36,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
 
   if (!isOpen) return null;
 
-  const POLICY_URL = "https://fsp-russia.ru/files/%D0%9F%D0%BE%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BE%D0%B1%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D1%83%20%D0%BF%D0%B4%D0%BD%20(1).pdf";
+  const POLICY_URL = "https://fsp-russia.ru/files/%D0%9F%D0%BE%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BE%D0%B1%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B0%20%D0%BF%D0%B4%D0%BD%20(1).pdf";
 
   const handleQuickFill = (testEmail: string, testPass: string) => {
     setEmail(testEmail);
@@ -89,16 +89,12 @@ export const LoginModal: React.FC<LoginModalProps> = ({
     setError(null);
 
     try {
-      // Simulate quick registration and log in as the chosen role
-      const mockUser: AuthLoginResponse = {
-        token: 'jwt-registered-' + Date.now(),
+      const registeredUser = await api.register({
         email: regEmail,
+        password: regPassword,
         fullName: regName,
-        role: regRole,
-        candidateId: regRole === 'CANDIDATE' ? 'cand-pesterev' : undefined,
-        employerId: regRole === 'EMPLOYER' ? 'emp-sbertech' : undefined,
-        fspVerified: true
-      };
+        role: regRole
+      });
 
       confetti({
         particleCount: 60,
@@ -106,7 +102,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
         origin: { y: 0.6 }
       });
 
-      onLoginSuccess(mockUser);
+      onLoginSuccess(registeredUser);
       onClose();
     } catch (err: any) {
       setError(err.message || 'Ошибка при регистрации');
