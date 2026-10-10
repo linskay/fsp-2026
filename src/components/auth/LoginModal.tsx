@@ -533,8 +533,44 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                   )}
                 </button>
               </form>
+
+              {/* Social Register Options */}
+              <div className="space-y-2 pt-2 border-t border-white/[0.06]">
+                <div className="text-[11px] text-slate-400 text-center font-medium">
+                  или зарегистрироваться через сервис:
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleSocialAuth('github')}
+                    className="py-2 px-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs text-slate-200 font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <Github className="w-3.5 h-3.5 text-white" />
+                    <span>GitHub</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleSocialAuth('yandex')}
+                    className="py-2 px-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs text-slate-200 font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <span className="w-3.5 h-3.5 rounded-full bg-red-500 text-white font-black text-[9px] flex items-center justify-center">Я</span>
+                    <span>Яндекс</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleSocialAuth('hh')}
+                    className="py-2 px-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs text-slate-200 font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <span className="w-3.5 h-3.5 rounded-full bg-[#ff2b42] text-white font-black text-[8px] flex items-center justify-center">hh</span>
+                    <span>hh.ru</span>
+                  </button>
+                </div>
+              </div>
             </div>
           )}
+
 
           {/* Compliance & Info footer */}
           <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-[11px] text-slate-500">

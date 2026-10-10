@@ -754,27 +754,28 @@ class ApiService {
       });
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || 'Ошибка при регистрации');
+        throw new Error(data.error || data.message || 'Ошибка при регистрации');
       }
       return data;
     } catch (err: any) {
-      if (err.message && err.message.includes('Пользователь с таким email уже зарегистрирован')) {
+      if (err.message && !err.message.includes('Failed to fetch')) {
         throw err;
       }
-      // If backend is standalone/offline fallback
+      // Fallback only if complete network failure
       return {
         status: 'SUCCESS',
         userId: 'u-' + Date.now(),
         email: params.email,
         fullName: params.fullName,
         role: params.role,
-        candidateId: params.role === 'CANDIDATE' ? 'cand-pesterev' : undefined,
-        employerId: params.role === 'EMPLOYER' ? 'emp-sbertech' : undefined,
+        candidateId: params.role === 'CANDIDATE' ? 'cand-' + Date.now() : undefined,
+        employerId: params.role === 'EMPLOYER' ? 'emp-' + Date.now() : undefined,
         token: 'fsp-jwt-' + Date.now(),
         fspVerified: true
       };
     }
   }
+
 
   // 12. Fetch Test Users list
   async getTestUsers(): Promise<TestUserDto[]> {
