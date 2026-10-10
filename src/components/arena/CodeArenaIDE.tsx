@@ -433,8 +433,8 @@ export const CodeArenaIDE: React.FC<CodeArenaIDEProps> = ({
     const eloEarned = isAccepted ? selectedTask.fspRatingWeight : 0;
 
     const logOutput = backendResult
-      ? `[Judge0 Sandbox / Spring Boot 3 API: ${backendResult.verdict}]\n> ${backendResult.statusMessage}\n> Tests passed: ${backendResult.testsPassed}/${backendResult.totalTests}\n> Execution time: ${backendResult.executionTimeMs}ms | Memory: ${backendResult.memoryUsedKb}KB\n\n${backendResult.stdout || ''}\n${backendResult.stderr ? '> STDERR: ' + backendResult.stderr : ''}`
-      : `[Judge0 Isolated Linux Kernel 6.8 / Docker Sandbox v1.14.0]\n> Compiling ${language} source with -O3 optimizations...\n> Executing Test Suite against ${totalOpen + totalHidden} test vectors.\n> Memory limit: ${selectedTask.memoryLimitMb}MB | Time limit: ${selectedTask.timeLimitMs}ms\n[PASS] Test Case #1 (Open): OK (0.8ms)\n[PASS] Test Case #2 (Open): OK (1.1ms)\n[PASS] Test Case #3 (Hidden Stress Vector 100k elements): OK (${execTime}ms, ${mem}MB RSS)\n\n>> VERDICT: ACCEPTED (100% TEST COVERAGE) <<\n>> FSP ELO RATING BOOST: +${eloEarned} pts\n>> VERIFIED GRADE ASSIGNED: ${gradeEarned.toUpperCase()}`;
+      ? `[Тестовый раннер платформы: ${backendResult.verdict}]\n> ${backendResult.statusMessage}\n> Тестов пройдено: ${backendResult.testsPassed}/${backendResult.totalTests}\n> Время выполнения: ${backendResult.executionTimeMs}ms | Память: ${backendResult.memoryUsedKb}KB\n\n${backendResult.stdout || ''}\n${backendResult.stderr ? '> STDERR: ' + backendResult.stderr : ''}`
+      : `[Среда компиляции и тестирования]\n> Компиляция решения на ${language}...\n> Запуск набора тестов (${totalOpen + totalHidden} тест-кейсов).\n> Лимит памяти: ${selectedTask.memoryLimitMb}MB | Лимит времени: ${selectedTask.timeLimitMs}ms\n[PASS] Тест #1 (Open): OK (0.8ms)\n[PASS] Тест #2 (Open): OK (1.1ms)\n[PASS] Тест #3 (Hidden Stress Vector 100k элементов): OK (${execTime}ms, ${mem}MB RSS)\n\n>> ВЕРДИКТ: ACCEPTED (100% тестов пройдено) <<\n>> ПРИРОСТ РЕЙТИНГА ELO: +${eloEarned} pts\n>> ПРИСВОЕННЫЙ ГРЕЙД: ${gradeEarned.toUpperCase()}`;
 
     const verdict: SubmissionResult = {
       id: backendResult?.submissionId || ('sub-' + Date.now()),
@@ -844,7 +844,7 @@ export const CodeArenaIDE: React.FC<CodeArenaIDEProps> = ({
                 </h3>
                 {submissionsHistory.length === 0 ? (
                   <p className="text-xs text-slate-400 p-4 bg-[#0e1428] rounded-xl text-center border border-[#1b233a]">
-                    Вы еще не отправляли решений на вердикт Judge0.
+                    Вы еще не отправляли решений на проверку.
                   </p>
                 ) : (
                   submissionsHistory.map((sub, idx) => (
@@ -885,7 +885,7 @@ export const CodeArenaIDE: React.FC<CodeArenaIDEProps> = ({
             </div>
             <span className="text-[11px] text-slate-400 font-mono flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block animate-pulse" />
-              Monaco IDE • Judge0 Docker Kernel
+              Среда разработки • Онлайн компилятор
             </span>
           </div>
 
@@ -934,7 +934,7 @@ export const CodeArenaIDE: React.FC<CodeArenaIDEProps> = ({
                   className="flex items-center gap-1.5 px-5 py-2 rounded-xl bg-gradient-to-r from-[#2b35ff] to-[#00f0ff] hover:opacity-90 text-slate-950 text-xs font-black shadow-lg shadow-[#2b35ff]/30 transition-all disabled:opacity-50"
                 >
                   <Send className="w-3.5 h-3.5" />
-                  <span>{isSubmitting ? 'Проверка Judge0...' : 'Отправить в Judge0 (Submit)'}</span>
+                  <span>{isSubmitting ? 'Проверка тестов...' : 'Отправить решение'}</span>
                 </button>
               </div>
 
@@ -1226,7 +1226,7 @@ export const CodeArenaIDE: React.FC<CodeArenaIDEProps> = ({
                     <div className="pt-1">
                       <details className="text-[11px] text-slate-400">
                         <summary className="cursor-pointer hover:text-slate-200 font-mono text-[10px]">
-                          Подробный лог выполнения песочницы Judge0 Linux Kernel
+                          Подробный отчет выполнения тестов
                         </summary>
                         <pre className="text-[10px] text-slate-300 font-mono bg-black/70 p-2.5 rounded-xl max-h-24 overflow-y-auto border border-[#1b233a] mt-2">
                           {submissionVerdict.logOutput}

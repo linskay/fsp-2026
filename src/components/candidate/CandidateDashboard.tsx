@@ -84,7 +84,7 @@ function getDynamicEloProgression(currentElo: number, candidate: CandidateProfil
     { pts: p2, label: achName1, stage: 'Турнир' },
     { pts: p3, label: achName2, stage: 'Финал', color: 'text-amber-400' },
     { pts: p4, label: 'Высшая Лига', stage: 'Суперлига' },
-    { pts: p5, label: 'Judge0 Sandbox', stage: 'Текущий пик', color: 'text-[#00f0ff]' }
+    { pts: p5, label: 'Тестирование', stage: 'Текущий пик', color: 'text-[#00f0ff]' }
   ];
 }
 
@@ -390,7 +390,7 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
               <div className="bg-[#070b16] p-3 rounded-2xl border border-[#162038] text-xs space-y-0.5 flex-1">
                 <div className="flex items-center gap-1.5 text-[10px] text-[#00f0ff] font-bold">
                   <Lock className="w-3 h-3 text-[#00f0ff]" />
-                  <span>152-ФЗ Защита контактов</span>
+                  <span>Защита контактов</span>
                 </div>
                 <p className="text-slate-300 text-[11px] font-mono">
                   Маскировано: <span className="text-[#00f0ff] font-bold">{candidate.phoneMasked}</span>
@@ -700,7 +700,7 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
             }`}
           >
             <MessageSquare className="w-4 h-4" />
-            <span>Чат с работодателями (152-ФЗ)</span>
+            <span>Чат с работодателями</span>
             {acceptedInvitations.length > 0 && (
               <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-bold border border-emerald-500/30">
                 {acceptedInvitations.length} активных
@@ -842,11 +842,11 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
                 <button
                   type="button"
                   onClick={() => {
-                    setAssessmentExecutionLogs('Запуск локальных стресс-тестов в песочнице: 4/4 тестов пройдено. Решение готово к отправке.');
+                    setAssessmentExecutionLogs('Запуск стресс-тестов: 4/4 тестов пройдено успешно. Решение готово к отправке.');
                   }}
                   className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 text-xs font-semibold"
                 >
-                  Запустить тесты (Sandbox Run)
+                  Запустить тесты
                 </button>
 
                 <button
@@ -859,7 +859,7 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
                         spentTimeMinutes: 24,
                         passedCount: 4,
                         totalCount: 4,
-                        executionLogs: 'Все открытые и скрытые тест-кейсы компании успешно пройдены в Judge0.',
+                        executionLogs: 'Все открытые и скрытые тест-кейсы компании успешно пройдены.',
                         submittedAt: new Date().toISOString()
                       });
                     }
@@ -1074,7 +1074,7 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
                       <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                       <div className="space-y-0.5">
                         <span className="font-bold text-emerald-300 text-[11px] block">
-                          Контур безопасности 152-ФЗ (OAuth Scope: public_repo):
+                          Безопасность профиля GitHub:
                         </span>
                         <p className="text-[10px] text-slate-300 leading-relaxed font-mono">
                           Закрытые репозитории пользователей НЕ сканируются. Анализируются только открытые проекты и публичные коммиты профиля.
@@ -1325,7 +1325,7 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
                           <span className="text-[10px] text-slate-500 font-mono">0 тестов на hh.ru</span>
                         </div>
                         <p className="text-[11px] text-slate-400 leading-relaxed">
-                          Раздел «Пройденные тесты и экзамены» на hh.ru пока не заполнен. Квалификация и навыки кандидата подтверждаются решениями задач олимпиадного уровня в Арене ФСП (Judge0).
+                          Раздел «Пройденные тесты и экзамены» на hh.ru пока не заполнен. Квалификация и навыки кандидата подтверждаются решениями задач в Арене ФСП.
                         </p>
                       </div>
                     )}
@@ -1450,7 +1450,7 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
                         {isAccepted ? (
                           <div className="flex items-center gap-2 text-emerald-400 font-semibold">
                             <Unlock className="w-4 h-4" />
-                            <span>Приглашение принято. Контакты раскрыты работодателю по 152-ФЗ.</span>
+                            <span>Приглашение принято. Контакты переданы работодателю.</span>
                           </div>
                         ) : isDeclined ? (
                           <div className="text-slate-500 flex items-center gap-2">
@@ -1516,10 +1516,10 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                Алгоритмическая песочница и подтверждение грейда
+                Алгоритмическая арена и подтверждение грейда
               </h2>
               <p className="text-xs text-slate-400">
-                Решайте задачи банка ФСП в интерактивной IDE с изолированным запуском тестов (Judge0 Sandbox).
+                Решайте задачи банка ФСП в интерактивной среде разработки с автоматической проверкой тестов.
               </p>
             </div>
           </div>
@@ -1570,7 +1570,7 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
                     </p>
                     <div className="flex items-center gap-1 text-[10px] text-emerald-400 mt-2">
                       <Unlock className="w-3 h-3" />
-                      <span>Контакты раскрыты по 152-ФЗ</span>
+                      <span>Контакты переданы</span>
                     </div>
                   </div>
                 ))
@@ -1897,12 +1897,12 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
             <div className="flex items-center gap-3 text-emerald-400">
               <ShieldCheck className="w-6 h-6" />
               <h3 className="text-base font-bold text-white">
-                Согласие на раскрытие контактов (152-ФЗ)
+                Согласие на передачу контактов
               </h3>
             </div>
 
             <p className="text-xs text-slate-300 leading-relaxed">
-              Вы подтверждаете интерес к офферу от работодателя. В соответствии с Федеральным законом № 152-ФЗ «О персональных данных», ваши контактные данные:
+              Вы подтверждаете интерес к офферу от работодателя. Ваши контактные данные:
             </p>
 
             <div className="p-3 bg-slate-900 rounded-xl border border-slate-800 text-xs space-y-1 font-mono">

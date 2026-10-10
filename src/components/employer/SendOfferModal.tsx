@@ -206,9 +206,8 @@ export const SendOfferModal: React.FC<SendOfferModalProps> = ({
             />
           </div>
 
-          {/* 152-FZ notice */}
           <div className="p-3 rounded-xl bg-blue-950/30 border border-blue-800/40 text-[11px] text-blue-300">
-            🔒 <strong>152-ФЗ регламент:</strong> Прямой номер телефона и Telegram кандидата откроются в вашей ATS панели после того, как он нажмет «Принять оффер».
+            🔒 <strong>Регламент платформы:</strong> Прямой номер телефона и Telegram кандидата откроются в вашей ATS панели после того, как он нажмет «Принять оффер».
           </div>
 
           {/* 152-FZ Consent Checkbox */}

@@ -34,7 +34,7 @@ export const NotFoundPage: React.FC<NotFoundPageProps> = ({
     setDiagnosticResult(null);
     setTimeout(() => {
       setIsDiagnosticRunning(false);
-      setDiagnosticResult('Пинг Judge0: 14ms | PostgreSQL: OK | Redis Cache: HIT | Маршрут: UNRESOLVED (404)');
+      setDiagnosticResult('Пинг серверов: 14ms | PostgreSQL: OK | Redis Cache: HIT | Маршрут: UNRESOLVED (404)');
     }, 800);
   };
 
@@ -140,7 +140,7 @@ export const NotFoundPage: React.FC<NotFoundPageProps> = ({
 
         {/* Informative Subtext in Russian */}
         <p className="text-sm sm:text-base md:text-lg text-slate-300 max-w-2xl leading-relaxed mb-8 font-normal">
-          Запрашиваемый URL-маршрут отсутствует в едином реестре платформы ФСП. Возможно, страница была перемещена, удалена или задача ещё ожидает компиляции в песочнице Judge0.
+          Запрашиваемый URL-маршрут отсутствует в едином реестре платформы ФСП. Возможно, страница была перемещена, удалена или задача ещё ожидает компиляции.
         </p>
 
         {/* Primary Call to Action Pill Button (matches the screenshot's rounded-full pill) */}
@@ -158,7 +158,7 @@ export const NotFoundPage: React.FC<NotFoundPageProps> = ({
             className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-[#0a1126] hover:bg-[#121c3d] text-[#00f0ff] hover:text-white font-semibold text-sm border border-[#2b35ff]/50 transition-all shadow-md shadow-[#2b35ff]/20 cursor-pointer"
           >
             <Code2 className="w-4 h-4 text-[#00f0ff]" />
-            <span>В Арену задач (Judge0)</span>
+            <span>В Арену задач</span>
           </button>
         </div>
 
@@ -243,7 +243,7 @@ export const NotFoundPage: React.FC<NotFoundPageProps> = ({
             <span>•</span>
             <span>Минцифры РФ</span>
             <span>•</span>
-            <span>152-ФЗ Защита персональных данных</span>
+            <span>Защита персональных данных</span>
           </div>
         </div>
       </footer>

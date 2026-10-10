@@ -55,7 +55,7 @@ export const YandexTelemostWidget: React.FC<YandexTelemostWidgetProps> = ({
                 Яндекс Телемост
               </span>
               <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-slate-300 border border-white/10 font-mono">
-                152-ФЗ РФ
+                HD Video
               </span>
             </div>
             <h4 className="text-sm font-semibold text-white mt-0.5">{roomName}</h4>
