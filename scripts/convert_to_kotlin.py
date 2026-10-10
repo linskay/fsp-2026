@@ -68,6 +68,9 @@ def convert_java_file_to_kotlin(java_file_path: str) -> str:
         "",
         "import io.swagger.v3.oas.annotations.media.Schema",
         "import java.time.Instant",
+        "import java.time.OffsetDateTime",
+        "import java.util.UUID",
+        "import ru.fsp.careerarena.entity.*",
         "",
         f"/**",
         f" * Автоматически сгенерированный Kotlin Data Class для {class_name}.",
@@ -85,7 +88,7 @@ def convert_java_file_to_kotlin(java_file_path: str) -> str:
 def main():
     root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     dto_dir = os.path.join(root_dir, "backend", "src", "main", "java", "ru", "fsp", "careerarena", "dto")
-    out_dir = os.path.join(root_dir, "backend", "src", "main", "kotlin", "ru", "fsp", "careerarena", "dto")
+    out_dir = os.path.join(root_dir, "mobile", "app", "src", "main", "kotlin", "ru", "fsp", "careerarena", "mobile", "model", "dto")
 
     os.makedirs(out_dir, exist_ok=True)
     print(f"[KOTLIN-CONVERTER] Сканирование Java DTO: {dto_dir}")
