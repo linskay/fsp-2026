@@ -2,7 +2,7 @@ name: Build & Publish Docker Packages to GitHub Container Registry (GHCR)
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "feature/future" ]
     tags: [ 'v*.*.*' ]
   workflow_dispatch:
 
