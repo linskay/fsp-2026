@@ -1313,6 +1313,63 @@ class ApiService {
     } catch {}
     return 'https://oauth.yandex.ru/authorize?client_id=FSP_CAREER_YANDEX_ID';
   }
+
+  // 26. 152-FZ Security Audit Logs
+  async getSecurityAuditLogs(): Promise<SecurityAuditLogDto[]> {
+    try {
+      const res = await fetch(`${API_BASE}/audit/logs`);
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return [
+      {
+        id: 'ad000000-0000-0000-0000-000000000001',
+        actorEmail: 'employer@fsp.ru',
+        actorRole: 'EMPLOYER',
+        action: 'VIEW_PERSONAL_CONTACTS',
+        targetCandidateName: 'Иван Пестерев',
+        description: 'Рекрутер СберТеха (Елена Романова) просмотрел контакты кандидата Ивана Пестерева после согласия на оффер (152-ФЗ)',
+        ipAddress: '192.168.1.42',
+        userAgent: 'FSP-Career-Arena/2.0',
+        createdAt: new Date().toISOString()
+      }
+    ];
+  }
+
+  async logViewContacts(payload: {
+    candidateId?: string;
+    candidateName: string;
+    employerEmail?: string;
+    companyName?: string;
+  }): Promise<SecurityAuditLogDto | null> {
+    try {
+      const res = await fetch(`${API_BASE}/audit/log-view-contacts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return null;
+  }
+}
+
+export interface SecurityAuditLogDto {
+  id: string;
+  actorUserId?: string;
+  actorEmail: string;
+  actorRole: string;
+  action: string;
+  targetCandidateId?: string;
+  targetCandidateName?: string;
+  description: string;
+  ipAddress?: string;
+  userAgent?: string;
+  createdAt: string;
 }
 
 export const api = new ApiService();
+

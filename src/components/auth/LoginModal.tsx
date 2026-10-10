@@ -44,6 +44,30 @@ export const LoginModal: React.FC<LoginModalProps> = ({
     setError(null);
   };
 
+  const handleQuickLogin = async (testEmail: string, testPass: string) => {
+    setEmail(testEmail);
+    setPassword(testPass);
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      const response = await api.login(testEmail, testPass);
+      try {
+        confetti({
+          particleCount: 50,
+          spread: 60,
+          origin: { y: 0.6 }
+        });
+      } catch {}
+      onLoginSuccess(response);
+      onClose();
+    } catch (err: any) {
+      setError(err?.message || 'Ошибка аутентификации. Проверьте логин и пароль.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSubmitLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim() || !password) {
@@ -270,12 +294,9 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   <button
                     type="button"
-                    onClick={() => handleQuickFill('candidate@fsp.ru', 'candidate2026')}
-                    className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
-                      email === 'candidate@fsp.ru'
-                        ? 'bg-blue-600/20 border-blue-500 text-white shadow-md shadow-blue-500/10 ring-1 ring-blue-500'
-                        : 'bg-white/[0.03] border-white/10 text-slate-300 hover:bg-white/[0.06] hover:border-white/20'
-                    }`}
+                    onClick={() => handleQuickLogin('candidate@fsp.ru', 'candidate2026')}
+                    disabled={isLoading}
+                    className="group p-3 rounded-xl border text-left transition-all cursor-pointer bg-white/[0.03] border-white/10 text-slate-300 hover:bg-blue-600/15 hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/10 active:scale-[0.98]"
                   >
                     <div className="flex items-center gap-2 mb-1">
                       <UserCheck className="w-4 h-4 text-cyan-400" />
@@ -284,19 +305,19 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                         1200 ELO
                       </span>
                     </div>
-                    <div className="text-[11px] text-slate-300 font-medium">Иван Пестерев</div>
+                    <div className="text-[11px] text-slate-200 font-medium">Иван Пестерев</div>
                     <div className="text-[10px] text-slate-400 font-mono truncate mt-0.5">candidate@fsp.ru</div>
-                    <div className="text-[10px] text-slate-500 font-mono">Пароль: candidate2026</div>
+                    <div className="mt-2 pt-2 border-t border-white/[0.08] flex items-center justify-between text-[11px] text-cyan-400 font-bold group-hover:text-cyan-300">
+                      <span>Войти в 1 клик</span>
+                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                    </div>
                   </button>
 
                   <button
                     type="button"
-                    onClick={() => handleQuickFill('employer@fsp.ru', 'employer2026')}
-                    className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
-                      email === 'employer@fsp.ru'
-                        ? 'bg-indigo-600/20 border-indigo-500 text-white shadow-md shadow-indigo-500/10 ring-1 ring-indigo-500'
-                        : 'bg-white/[0.03] border-white/10 text-slate-300 hover:bg-white/[0.06] hover:border-white/20'
-                    }`}
+                    onClick={() => handleQuickLogin('employer@fsp.ru', 'employer2026')}
+                    disabled={isLoading}
+                    className="group p-3 rounded-xl border text-left transition-all cursor-pointer bg-white/[0.03] border-white/10 text-slate-300 hover:bg-indigo-600/15 hover:border-indigo-500/50 hover:shadow-lg hover:shadow-indigo-500/10 active:scale-[0.98]"
                   >
                     <div className="flex items-center gap-2 mb-1">
                       <Building2 className="w-4 h-4 text-indigo-400" />
@@ -305,9 +326,12 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                         HR
                       </span>
                     </div>
-                    <div className="text-[11px] text-slate-300 font-medium">Елена Романова (СберТех)</div>
+                    <div className="text-[11px] text-slate-200 font-medium">Елена Романова (СберТех)</div>
                     <div className="text-[10px] text-slate-400 font-mono truncate mt-0.5">employer@fsp.ru</div>
-                    <div className="text-[10px] text-slate-500 font-mono">Пароль: employer2026</div>
+                    <div className="mt-2 pt-2 border-t border-white/[0.08] flex items-center justify-between text-[11px] text-indigo-400 font-bold group-hover:text-indigo-300">
+                      <span>Войти в 1 клик</span>
+                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                    </div>
                   </button>
                 </div>
               </div>

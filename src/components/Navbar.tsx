@@ -116,10 +116,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* User State & Login/Logout */}
             {currentUser ? (
               <div className="flex items-center gap-2">
-                <div 
-                  onClick={() => onRoleChange(currentUser.role === 'EMPLOYER' ? 'employer' : 'candidate')}
-                  className="flex items-center gap-2 pl-2 py-1 pr-2.5 rounded-2xl bg-white/[0.04] border border-white/10 hover:border-blue-500/50 cursor-pointer transition-colors"
-                  title={`Вы вошли как ${currentUser.fullName} (${currentUser.email})`}
+                <button
+                  type="button"
+                  onClick={onOpenLoginModal}
+                  className="flex items-center gap-2 pl-2 py-1 pr-2.5 rounded-2xl bg-white/[0.04] border border-white/10 hover:border-blue-500/50 cursor-pointer transition-colors text-left"
+                  title={`Вы вошли как ${currentUser.fullName} (${currentUser.email}). Нажмите для смены профиля`}
                 >
                   <UserAvatar
                     name={currentUser.fullName}
@@ -135,10 +136,23 @@ export const Navbar: React.FC<NavbarProps> = ({
                       {currentUser.role === 'EMPLOYER' ? 'Работодатель' : `${candidate?.fspRating || 1200} ELO`}
                     </span>
                   </div>
-                </div>
+                </button>
+
+                {onOpenLoginModal && (
+                  <button
+                    type="button"
+                    onClick={onOpenLoginModal}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 text-xs font-semibold transition-all cursor-pointer hover:scale-[1.02]"
+                    title="Сменить аккаунт / Войти"
+                  >
+                    <LogIn className="w-3.5 h-3.5 text-blue-400" />
+                    <span>Войти</span>
+                  </button>
+                )}
 
                 {onLogout && (
                   <button
+                    type="button"
                     onClick={onLogout}
                     className="p-2 rounded-xl bg-white/[0.04] hover:bg-rose-500/20 text-slate-400 hover:text-rose-300 border border-white/10 hover:border-rose-500/30 transition-all cursor-pointer"
                     title="Выйти из аккаунта"
@@ -150,8 +164,9 @@ export const Navbar: React.FC<NavbarProps> = ({
             ) : (
               onOpenLoginModal && (
                 <button
+                  type="button"
                   onClick={onOpenLoginModal}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-xs text-white font-semibold transition-all cursor-pointer shadow-md shadow-blue-500/20 hover:scale-[1.02]"
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs text-white font-semibold transition-all cursor-pointer shadow-md shadow-blue-500/20 hover:scale-[1.02]"
                   title="Войти в личный кабинет"
                 >
                   <LogIn className="w-3.5 h-3.5" />

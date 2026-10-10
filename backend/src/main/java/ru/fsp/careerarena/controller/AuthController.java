@@ -31,6 +31,7 @@ public class AuthController {
     private final CandidateProfileRepository candidateProfileRepository;
     private final EmployerProfileRepository employerProfileRepository;
     private final ru.fsp.careerarena.service.GithubOAuthService githubOAuthService;
+    private final ru.fsp.careerarena.security.JwtService jwtService;
 
     @GetMapping("/test-users")
     @Operation(summary = "Получение списка тестовых учетных записей (Кандидат и Работодатель)")
@@ -69,6 +70,8 @@ public class AuthController {
         if (userOpt.isPresent()) {
             User user = userOpt.get();
             if (password.equals(user.getPassword())) {
+                String token = jwtService.generateToken(user.getEmail(), user.getRole().name(), user.getFullName(), user.getId().toString());
+
                 Map<String, Object> resp = new HashMap<>();
                 resp.put("status", "SUCCESS");
                 resp.put("userId", user.getId().toString());
@@ -76,7 +79,7 @@ public class AuthController {
                 resp.put("fullName", user.getFullName());
                 resp.put("role", user.getRole().name());
                 resp.put("avatarUrl", user.getAvatarUrl());
-                resp.put("token", "fsp-jwt-" + UUID.randomUUID());
+                resp.put("token", token);
 
                 if ("CANDIDATE".equals(user.getRole().name())) {
                     candidateProfileRepository.findByUserId(user.getId()).ifPresent(cp -> {
@@ -169,7 +172,8 @@ public class AuthController {
         resp.put("fullName", savedUser.getFullName());
         resp.put("role", savedUser.getRole().name());
         resp.put("avatarUrl", savedUser.getAvatarUrl());
-        resp.put("token", "fsp-jwt-" + UUID.randomUUID());
+        String token = jwtService.generateToken(savedUser.getEmail(), savedUser.getRole().name(), savedUser.getFullName(), savedUser.getId().toString());
+        resp.put("token", token);
 
         if (role == UserRole.CANDIDATE) {
             CandidateProfile profile = CandidateProfile.builder()

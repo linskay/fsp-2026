@@ -664,15 +664,33 @@ export default function App() {
       showToast(`Успешная регистрация и вход! Добро пожаловать, ${authResp.fullName}`, 'fsp');
     } else if (authResp.role === 'EMPLOYER') {
       const empId = authResp.employerId || ('emp-' + Date.now());
-      setCurrentEmployer(prev => ({
-        ...prev,
-        id: empId,
-        name: authResp.companyName || authResp.fullName,
-        contactPerson: authResp.fullName,
-        email: authResp.email
-      }));
+      setEmployers(prev => {
+        const existing = prev.find(e => e.id === empId || e.email?.toLowerCase() === authResp.email.toLowerCase());
+        if (existing) {
+          return prev.map(e => e.id === existing.id ? {
+            ...e,
+            name: authResp.companyName || e.name,
+            contactPerson: authResp.fullName,
+            email: authResp.email
+          } : e);
+        }
+        return [{
+          id: empId,
+          name: authResp.companyName || authResp.fullName,
+          logo: authResp.avatarUrl || 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=128&auto=format&fit=crop&q=80',
+          industry: 'IT & Финтех',
+          about: 'Ведущая аккредитованная технологическая компания РФ.',
+          contactPerson: authResp.fullName,
+          email: authResp.email,
+          telegram: '@' + authResp.email.split('@')[0],
+          isVerifiedPartner: true,
+          vacanciesCount: 3,
+          offersSentCount: 1,
+          interviewsCount: 1
+        }, ...prev];
+      });
       setCurrentRole('employer');
-      showToast(`Успешная регистрация и вход! Добро пожаловать, ${authResp.fullName} (${authResp.companyName || 'Работодатель'})`, 'fsp');
+      showToast(`Успешная авторизация! Добро пожаловать, ${authResp.fullName} (${authResp.companyName || 'Работодатель'})`, 'fsp');
     }
   };
 

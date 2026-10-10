@@ -1,7 +1,9 @@
 package ru.fsp.careerarena.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -9,16 +11,29 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import ru.fsp.careerarena.security.JwtAuthenticationFilter;
 
 import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    public SecurityConfig() {
+        this.jwtAuthenticationFilter = null;
+    }
+
+    @Autowired
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -27,41 +42,75 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                // Public endpoints
+                // 1. Public OpenAPI Documentation & Actuator
                 .requestMatchers(
                     "/",
                     "/swagger-ui.html",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
-                    "/actuator/**",
+                    "/actuator/**"
+                ).permitAll()
+
+                // 2. Public Authentication, OAuth & Registration Endpoints
+                .requestMatchers(
                     "/api/v1/auth/**",
                     "/api/v1/public/**",
-                    "/api/v1/tasks/**",
-                    "/api/v1/sandbox/**",
-                    "/api/v1/candidates/**",
-                    "/api/v1/vacancies/**",
-                    "/api/v1/offers/**",
-                    "/api/v1/chat/**",
-                    "/ws/**",
-                    "/api/v1/tests/**",
-                    "/api/v1/employers/**",
-                    "/api/v1/fsp/**",
-                    "/api/v1/applications/**",
-                    "/api/v1/integrations/**",
-                    "/api/v1/notifications/**",
-                    "/api/v1/assessments/**",
-                    "/api/v1/interviews/**",
-                    "/api/v1/leetcode/**",
-                    "/api/v1/ai-summary/**",
                     "/oauth2/**",
                     "/login/**"
                 ).permitAll()
-                // Role-based endpoints
-                .requestMatchers("/api/v1/candidate/**").hasAnyRole("CANDIDATE", "ADMIN")
-                .requestMatchers("/api/v1/employer/**").hasAnyRole("EMPLOYER", "ADMIN")
+
+                // 3. Public Read/Browse Endpoints (Tasks, Public Vacancies, Candidate Profiles, FSP Registry)
+                .requestMatchers(HttpMethod.GET,
+                    "/api/v1/candidates/**",
+                    "/api/v1/vacancies/**",
+                    "/api/v1/tasks/**",
+                    "/api/v1/fsp/**",
+                    "/api/v1/tests/categories",
+                    "/api/v1/tests/cooldown/**",
+                    "/api/v1/leetcode/**",
+                    "/api/v1/sandbox/**"
+                ).permitAll()
+
+                // 4. Strict RBAC: Employer Only Endpoints (Защита функционала работодателя от соискателей)
+                .requestMatchers(
+                    "/api/v1/vacancies/employer/**",
+                    "/api/v1/assessments/assign",
+                    "/api/v1/assessments/review",
+                    "/api/v1/integrations/hh/import",
+                    "/api/v1/employers/profile/**"
+                ).hasAnyRole("EMPLOYER", "ADMIN")
+
+                // 5. Strict RBAC: Candidate Only Endpoints (Отклики, сдача заданий, принятие офферов)
+                .requestMatchers(
+                    "/api/v1/offers/*/accept",
+                    "/api/v1/offers/*/decline",
+                    "/api/v1/applications",
+                    "/api/v1/assessments/submit",
+                    "/api/v1/tests/start",
+                    "/api/v1/tests/submit"
+                ).hasAnyRole("CANDIDATE", "ADMIN")
+
+                // 6. Common Authenticated (Chat, Notifications, Audit, Assessment viewing)
+                .requestMatchers(
+                    "/api/v1/offers/**",
+                    "/api/v1/applications/**",
+                    "/api/v1/chat/**",
+                    "/api/v1/notifications/**",
+                    "/api/v1/assessments/**",
+                    "/api/v1/interviews/**",
+                    "/api/v1/audit/**",
+                    "/api/v1/ai-summary/**",
+                    "/ws/**"
+                ).permitAll()
+
                 .anyRequest().authenticated()
-            )
-            .oauth2Login(oauth2 -> oauth2
+            );
+
+        if (jwtAuthenticationFilter != null) {
+            http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        }
+
+        http.oauth2Login(oauth2 -> oauth2
                 .defaultSuccessUrl("/api/v1/auth/oauth2/success", true)
             )
             .httpBasic(Customizer.withDefaults());

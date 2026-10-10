@@ -39,6 +39,8 @@ import { UserAvatar } from '../brand/UserAvatar';
 import { LeetCodeStatsCard } from '../candidate/LeetCodeStatsCard';
 import { CandidateAiSummaryModal } from '../candidate/CandidateAiSummaryModal';
 import { YandexTelemostWidget } from '../common/YandexTelemostWidget';
+import { AuditLogModal } from '../common/AuditLogModal';
+import { api } from '../../services/api';
 import { evaluateCandidateLevel, calculateCandidateAchievementPoints } from '../../utils/ratingEngine';
 
 interface EmployerDashboardProps {
@@ -92,6 +94,7 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
   const [reviewModalAssessment, setReviewModalAssessment] = useState<AssessmentAssignment | null>(null);
   const [explainModalCandidate, setExplainModalCandidate] = useState<CandidateProfile | null>(null);
   const [aiModalCandidate, setAiModalCandidate] = useState<CandidateProfile | null>(null);
+  const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
 
   // Chat state
   const [selectedChatInvId, setSelectedChatInvId] = useState<string | null>(
@@ -281,6 +284,18 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
             <span>Диалоги по офферам</span>
           </button>
 
+        </div>
+
+        {/* 152-FZ Compliance Audit Log */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsAuditModalOpen(true)}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 transition-all duration-200 hover:scale-[1.02] shadow-sm shadow-emerald-950/20"
+            title="Журнал аудита безопасности и доступа к персональным данным соискателей (152-ФЗ)"
+          >
+            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            <span>Журнал аудита 152-ФЗ</span>
+          </button>
         </div>
       </div>
 
@@ -1345,6 +1360,12 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
           }}
         />
       )}
+
+      {/* 152-FZ Security Audit Log Modal */}
+      <AuditLogModal
+        isOpen={isAuditModalOpen}
+        onClose={() => setIsAuditModalOpen(false)}
+      />
 
     </div>
   );
