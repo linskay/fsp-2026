@@ -10,6 +10,9 @@ import ru.fsp.careerarena.entity.EmployerProfile;
 import ru.fsp.careerarena.entity.Vacancy;
 import ru.fsp.careerarena.entity.enums.Grade;
 import ru.fsp.careerarena.entity.enums.Specialization;
+import ru.fsp.careerarena.exception.BadRequestException;
+import ru.fsp.careerarena.exception.ResourceNotFoundException;
+import ru.fsp.careerarena.mapper.VacancyMapper;
 import ru.fsp.careerarena.repository.EmployerProfileRepository;
 import ru.fsp.careerarena.repository.VacancyRepository;
 
@@ -24,36 +27,37 @@ public class VacancyService {
 
     private final VacancyRepository vacancyRepository;
     private final EmployerProfileRepository employerRepository;
+    private final VacancyMapper vacancyMapper;
 
     @Transactional(readOnly = true)
     public List<VacancyDto> getAllVacancies() {
         return vacancyRepository.findByIsActiveTrue().stream()
-                .map(this::mapToDto)
+                .map(vacancyMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<VacancyDto> searchVacancies(Specialization specialization, Grade grade, Integer maxRequiredElo) {
         return vacancyRepository.searchVacancies(specialization, grade, maxRequiredElo).stream()
-                .map(this::mapToDto)
+                .map(vacancyMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<VacancyDto> getVacanciesByEmployer(UUID employerId) {
         return vacancyRepository.findByEmployerId(employerId).stream()
-                .map(this::mapToDto)
+                .map(vacancyMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Transactional
     public VacancyDto createVacancy(CreateVacancyRequest request) {
         if (request.getSalaryFrom() > request.getSalaryTo()) {
-            throw new IllegalArgumentException("Минимальная зарплата (от) не может превышать максимальную (до)");
+            throw new BadRequestException("Минимальная зарплата (от) не может превышать максимальную (до)");
         }
 
         EmployerProfile employer = employerRepository.findById(request.getEmployerId())
-                .orElseThrow(() -> new IllegalArgumentException("Работодатель с ID " + request.getEmployerId() + " не найден"));
+                .orElseThrow(() -> new ResourceNotFoundException("Работодатель с ID " + request.getEmployerId() + " не найден"));
 
         Vacancy vacancy = Vacancy.builder()
                 .employer(employer)
@@ -74,27 +78,10 @@ public class VacancyService {
 
         Vacancy saved = vacancyRepository.save(vacancy);
         log.info("Created new vacancy ID={} for employer={}", saved.getId(), employer.getCompanyName());
-        return mapToDto(saved);
+        return vacancyMapper.toDto(saved);
     }
 
     public VacancyDto mapToDto(Vacancy v) {
-        return VacancyDto.builder()
-                .id(v.getId())
-                .employerId(v.getEmployer() != null ? v.getEmployer().getId() : null)
-                .companyName(v.getEmployer() != null ? v.getEmployer().getCompanyName() : "Компания")
-                .companyLogo(v.getEmployer() != null ? v.getEmployer().getCompanyLogo() : null)
-                .title(v.getTitle())
-                .specialization(v.getSpecialization())
-                .grade(v.getGrade())
-                .salaryFrom(v.getSalaryFrom())
-                .salaryTo(v.getSalaryTo())
-                .minFspElo(v.getMinFspElo())
-                .requiredFspRank(v.getRequiredFspRank())
-                .location(v.getLocation())
-                .workFormat(v.getWorkFormat())
-                .description(v.getDescription())
-                .isActive(v.isActive())
-                .requiredSkills(v.getRequiredSkills())
-                .build();
+        return vacancyMapper.toDto(v);
     }
 }

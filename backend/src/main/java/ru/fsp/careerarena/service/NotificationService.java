@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.fsp.careerarena.dto.NotificationDto;
 import ru.fsp.careerarena.entity.UserNotification;
 import ru.fsp.careerarena.exception.ResourceNotFoundException;
+import ru.fsp.careerarena.mapper.NotificationMapper;
 import ru.fsp.careerarena.repository.UserNotificationRepository;
 
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 public class NotificationService {
 
     private final UserNotificationRepository notificationRepository;
+    private final NotificationMapper notificationMapper;
 
     @Transactional(readOnly = true)
     public List<NotificationDto> getUserNotifications(UUID userId) {
@@ -32,7 +34,7 @@ public class NotificationService {
             list = notificationRepository.findAllByOrderByCreatedAtDesc();
         }
 
-        return list.stream().map(this::mapToDto).collect(Collectors.toList());
+        return list.stream().map(notificationMapper::toDto).collect(Collectors.toList());
     }
 
     @Transactional
@@ -42,18 +44,10 @@ public class NotificationService {
 
         notification.setRead(true);
         notification = notificationRepository.save(notification);
-        return mapToDto(notification);
+        return notificationMapper.toDto(notification);
     }
 
-    private NotificationDto mapToDto(UserNotification n) {
-        return NotificationDto.builder()
-                .id(n.getId())
-                .title(n.getTitle())
-                .message(n.getMessage())
-                .type(n.getType())
-                .entityId(n.getEntityId())
-                .read(n.isRead())
-                .createdAt(n.getCreatedAt())
-                .build();
+    public NotificationDto mapToDto(UserNotification n) {
+        return notificationMapper.toDto(n);
     }
 }

@@ -11,6 +11,7 @@ import ru.fsp.careerarena.entity.EmployerProfile;
 import ru.fsp.careerarena.entity.ScheduledInterview;
 import ru.fsp.careerarena.entity.UserNotification;
 import ru.fsp.careerarena.exception.ResourceNotFoundException;
+import ru.fsp.careerarena.mapper.InterviewMapper;
 import ru.fsp.careerarena.repository.CandidateProfileRepository;
 import ru.fsp.careerarena.repository.EmployerProfileRepository;
 import ru.fsp.careerarena.repository.ScheduledInterviewRepository;
@@ -30,6 +31,7 @@ public class InterviewService {
     private final EmployerProfileRepository employerRepository;
     private final CandidateProfileRepository candidateRepository;
     private final UserNotificationRepository notificationRepository;
+    private final InterviewMapper interviewMapper;
 
     @Transactional
     public ScheduledInterviewDto scheduleInterview(ScheduleInterviewRequest request) {
@@ -72,35 +74,24 @@ public class InterviewService {
         }
 
         log.info("Scheduled live interview {} in Yandex Telemost for candidate {}", interview.getId(), candidate.getId());
-        return mapToDto(interview);
+        return interviewMapper.toDto(interview);
     }
 
     @Transactional(readOnly = true)
     public List<ScheduledInterviewDto> getInterviewsByCandidate(UUID candidateId) {
         return interviewRepository.findByCandidateIdOrderByScheduledAtDesc(candidateId).stream()
-                .map(this::mapToDto)
+                .map(interviewMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<ScheduledInterviewDto> getInterviewsByEmployer(UUID employerId) {
         return interviewRepository.findByEmployerIdOrderByScheduledAtDesc(employerId).stream()
-                .map(this::mapToDto)
+                .map(interviewMapper::toDto)
                 .collect(Collectors.toList());
     }
 
-    private ScheduledInterviewDto mapToDto(ScheduledInterview i) {
-        return ScheduledInterviewDto.builder()
-                .id(i.getId())
-                .employerId(i.getEmployer() != null ? i.getEmployer().getId() : null)
-                .companyName(i.getEmployer() != null ? i.getEmployer().getCompanyName() : "Не указано")
-                .candidateId(i.getCandidate() != null ? i.getCandidate().getId() : null)
-                .candidateName(i.getCandidate() != null && i.getCandidate().getUser() != null ? i.getCandidate().getUser().getFullName() : "Не указано")
-                .title(i.getTitle())
-                .scheduledAt(i.getScheduledAt())
-                .telemostRoomUrl(i.getTelemostRoomUrl())
-                .status(i.getStatus())
-                .createdAt(i.getCreatedAt())
-                .build();
+    public ScheduledInterviewDto mapToDto(ScheduledInterview i) {
+        return interviewMapper.toDto(i);
     }
 }

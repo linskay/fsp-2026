@@ -60,7 +60,7 @@ public class AuthController {
         String password = credentials.get("password");
 
         if (email == null || password == null) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Email и пароль обязательны"));
+            throw new ru.fsp.careerarena.exception.BadRequestException("Email и пароль обязательны");
         }
 
         // 1. Поиск в БД PostgreSQL через Spring Data JPA
@@ -140,12 +140,12 @@ public class AuthController {
         String roleStr = (String) req.get("role");
 
         if (email == null || email.isBlank() || password == null || password.isBlank() || fullName == null || fullName.isBlank()) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Email, пароль и имя обязательны для заполнения"));
+            throw new ru.fsp.careerarena.exception.BadRequestException("Email, пароль и имя обязательны для заполнения");
         }
 
         String normalizedEmail = email.trim().toLowerCase();
         if (userRepository.findByEmail(normalizedEmail).isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", "Пользователь с таким email уже зарегистрирован"));
+            throw new ru.fsp.careerarena.exception.BadRequestException("Пользователь с email '" + normalizedEmail + "' уже зарегистрирован в системе");
         }
 
         UserRole role = "EMPLOYER".equalsIgnoreCase(roleStr) ? UserRole.EMPLOYER : UserRole.CANDIDATE;

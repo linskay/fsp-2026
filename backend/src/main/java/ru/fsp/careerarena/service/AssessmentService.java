@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.fsp.careerarena.dto.*;
 import ru.fsp.careerarena.entity.*;
 import ru.fsp.careerarena.exception.ResourceNotFoundException;
+import ru.fsp.careerarena.mapper.AssessmentMapper;
 import ru.fsp.careerarena.repository.AssessmentAssignmentRepository;
 import ru.fsp.careerarena.repository.CandidateProfileRepository;
 import ru.fsp.careerarena.repository.EmployerProfileRepository;
@@ -27,18 +28,19 @@ public class AssessmentService {
     private final EmployerProfileRepository employerRepository;
     private final CandidateProfileRepository candidateRepository;
     private final UserNotificationRepository notificationRepository;
+    private final AssessmentMapper assessmentMapper;
 
     @Transactional(readOnly = true)
     public List<AssessmentAssignmentDto> getAssessmentsByEmployerId(UUID employerId) {
         return assessmentRepository.findByEmployerIdOrderByCreatedAtDesc(employerId).stream()
-                .map(this::mapToDto)
+                .map(assessmentMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<AssessmentAssignmentDto> getAssessmentsByCandidateId(UUID candidateId) {
         return assessmentRepository.findByCandidateIdOrderByCreatedAtDesc(candidateId).stream()
-                .map(this::mapToDto)
+                .map(assessmentMapper::toDto)
                 .collect(Collectors.toList());
     }
 
@@ -90,7 +92,7 @@ public class AssessmentService {
         log.info("Assigned assessment {} to candidate {} from employer {}",
                 assignment.getId(), candidate.getId(), employer.getId());
 
-        return mapToDto(assignment);
+        return assessmentMapper.toDto(assignment);
     }
 
     @Transactional(readOnly = true)
@@ -98,25 +100,7 @@ public class AssessmentService {
         AssessmentAssignment assignment = assessmentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Назначенное задание с ID " + id + " не найдено"));
 
-        CandidateProfile c = assignment.getCandidate();
-        User u = c != null ? c.getUser() : null;
-
-        return AssessmentSubmissionDto.builder()
-                .id(assignment.getId())
-                .candidateId(c != null ? c.getId() : null)
-                .candidateName(u != null ? u.getFullName() : "Не указано")
-                .taskTitle(assignment.getTaskTitle())
-                .code(assignment.getSubmissionCode() != null ? assignment.getSubmissionCode() : "// Решение кандидата еще не отправлено")
-                .language(assignment.getSubmissionLanguage() != null ? assignment.getSubmissionLanguage() : "javascript")
-                .testsPassed(assignment.getTestsPassed() != null ? assignment.getTestsPassed() : 0)
-                .totalTests(assignment.getTotalTests() != null ? assignment.getTotalTests() : 0)
-                .executionTimeMs(assignment.getExecutionTimeMs() != null ? assignment.getExecutionTimeMs() : 0)
-                .submittedAt(assignment.getSubmittedAt())
-                .status(assignment.getStatus())
-                .reviewVerdict(assignment.getReviewVerdict())
-                .internalNote(assignment.getInternalNote())
-                .candidateFeedbackMessage(assignment.getCandidateFeedbackMessage())
-                .build();
+        return assessmentMapper.toSubmissionDto(assignment);
     }
 
     @Transactional
@@ -150,39 +134,10 @@ public class AssessmentService {
         }
 
         log.info("Reviewed assessment {} with verdict {}", assignment.getId(), request.getVerdict());
-        return mapToDto(assignment);
+        return assessmentMapper.toDto(assignment);
     }
 
-    private AssessmentAssignmentDto mapToDto(AssessmentAssignment a) {
-        CandidateProfile c = a.getCandidate();
-        User u = c != null ? c.getUser() : null;
-
-        return AssessmentAssignmentDto.builder()
-                .id(a.getId())
-                .employerId(a.getEmployer() != null ? a.getEmployer().getId() : null)
-                .companyName(a.getEmployer() != null ? a.getEmployer().getCompanyName() : "Не указано")
-                .candidateId(c != null ? c.getId() : null)
-                .candidateName(u != null ? u.getFullName() : "Не указано")
-                .taskTitle(a.getTaskTitle())
-                .taskDifficulty(a.getTaskDifficulty())
-                .taskDescription(a.getTaskDescription())
-                .starterCode(a.getStarterCode())
-                .timeLimitMinutes(a.getTimeLimitMinutes())
-                .status(a.getStatus())
-                .liveInterview(a.isLiveInterview())
-                .telemostRoomUrl(a.getTelemostRoomUrl())
-                .scheduledInterviewAt(a.getScheduledInterviewAt())
-                .submissionLanguage(a.getSubmissionLanguage())
-                .testsPassed(a.getTestsPassed())
-                .totalTests(a.getTotalTests())
-                .executionTimeMs(a.getExecutionTimeMs())
-                .submittedAt(a.getSubmittedAt())
-                .reviewVerdict(a.getReviewVerdict())
-                .internalNote(a.getInternalNote())
-                .candidateFeedbackMessage(a.getCandidateFeedbackMessage())
-                .reviewerName(a.getReviewerName())
-                .reviewedAt(a.getReviewedAt())
-                .createdAt(a.getCreatedAt())
-                .build();
+    public AssessmentAssignmentDto mapToDto(AssessmentAssignment a) {
+        return assessmentMapper.toDto(a);
     }
 }
