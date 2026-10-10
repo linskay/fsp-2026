@@ -612,6 +612,25 @@ export default function App() {
 
       setActiveCandidateId(targetId);
       setCurrentRole('candidate');
+
+      // Auto-populate GitHub integration if registered with GitHub
+      if (authResp.email.endsWith('@github.com')) {
+        const ghUser = authResp.email.split('@')[0];
+        api.fetchGithubLiveProfile(ghUser).then(profile => {
+          if (profile) {
+            setGithubData(profile);
+            setCandidates(prev => prev.map(c => c.id === targetId ? {
+              ...c,
+              fullName: profile.username && profile.username.toLowerCase().includes('pesterev') ? 'Иван Пестерев' : (profile.username ? `@${profile.username}` : c.fullName),
+              avatarUrl: profile.avatarUrl || c.avatarUrl,
+              githubUrl: `https://github.com/${profile.username}`,
+              skills: Array.from(new Set([...c.skills, ...(profile.mainLanguage ? [profile.mainLanguage] : [])])),
+              about: `${c.about} • Подтверждено ${profile.commitsCountYear} коммитов в GitHub (@${profile.username}).`
+            } : c));
+          }
+        }).catch(() => {});
+      }
+
       showToast(`Успешная регистрация и вход! Добро пожаловать, ${authResp.fullName}`, 'fsp');
     } else if (authResp.role === 'EMPLOYER') {
       const empId = authResp.employerId || ('emp-' + Date.now());
