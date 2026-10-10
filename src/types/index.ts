@@ -457,3 +457,33 @@ export interface AssessmentAssignment {
   review?: EmployerAssessmentReview;
 }
 
+export type OfferStatus = 'PENDING' | 'ACCEPTED' | 'DECLINED' | 'INTERVIEW_SCHEDULED';
+
+export interface ReverseRecruitingOffer {
+  id: string;
+  candidateId: string;
+  candidateName: string;
+  employerId: string;
+  companyName: string;
+  companyLogo?: string;
+  vacancyId?: string;
+  positionTitle: string;
+  salaryFrom: number;
+  salaryTo: number;
+  salaryOffered: number;
+  description: string;
+  status: OfferStatus;
+  contactsUnmasked: boolean;
+  candidateContacts?: {
+    email?: string;
+    phone?: string;
+    telegram?: string;
+    github?: string;
+    consentStatus?: string;
+    notice?: string;
+  };
+  createdAt: string;
+  updatedAt?: string;
+}
+
+

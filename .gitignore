@@ -9,3 +9,5 @@ coverage/
 .idea/
 target/
 backend/target/
+dist-docs/
+

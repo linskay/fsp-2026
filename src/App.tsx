@@ -122,6 +122,19 @@ export default function App() {
     }
     loadBackendData();
 
+    // Process GitHub OAuth callback if redirected with code
+    const urlParams = new URLSearchParams(window.location.search);
+    const oauthCode = urlParams.get('code');
+    if (oauthCode) {
+      api.handleGithubOAuthCallback(oauthCode).then(res => {
+        handleLoginSuccess(res);
+        showToast('Успешная авторизация через GitHub OAuth! Профиль и ELO верифицированы.', 'fsp');
+        window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+      }).catch(err => {
+        console.warn('OAuth callback error:', err);
+      });
+    }
+
     // Restore authenticated session from localStorage
     try {
       const savedUser = localStorage.getItem('fsp_auth_user');
@@ -276,6 +289,9 @@ export default function App() {
 
   // Handlers
   const handleAcceptInvitation = (invitationId: string) => {
+    // Sync with Spring Boot REST API
+    api.acceptOffer(invitationId).catch(() => {});
+
     setInvitations(prev =>
       prev.map(inv => {
         if (inv.id === invitationId) {
@@ -312,6 +328,9 @@ export default function App() {
   };
 
   const handleDeclineInvitation = (invitationId: string, reason: string) => {
+    // Sync with Spring Boot REST API
+    api.declineOffer(invitationId).catch(() => {});
+
     setInvitations(prev =>
       prev.map(inv => {
         if (inv.id === invitationId) {

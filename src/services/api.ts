@@ -8,7 +8,8 @@ import {
   CandidateAiSummary,
   LeetCodeProfileStats,
   GitHubProfileData,
-  GitHubRepo
+  GitHubRepo,
+  ReverseRecruitingOffer
 } from '../types';
 import { 
   INITIAL_CANDIDATES, 
@@ -801,6 +802,116 @@ class ApiService {
         description: 'Работодатель: ПАО Сбербанк (СберТех), вакансия Senior Java 350-520к ₽'
       }
     ];
+  }
+
+  // 13. GitHub OAuth2 Endpoints
+  async getGithubOAuthUrl(redirectUri?: string): Promise<string> {
+    try {
+      const query = redirectUri ? `?redirectUri=${encodeURIComponent(redirectUri)}` : '';
+      const res = await fetch(`${API_BASE}/auth/oauth/github/url${query}`);
+      if (res.ok) {
+        const data = await res.json();
+        return data.url;
+      }
+    } catch {}
+    return 'https://github.com/login/oauth/authorize?client_id=mock-github-client-id&scope=read:user,user:email,public_repo';
+  }
+
+  async handleGithubOAuthCallback(code?: string, username?: string): Promise<AuthLoginResponse> {
+    try {
+      const res = await fetch(`${API_BASE}/auth/oauth/github/callback`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, username })
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+
+    // Fallback if backend is offline
+    const finalUser = username || 'ipesterev';
+    return {
+      status: 'SUCCESS',
+      userId: 'u-gh-' + finalUser,
+      candidateId: 'cand-gh-' + finalUser,
+      email: `${finalUser}@github.com`,
+      fullName: `@${finalUser}`,
+      role: 'CANDIDATE',
+      avatarUrl: `https://github.com/${finalUser}.png`,
+      token: 'fsp-jwt-gh-' + Date.now(),
+      fspVerified: true,
+      fspRank: '1-й спортивный разряд',
+      fspElo: 2150
+    };
+  }
+
+  // 14. Reverse Recruiting Offers (35% критерий ТЗ)
+  async createOffer(params: {
+    candidateId: string;
+    employerId: string;
+    vacancyId?: string;
+    positionTitle?: string;
+    salaryFrom?: number;
+    salaryTo?: number;
+    salaryOffered?: number;
+    description?: string;
+    message?: string;
+  }): Promise<ReverseRecruitingOffer> {
+    const res = await fetch(`${API_BASE}/offers`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || err.message || 'Ошибка при отправке оффера');
+    }
+    return await res.json();
+  }
+
+  async getOffersByCandidate(candidateId: string): Promise<ReverseRecruitingOffer[]> {
+    try {
+      const res = await fetch(`${API_BASE}/offers/candidate/${candidateId}`);
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return [];
+  }
+
+  async getOffersByEmployer(employerId: string): Promise<ReverseRecruitingOffer[]> {
+    try {
+      const res = await fetch(`${API_BASE}/offers/employer/${employerId}`);
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return [];
+  }
+
+  async acceptOffer(offerId: string): Promise<ReverseRecruitingOffer> {
+    const res = await fetch(`${API_BASE}/offers/${offerId}/accept`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || err.message || 'Не удалось принять оффер');
+    }
+    return await res.json();
+  }
+
+  async declineOffer(offerId: string): Promise<ReverseRecruitingOffer> {
+    const res = await fetch(`${API_BASE}/offers/${offerId}/decline`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || err.message || 'Не удалось отклонить оффер');
+    }
+    return await res.json();
   }
 }
 

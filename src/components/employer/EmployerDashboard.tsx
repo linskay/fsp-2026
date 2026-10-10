@@ -76,8 +76,8 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSpecialization, setSelectedSpecialization] = useState<string>('all');
   const [selectedGrade, setSelectedGrade] = useState<string>('all');
-  const [minRating, setMinRating] = useState<number>(1200);
-  const [onlyVerifiedFsp, setOnlyVerifiedFsp] = useState(true);
+  const [minRating, setMinRating] = useState<number>(0);
+  const [onlyVerifiedFsp, setOnlyVerifiedFsp] = useState(false);
   const [onlyWithAchievements, setOnlyWithAchievements] = useState(false);
 
   // Modals state
@@ -99,24 +99,30 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
   );
   const [chatMessageText, setChatMessageText] = useState('');
 
-  // Filtered and Ranked candidates
+  // Filtered and Ranked candidates (Safe for candidates with 0 ELO and no FSP history)
   const filteredCandidates = candidates
     .filter(c => {
       if (onlyVerifiedFsp && !c.isVerified) return false;
       if (onlyWithAchievements && (!c.achievements || c.achievements.length === 0)) return false;
       if (selectedSpecialization !== 'all' && c.specialization !== selectedSpecialization) return false;
       if (selectedGrade !== 'all' && c.targetGrade !== selectedGrade) return false;
-      if (c.fspRating < minRating) return false;
+      if (minRating > 0 && (c.fspRating || 0) < minRating) return false;
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
-        const inName = c.fullName.toLowerCase().includes(q);
-        const inSkills = c.skills.some(s => s.toLowerCase().includes(q));
-        const inTitle = c.title.toLowerCase().includes(q);
+        const inName = (c.fullName || '').toLowerCase().includes(q);
+        const inSkills = (c.skills || []).some(s => s.toLowerCase().includes(q));
+        const inTitle = (c.title || '').toLowerCase().includes(q);
         if (!inName && !inSkills && !inTitle) return false;
       }
       return true;
     })
-    .sort((a, b) => b.fspRating - a.fspRating); // FSP ELO ranking
+    .sort((a, b) => {
+      const aRating = a.fspRating || 0;
+      const bRating = b.fspRating || 0;
+      const aScore = aRating > 0 ? aRating : ((a.testScorePercent || 0) * 20 + (a.solvedTasksCount || 0) * 15);
+      const bScore = bRating > 0 ? bRating : ((b.testScorePercent || 0) * 20 + (b.solvedTasksCount || 0) * 15);
+      return bScore - aScore;
+    });
 
   // ATS Invitations
   const employerInvitations = invitations.filter(i => i.employerId === currentEmployer.id || i.companyName.includes('Сбер'));
@@ -571,10 +577,10 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
                   <div className="sm:text-right bg-[#070a14] p-3 rounded-2xl border border-[#1b233a] shrink-0 space-y-1">
                     <div className="text-xs text-slate-400">Рейтинг ФСП ELO:</div>
                     <div className="text-xl font-black text-emerald-400 font-mono">
-                      {c.fspRating} pts
+                      {c.fspRating > 0 ? `${c.fspRating} pts` : 'Без ELO'}
                     </div>
                     <div className="text-[11px] text-slate-400">
-                      Тесты: <strong className="text-white">{c.testScorePercent}%</strong> ({c.avgExecutionTimeMs} ms)
+                      Тесты: <strong className="text-white">{c.testScorePercent}%</strong> ({c.avgExecutionTimeMs || 15} ms)
                     </div>
                   </div>
                 </div>

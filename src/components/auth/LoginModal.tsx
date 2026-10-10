@@ -114,30 +114,23 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   const [socialProvider, setSocialProvider] = useState<'github' | 'yandex' | 'hh' | null>(null);
   const [socialUsername, setSocialUsername] = useState('ipesterev');
 
-  const handleSocialSubmit = async (provider: 'github' | 'yandex' | 'hh') => {
+  const handleSocialAuth = async (provider: 'github' | 'yandex' | 'hh') => {
     setIsLoading(true);
     setError(null);
 
     try {
       if (provider === 'github') {
         const username = socialUsername.trim() || 'ipesterev';
-        let ghProfile = null;
-        try {
-          ghProfile = await api.fetchGithubLiveProfile(username);
-        } catch {}
 
-        const isPesterev = username.toLowerCase().includes('pesterev');
-        const user: AuthLoginResponse = {
-          token: 'jwt-oauth-github-' + Date.now(),
-          email: `${username.toLowerCase()}@github.com`,
-          fullName: isPesterev ? 'Иван Пестерев' : (ghProfile?.username ? `@${ghProfile.username}` : `@${username}`),
-          avatarUrl: ghProfile?.avatarUrl || `https://github.com/${username}.png`,
-          role: 'CANDIDATE',
-          candidateId: 'cand-gh-' + username.toLowerCase(),
-          fspVerified: true,
-          fspRank: isPesterev ? '1-й спортивный разряд' : '2-й спортивный разряд',
-          fspElo: isPesterev ? 2540 : (1400 + Math.min(ghProfile?.commitsCountYear || 300, 700))
-        };
+        // 1. Проверяем OAuth redirect URL от бэкенда
+        const authUrl = await api.getGithubOAuthUrl(window.location.origin + window.location.pathname);
+        if (authUrl && !authUrl.includes('mock-github-client-id')) {
+          window.location.href = authUrl;
+          return;
+        }
+
+        // 2. Бэкенд OAuth-пайплайн: запрос GitHub API, парсинг стека, расчет ELO, сохранение в PostgreSQL и генерация AI-саммари
+        const resp = await api.handleGithubOAuthCallback(undefined, username);
 
         confetti({
           particleCount: 60,
@@ -145,7 +138,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
           origin: { y: 0.6 }
         });
 
-        onLoginSuccess(user);
+        onLoginSuccess(resp);
         onClose();
       } else if (provider === 'yandex') {
         const username = socialUsername.trim() || 'developer';
@@ -537,7 +530,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                       />
                       <button
                         type="button"
-                        onClick={() => handleSocialSubmit(socialProvider)}
+                        onClick={() => handleSocialAuth(socialProvider)}
                         disabled={isLoading || !socialUsername.trim()}
                         className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition-colors cursor-pointer disabled:opacity-50 shrink-0"
                       >

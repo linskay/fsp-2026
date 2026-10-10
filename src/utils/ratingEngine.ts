@@ -179,7 +179,7 @@ export function evaluateCandidateLevel(input: {
   solvedTasksCount?: number;
   leetcodeStats?: LeetCodeProfileStats | null;
 }): FspLevelDetails {
-  const elo = input.elo || 1200;
+  const elo = (input.elo !== undefined && input.elo !== null) ? input.elo : 0;
   const achievements = input.achievements || [];
   const achievementsCount = achievements.length;
   const lcSolved = input.leetcodeStats?.totalSolved || 0;
@@ -187,8 +187,31 @@ export function evaluateCandidateLevel(input: {
   const totalTasks = lcSolved + arenaSolved;
   const ap = calculateCandidateAchievementPoints(achievements);
 
+  // Кандидат без истории ФСП (ELO = 0 и 0 турниров)
+  if (elo === 0 && achievementsCount === 0) {
+    const baseLvl = FSP_STANDARD_LEVELS[0];
+    return {
+      ...baseLvl,
+      levelName: 'Квалификационный дивизион (Без истории ФСП)',
+      rankName: 'Без спортивного разряда' as FspRank,
+      shortRank: 'Без разряда',
+      minElo: 0,
+      maxElo: 1199,
+      isInTop: false,
+      topPercentile: 'Ранжирование по тех-тесту',
+      badgeColor: 'text-slate-400 border-slate-700 bg-slate-800/40',
+      description: 'Кандидат без истории соревнований ФСП. Ранжируется в общем поиске по результатам технического тестирования и стеку технологий.',
+      requirementsSummary: 'Пройдите тестирование в Арене для получения ELO',
+      achievementsCount: 0,
+      solvedTasksCount: totalTasks,
+      achievementPoints: 0,
+      isUnlocked: true,
+      unmetRequirements: ['Спортивная история в реестре ФСП отсутствует']
+    };
+  }
+
   // Важнейшее правило анти-чита:
-  // Если у кандидата 0 подтвержденных турниров/достижений И 0 решенных задач (как у Ивана на старте):
+  // Если у кандидата 0 подтвержденных турниров/достижений И 0 решенных задач:
   // Он находится в Квалификационном дивизионе и НЕ МОЖЕТ быть в ТОПе!
   const hasSubstantialAchievements = achievementsCount > 0 && achievements.some(a => 
     !a.title.toLowerCase().includes('квалификационного отбора') || totalTasks >= 5

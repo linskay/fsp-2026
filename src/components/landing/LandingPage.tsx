@@ -290,69 +290,81 @@ public class Solution {
                   </div>
                 </div>
 
-                {/* Right: Live Interactive Esports Profile Card */}
+                {/* Right: Conceptual 3-Step Reverse Recruiting Guide */}
                 <div className="lg:col-span-6 rounded-2xl bg-[#090d20]/80 border border-white/[0.08] p-5 sm:p-6 shadow-2xl relative space-y-4 backdrop-blur-md">
-                  
-                  {/* Candidate Header */}
-                  <div className="flex items-start justify-between gap-3 border-b border-white/[0.06] pb-4">
-                    <div className="flex items-center gap-3.5">
-                      <UserAvatar
-                        name={displayCandidate.fullName}
-                        src={displayCandidate.avatarUrl}
-                        size="lg"
-                        rank={displayCandidate.fspRank}
-                      />
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h4 className="font-bold text-white text-base">{displayCandidate.fullName}</h4>
-                          <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30 text-[10px] font-bold">
-                            {rankShort}
-                          </span>
-                        </div>
-                        <p className="text-xs text-slate-400 font-medium">{displayCandidate.title}</p>
-                      </div>
+                  <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping" />
+                      <span className="text-xs font-bold text-white uppercase tracking-wider">Модель Reverse Recruiting (35% ТЗ)</span>
                     </div>
-
-                    <div className="text-right">
-                      <div className="text-xl sm:text-2xl font-black text-cyan-300 font-mono tracking-tight">{displayCandidate.fspRating} ELO</div>
-                      <div className="text-[10px] text-emerald-400 font-semibold tracking-wide">{topPercentageStr}</div>
-                    </div>
-                  </div>
-
-                  {/* GitHub, LeetCode & ELO Stats */}
-                  <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                    <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-                      <div className="font-bold text-white font-mono text-sm">{commitsCount.toLocaleString('ru-RU')}</div>
-                      <div className="text-[10px] text-slate-400 font-medium mt-0.5">Коммиты GitHub</div>
-                    </div>
-                    <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-                      <div className="font-bold text-amber-400 font-mono text-sm">{lcSolved} LC</div>
-                      <div className="text-[10px] text-slate-400 font-medium mt-0.5">{lcBadge} (Hard: {lcHard})</div>
-                    </div>
-                    <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-                      <div className="font-bold text-emerald-400 font-mono text-sm">{desiredSalaryStr}</div>
-                      <div className="text-[10px] text-slate-400 font-medium mt-0.5">Ожидаемый оклад</div>
-                    </div>
-                  </div>
-
-                  {/* Incoming Offer Pill */}
-                  <div className="p-3.5 rounded-xl bg-emerald-950/30 border border-emerald-500/30 flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-sm">
-                        ₽
-                      </div>
-                      <div>
-                        <div className="font-bold text-white">Входящий оффер: {isIvan ? 'ВТБ (HighLoad Core)' : 'СберТех'}</div>
-                        <div className="text-[11px] text-emerald-300 font-mono font-medium">
-                          {isIvan ? '135 000 ₽ (на руки) • Remote' : '520 000 ₽ (на руки) • Remote'}
-                        </div>
-                      </div>
-                    </div>
-                    <span className="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-500/30">
-                      Ждет ответа
+                    <span className="text-[11px] font-mono text-cyan-400 bg-cyan-500/10 px-2.5 py-0.5 rounded-full border border-cyan-500/20">
+                      3 простых шага
                     </span>
                   </div>
 
+                  <div className="space-y-3.5">
+                    {/* Step 1 */}
+                    <div className="p-3.5 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.06] transition-all flex items-start gap-3.5 group">
+                      <div className="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 border border-blue-500/30 flex items-center justify-center font-black text-xs shrink-0 group-hover:scale-105 transition-transform">
+                        01
+                      </div>
+                      <div className="space-y-0.5">
+                        <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                          <span>Верификация ELO & Кода</span>
+                          <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
+                        </div>
+                        <p className="text-[11px] text-slate-400 leading-relaxed">
+                          Тесты в Арене и коммиты GitHub подтверждают ваш честный уровень без ручного скрининга резюме.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Step 2 */}
+                    <div className="p-3.5 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.06] transition-all flex items-start gap-3.5 group">
+                      <div className="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 border border-purple-500/30 flex items-center justify-center font-black text-xs shrink-0 group-hover:scale-105 transition-transform">
+                        02
+                      </div>
+                      <div className="space-y-0.5">
+                        <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                          <span>Работодатели находят вас сами</span>
+                          <Lock className="w-3.5 h-3.5 text-purple-400" />
+                        </div>
+                        <p className="text-[11px] text-slate-400 leading-relaxed">
+                          Компании ищут по стеку и ELO. Ваши персональные данные скрыты до взаимного согласия (152-ФЗ РФ).
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Step 3 */}
+                    <div className="p-3.5 rounded-xl bg-emerald-950/30 border border-emerald-500/30 flex items-start gap-3.5 group">
+                      <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center font-black text-xs shrink-0 group-hover:scale-105 transition-transform">
+                        03
+                      </div>
+                      <div className="space-y-0.5">
+                        <div className="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+                          <span>Прямой оффер с вилкой в рублях</span>
+                          <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                        </div>
+                        <p className="text-[11px] text-slate-300 leading-relaxed">
+                          Получайте офферы с фиксированной вилкой «от-до». Контакты открываются только при обоюдном клике «Принять».
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-1 flex items-center justify-between text-[11px] text-slate-400">
+                    <span className="flex items-center gap-1 text-emerald-400 font-semibold">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      100% защита от спама
+                    </span>
+                    <button
+                      onClick={() => onSelectRole('arena')}
+                      className="text-cyan-400 hover:text-cyan-300 font-semibold transition-colors flex items-center gap-1"
+                    >
+                      <span>Попробовать Арену</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </button>
+                  </div>
                 </div>
 
               </div>
@@ -804,27 +816,35 @@ public class Solution {
       {/* ========================================================================= */}
       {/* ИНТЕРАКТИВНЫЙ КАЛЬКУЛЯТОР: ELO → РЫНОЧНАЯ ВИЛКА В РУБЛЯХ */}
       {/* ========================================================================= */}
-      <section id="calculator-section" className="relative z-10 py-16 bg-[#04060e] border-t border-[#141d38]">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="calculator-section" className="relative z-10 py-16 bg-[#04060e] border-t border-white/[0.06]">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          <div className="rounded-3xl bg-gradient-to-r from-[#0b122c] via-[#080d22] to-[#0b122c] border-2 border-[#2b35ff]/40 p-6 sm:p-10 shadow-2xl space-y-6">
-            
-            <div className="text-center space-y-2">
-              <h3 className="text-xl sm:text-3xl font-black text-white">
-                Калькулятор: ELO рейтинг ФСП → Рыночная вилка в ₽
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-400">
-                Потяните ползунок, чтобы увидеть среднюю вилку оклада и спортивный разряд разработчика
-              </p>
+          <div className="rounded-3xl glass-card-pro border border-cyan-500/30 p-6 sm:p-8 lg:p-10 shadow-2xl relative overflow-hidden space-y-6">
+            <div className="absolute -top-24 -right-24 w-72 h-72 bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none" />
+
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.06] pb-5">
+              <div>
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs font-semibold mb-2">
+                  <TrendingUp className="w-3.5 h-3.5 text-cyan-400" />
+                  <span>Метрика рыночной стоимости</span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-extrabold text-white">
+                  Калькулятор: ELO ФСП → Зарплатная вилка в ₽
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-400">
+                  Интерактивный расчет зарплатного потенциала на основе спортивного рейтинга
+                </p>
+              </div>
+
+              <div className="text-right sm:shrink-0 bg-white/[0.03] px-4 py-2.5 rounded-2xl border border-white/[0.08]">
+                <div className="text-xs text-slate-400 font-medium">Текущий рейтинг</div>
+                <div className="text-2xl sm:text-3xl font-black text-cyan-300 font-mono tracking-tight">{eloSlider} ELO</div>
+              </div>
             </div>
 
             {/* Slider Component */}
-            <div className="space-y-4 pt-4">
-              <div className="flex items-center justify-between text-sm font-bold">
-                <span className="text-slate-400">Рейтинг соискателя:</span>
-                <span className="text-2xl font-black text-[#00f0ff] font-mono">{eloSlider} ELO</span>
-              </div>
-
+            <div className="space-y-3">
               <input
                 type="range"
                 min="1200"
@@ -832,39 +852,53 @@ public class Solution {
                 step="50"
                 value={eloSlider}
                 onChange={(e) => setEloSlider(Number(e.target.value))}
-                className="w-full h-3 bg-[#060814] rounded-lg appearance-none cursor-pointer accent-[#00f0ff]"
+                className="w-full h-2.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-400 hover:accent-cyan-300 transition-all"
               />
 
-              <div className="flex justify-between text-[11px] text-slate-500 font-mono">
-                <span>1200 ELO (Junior)</span>
-                <span>2000 ELO (I разряд)</span>
-                <span>2400 ELO (КМС)</span>
-                <span>2800+ ELO (Мастер спорта)</span>
+              <div className="flex justify-between text-[11px] text-slate-400 font-mono">
+                <span>1200 (Junior)</span>
+                <span>1800 (Middle)</span>
+                <span>2400 (КМС / Senior)</span>
+                <span>2800+ (МС РФ / Lead)</span>
               </div>
             </div>
 
             {/* Result display */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
-              <div className="p-4 rounded-2xl bg-[#060917] border border-[#1e2a4a] text-center">
-                <div className="text-xs text-slate-400 font-bold uppercase mb-1">Рекомендуемая вилка</div>
-                <div className="text-lg sm:text-xl font-black text-emerald-400 font-mono">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+              <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] text-center">
+                <div className="text-[11px] text-slate-400 font-semibold uppercase mb-1">Рыночная вилка</div>
+                <div className="text-base sm:text-lg font-black text-emerald-400 font-mono">
                   {currentCalc.min.toLocaleString('ru-RU')} – {currentCalc.max.toLocaleString('ru-RU')} ₽
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-[#060917] border border-[#1e2a4a] text-center">
-                <div className="text-xs text-slate-400 font-bold uppercase mb-1">Спортивный разряд ФСП</div>
-                <div className="text-sm sm:text-base font-black text-yellow-400 font-mono">
+              <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] text-center">
+                <div className="text-[11px] text-slate-400 font-semibold uppercase mb-1">Спортивный разряд</div>
+                <div className="text-xs sm:text-sm font-bold text-amber-300">
                   {currentCalc.rank}
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-[#060917] border border-[#1e2a4a] text-center">
-                <div className="text-xs text-slate-400 font-bold uppercase mb-1">Квалификационный грейд</div>
-                <div className="text-sm sm:text-base font-black text-[#00f0ff] font-mono">
+              <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] text-center">
+                <div className="text-[11px] text-slate-400 font-semibold uppercase mb-1">Грейд разработчика</div>
+                <div className="text-xs sm:text-sm font-bold text-cyan-300">
                   {currentCalc.grade}
                 </div>
               </div>
+            </div>
+
+            {/* Direct CTA */}
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-white/[0.06]">
+              <span className="text-xs text-slate-400 text-center sm:text-left">
+                Задачи в Арене оцениваются динамически по времени исполнения и чистоте кода
+              </span>
+              <button
+                onClick={() => onSelectRole('arena')}
+                className="w-full sm:w-auto py-2.5 px-6 rounded-xl btn-wow-primary text-white font-bold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-cyan-500/20 group"
+              >
+                <span>Подтвердить свой ELO в Арене</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </button>
             </div>
 
           </div>

@@ -30,6 +30,7 @@ public class AuthController {
     private final UserRepository userRepository;
     private final CandidateProfileRepository candidateProfileRepository;
     private final EmployerProfileRepository employerProfileRepository;
+    private final ru.fsp.careerarena.service.GithubOAuthService githubOAuthService;
 
     @GetMapping("/test-users")
     @Operation(summary = "Получение списка тестовых учетных записей (Кандидат и Работодатель)")
@@ -230,5 +231,19 @@ public class AuthController {
             "resumeId", resumeId,
             "message", "Резюме и опыт работы с hh.ru успешно импортированы"
         ));
+    }
+
+    @GetMapping("/oauth/github/url")
+    @Operation(summary = "Получение официального URL для авторизации через GitHub OAuth2")
+    public ResponseEntity<Map<String, String>> getGithubAuthUrl(@RequestParam(required = false) String redirectUri) {
+        return ResponseEntity.ok(Map.of("url", githubOAuthService.getAuthorizationUrl(redirectUri)));
+    }
+
+    @PostMapping("/oauth/github/callback")
+    @Operation(summary = "Обработка GitHub OAuth callback: обмен кода на токен, загрузка репозиториев, расчет ELO и AI-саммари")
+    public ResponseEntity<Map<String, Object>> handleGithubCallback(@RequestBody(required = false) Map<String, String> payload) {
+        String code = payload != null ? payload.get("code") : null;
+        String fallbackUsername = payload != null ? payload.get("username") : null;
+        return ResponseEntity.ok(githubOAuthService.processGithubOAuth(code, fallbackUsername));
     }
 }
