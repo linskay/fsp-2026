@@ -39,7 +39,10 @@ function cleanAndParseMdx(text) {
   clean = clean.replace(/className=/g, 'class=');
 
   // 3. Parse Markdown to real HTML
-  const parsedHtml = marked.parse(clean);
+  let parsedHtml = marked.parse(clean);
+
+  // Normalize image and asset paths to relative 'images/...' so they work cleanly on GitHub Pages subpaths (/fsp-2026/), localhost, Hugging Face, and offline
+  parsedHtml = parsedHtml.replace(/src="(?:\/docs\/images\/|\/images\/|docs\/images\/)([^"]+)"/g, 'src="images/$1"');
 
   return { title, html: parsedHtml };
 }
@@ -89,7 +92,7 @@ const fullHtml = `<!DOCTYPE html>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FSP Career Arena 2026 — Интерактивная документация и регламент</title>
-  <link rel="icon" type="image/svg+xml" href="/logo/favicon.svg">
+  <link rel="icon" type="image/svg+xml" href="logo/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -513,7 +516,7 @@ const fullHtml = `<!DOCTYPE html>
 <body>
 
   <header class="fsp-header">
-    <a href="/" class="brand-group">
+    <a href="./" class="brand-group">
       <div class="brand-logo-badge">ФСП</div>
       <div>
         <span class="brand-title">Карьерная Арена 2026</span>
@@ -521,9 +524,10 @@ const fullHtml = `<!DOCTYPE html>
       </div>
     </a>
     <div class="header-links">
-      <a href="https://huggingface.co/spaces/Linskay/demo-2026" target="_blank" class="btn-header btn-header-ghost">🚀 Живое демо</a>
+      <a href="https://github.com/linskay/fsp-2026" target="_blank" class="btn-header btn-header-ghost">⭐ GitHub</a>
+      <a href="https://linskay-demo-2026.hf.space" target="_blank" class="btn-header btn-header-ghost">🚀 Демо стенд</a>
       <a href="https://linskay-demo-2026.hf.space/swagger" target="_blank" class="btn-header btn-header-ghost">📚 Swagger UI</a>
-      <a href="/docs/MANIFEST.pdf" target="_blank" class="btn-header btn-header-primary">📥 Скачать PDF Манифест</a>
+      <a href="MANIFEST.pdf" target="_blank" class="btn-header btn-header-primary">📥 Скачать PDF Манифест</a>
     </div>
   </header>
 
@@ -561,12 +565,28 @@ fs.writeFileSync(path.join(publicDir, 'docs.html'), fullHtml, 'utf8');
 const imagesSrcDir = path.join(docsDir, 'images');
 const imagesTarget1 = path.join(publicDocsDir, 'images');
 const imagesTarget2 = path.join(outDir, 'docs', 'images');
+const imagesTarget3 = path.join(publicDocsDir, 'docs', 'images');
 if (fs.existsSync(imagesSrcDir)) {
   fs.mkdirSync(imagesTarget1, { recursive: true });
   fs.mkdirSync(imagesTarget2, { recursive: true });
+  fs.mkdirSync(imagesTarget3, { recursive: true });
   fs.readdirSync(imagesSrcDir).forEach(file => {
     fs.copyFileSync(path.join(imagesSrcDir, file), path.join(imagesTarget1, file));
     fs.copyFileSync(path.join(imagesSrcDir, file), path.join(imagesTarget2, file));
+    fs.copyFileSync(path.join(imagesSrcDir, file), path.join(imagesTarget3, file));
+  });
+}
+
+// Copy logo folder to publicDocsDir/logo and outDir/logo
+const logoSrcDir = path.join(docsDir, 'logo');
+const logoTarget1 = path.join(publicDocsDir, 'logo');
+const logoTarget2 = path.join(outDir, 'logo');
+if (fs.existsSync(logoSrcDir)) {
+  fs.mkdirSync(logoTarget1, { recursive: true });
+  fs.mkdirSync(logoTarget2, { recursive: true });
+  fs.readdirSync(logoSrcDir).forEach(file => {
+    fs.copyFileSync(path.join(logoSrcDir, file), path.join(logoTarget1, file));
+    fs.copyFileSync(path.join(logoSrcDir, file), path.join(logoTarget2, file));
   });
 }
 

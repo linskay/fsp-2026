@@ -17,7 +17,7 @@
 
 - **Облачный веб-стенд платформы (24/7):** [https://huggingface.co/spaces/Linskay/demo-2026](https://huggingface.co/spaces/Linskay/demo-2026)
 - **Прямой адрес веб-интерфейса:** [https://linskay-demo-2026.hf.space](https://linskay-demo-2026.hf.space)
-- **Интерактивная документация (Mintlify-портал):** [https://linskay-demo-2026.hf.space/docs/](https://linskay-demo-2026.hf.space/docs/)
+- **Интерактивная документация (GitHub Pages):** [https://linskay.github.io/fsp-2026/](https://linskay.github.io/fsp-2026/)
 - **Интерактивная API спецификация (Swagger UI):** [https://linskay-demo-2026.hf.space/swagger](https://linskay-demo-2026.hf.space/swagger)
 
 ---
@@ -90,7 +90,7 @@ docker compose up -d
 
 Полная техническая документация с компонентными схемами, детальным описанием алгоритма ELO-ранжирования, защитой от утечки тестов, ролевой моделью и соответствием 152-ФЗ РФ представлена в следующих форматах:
 
-- **Интерактивный Mintlify-портал документации:** [https://linskay-demo-2026.hf.space/docs/](https://linskay-demo-2026.hf.space/docs/) *(локально: [http://localhost:3000/docs/](http://localhost:3000/docs/))*
+- **Интерактивный веб-портал документации (GitHub Pages):** [https://linskay.github.io/fsp-2026/](https://linskay.github.io/fsp-2026/) *(зеркало на HF: [https://linskay-demo-2026.hf.space/docs/](https://linskay-demo-2026.hf.space/docs/), локально: [http://localhost:3000/docs/](http://localhost:3000/docs/))*
 - **Официальный релизный PDF (на русском языке):** [docs/MANIFEST.pdf](docs/MANIFEST.pdf)
 - **Исходный Манифест (Markdown):** [docs/MANIFEST.md](docs/MANIFEST.md)
 
