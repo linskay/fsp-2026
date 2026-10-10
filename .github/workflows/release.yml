@@ -2,7 +2,7 @@ name: Automated GitHub Release on Push to Main
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "feature/future" ]
   workflow_dispatch:
 
 permissions:
@@ -33,6 +33,7 @@ jobs:
           mvn clean package -DskipTests
           ls -la target/
           cp target/*.jar ../fsp-career-backend.jar
+          cd ..
 
       - name: Set up Node.js 20
         uses: actions/setup-node@v4
@@ -48,10 +49,20 @@ jobs:
           zip -r ../fsp-career-frontend.zip .
           cd ..
 
+      - name: Set up Android SDK & Build Mobile APK
+        run: |
+          cd mobile
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon
+          ls -la app/build/outputs/apk/release/
+          cp app/build/outputs/apk/release/*.apk ../fsp-career-arena.apk
+          cd ..
+
       - name: Package Standalone Distribution
         run: |
           mkdir -p standalone/dist
           cp fsp-career-backend.jar standalone/
+          cp fsp-career-arena.apk standalone/ || true
           cp -r dist/* standalone/dist/
           cp docker-compose.yml docker-compose.prod.yml start.sh start.bat README.md standalone/
           cd standalone
@@ -80,9 +91,13 @@ jobs:
             **Команда разработчиков:** «NO PHP — NO PROBLEMS — 2026»
 
             ### 📦 Содержимое релиза:
+            * **`fsp-career-arena.apk`**: Нативное мобильное Android-приложение для соискателей и работодателей (Kotlin 2.0 / Jetpack Compose / Material 3).
             * **`fsp-career-backend.jar`**: Готовый исполняемый JAR-архив бэкенда (Java 21 / Kotlin 2.0 / Spring Boot 3).
             * **`fsp-career-frontend.zip`**: Скомпилированный статический бандл веб-интерфейса (React 19 / TypeScript / Vite).
-            * **`fsp-career-arena-standalone.zip`**: Полный автономный дистрибутив (бэкенд + фронтенд + Docker Compose + скрипты быстрого запуска).
+            * **`fsp-career-arena-standalone.zip`**: Полный автономный дистрибутив (бэкенд + фронтенд + мобильный APK + Docker Compose + скрипты быстрого запуска).
+
+            ### 📱 Установка мобильного приложения:
+            Скачайте **`fsp-career-arena.apk`** на смартфон Android и установите. Приложение предоставляет доступ к профилю ФСП, рейтингу ELO, офферам и живому чату.
 
             ### ⚡ Быстрый запуск бэкенда:
             ```bash
@@ -94,6 +109,7 @@ jobs:
             docker compose -f docker-compose.prod.yml up -d
             ```
           files: |
+            fsp-career-arena.apk
             fsp-career-backend.jar
             fsp-career-frontend.zip
             fsp-career-arena-standalone.zip

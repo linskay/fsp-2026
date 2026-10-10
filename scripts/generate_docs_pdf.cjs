@@ -527,6 +527,7 @@ const fullHtml = `<!DOCTYPE html>
       <a href="https://github.com/linskay/fsp-2026" target="_blank" class="btn-header btn-header-ghost">⭐ GitHub</a>
       <a href="https://linskay-demo-2026.hf.space" target="_blank" class="btn-header btn-header-ghost">🚀 Демо стенд</a>
       <a href="https://linskay-demo-2026.hf.space/swagger" target="_blank" class="btn-header btn-header-ghost">📚 Swagger UI</a>
+      <a href="fsp-career-arena.apk" download="fsp-career-arena.apk" class="btn-header btn-header-ghost" title="Скачать Android APK для смартфона">📱 Android APK</a>
       <a href="MANIFEST.pdf" download="MANIFEST.pdf" target="_blank" class="btn-header btn-header-primary">📥 Скачать PDF Манифест</a>
     </div>
   </header>
