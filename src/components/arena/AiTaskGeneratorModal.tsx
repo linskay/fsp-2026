@@ -27,8 +27,6 @@ export const AiTaskGeneratorModal: React.FC<AiTaskGeneratorModalProps> = ({
   onTaskGenerated,
   candidateGrade = 'senior'
 }) => {
-  if (!isOpen) return null;
-
   const [topic, setTopic] = useState<'dp' | 'graphs' | 'strings' | 'hashmap' | 'trees' | 'highload'>('dp');
   const [difficulty, setDifficulty] = useState<Grade>(candidateGrade);
   const [provider, setProvider] = useState<'gemini' | 'yandexgpt' | 'openrouter' | 'ollama'>('gemini');
@@ -140,6 +138,8 @@ export const AiTaskGeneratorModal: React.FC<AiTaskGeneratorModalProps> = ({
       onClose();
     }, 700);
   };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md overflow-y-auto">
