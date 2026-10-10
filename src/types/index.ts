@@ -217,6 +217,10 @@ export interface Invitation {
   // 152-ФЗ статус раскрытия контактов
   contactsRevealed: boolean;
   
+  // Идемпотентность API (защита от дублирования при сбоях и ретраях)
+  idempotencyKey?: string;
+  idempotentReplayed?: boolean;
+
   chatMessages: ChatMessage[];
 }
 
@@ -484,6 +488,8 @@ export interface ReverseRecruitingOffer {
   };
   createdAt: string;
   updatedAt?: string;
+  idempotencyKey?: string;
+  idempotentReplayed?: boolean;
 }
 
 

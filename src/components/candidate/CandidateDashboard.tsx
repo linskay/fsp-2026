@@ -21,7 +21,8 @@ import {
   TrendingUp,
   Sparkles,
   Phone,
-  SendHorizontal
+  SendHorizontal,
+  Download
 } from 'lucide-react';
 import { AlgorithmTask, CandidateProfile, Invitation, SubmissionResult, GitHubProfileData, HhResumeData, CandidateAiSummary, AssessmentAssignment, CandidateAssessmentSubmission } from '../../types';
 import { CodeArenaIDE } from '../arena/CodeArenaIDE';
@@ -156,6 +157,7 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
   const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
   const [isAiSummaryModalOpen, setIsAiSummaryModalOpen] = useState(false);
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
+  const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
   const [declineModalInvId, setDeclineModalInvId] = useState<string | null>(null);
   const [declineReason, setDeclineReason] = useState('Не подходит зарплатная вилка');
   const [showConsentModalForInvId, setShowConsentModalForInvId] = useState<string | null>(null);
@@ -414,6 +416,23 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
                   <FileText className="w-4 h-4 text-[#00f0ff]" />
                   <span>Паспорт ФСП</span>
                 </button>
+
+                <button
+                  onClick={async () => {
+                    setIsDownloadingPdf(true);
+                    try {
+                      await api.downloadOfficialCandidatePdf(candidate);
+                    } finally {
+                      setIsDownloadingPdf(false);
+                    }
+                  }}
+                  disabled={isDownloadingPdf}
+                  className="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-gradient-to-r from-[#2b35ff]/30 to-[#00f0ff]/30 hover:from-[#2b35ff]/50 hover:to-[#00f0ff]/50 text-white text-xs font-bold border border-[#00f0ff]/40 transition-all shadow-lg hover:border-[#00f0ff] disabled:opacity-50"
+                  title="Скачать официальный стандартизированный PDF-профиль соискателя с символикой ФСП и подтвержденным ELO"
+                >
+                  <Download className={`w-4 h-4 text-[#00f0ff] ${isDownloadingPdf ? 'animate-bounce' : ''}`} />
+                  <span>{isDownloadingPdf ? 'Генерация...' : 'Скачать официальный профиль ФСП (PDF)'}</span>
+                </button>
               </div>
             </div>
 
@@ -615,30 +634,30 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
           
           <button
             onClick={() => setActiveTab('invitations')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] ${
               activeTab === 'invitations'
-                ? 'bg-[#2b35ff] text-white shadow-lg shadow-[#2b35ff]/30'
-                : 'text-slate-400 hover:text-white hover:bg-[#121932]'
+                ? 'bg-blue-600 text-white shadow-sm shadow-blue-900/40 border border-blue-400/20'
+                : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
             }`}
           >
             <Building2 className="w-4 h-4" />
             <span>Входящие офферы от компаний</span>
-            <span className="px-2 py-0.5 rounded-full bg-[#ff2b42] text-white text-[10px] font-bold">
+            <span className="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 text-[10px] font-bold border border-rose-500/30">
               {myInvitations.length}
             </span>
           </button>
 
           <button
             onClick={() => setActiveTab('assessments')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] ${
               activeTab === 'assessments'
-                ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-600/30'
-                : 'text-slate-400 hover:text-white hover:bg-[#121932]'
+                ? 'bg-blue-600 text-white shadow-sm shadow-blue-900/40 border border-blue-400/20'
+                : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
             }`}
           >
-            <Zap className="w-4 h-4 text-amber-400" />
+            <Zap className="w-4 h-4 text-amber-300" />
             <span>Тестирования от компаний</span>
-            <span className="px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 text-[10px] font-bold border border-purple-500/30">
+            <span className="px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-300 text-[10px] font-bold border border-blue-500/30">
               {myAssessments.length}
             </span>
             {myAssessments.some(a => a.review) && (
@@ -648,25 +667,25 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
 
           <button
             onClick={() => setActiveTab('achievements')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] ${
               activeTab === 'achievements'
-                ? 'bg-[#2b35ff] text-white shadow-lg shadow-[#2b35ff]/30'
-                : 'text-slate-400 hover:text-white hover:bg-[#121932]'
+                ? 'bg-blue-600 text-white shadow-sm shadow-blue-900/40 border border-blue-400/20'
+                : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
             }`}
           >
-            <Award className="w-4 h-4 text-amber-400" />
+            <Award className="w-4 h-4 text-amber-300" />
             <span>Достижения & Нормативы ЕВСК</span>
-            <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold border border-amber-500/30">
+            <span className="px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 text-[10px] font-bold border border-amber-500/30">
               {candidateLvl.achievementPoints} AP
             </span>
           </button>
 
           <button
             onClick={() => setActiveTab('portfolio')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] ${
               activeTab === 'portfolio'
-                ? 'bg-[#2b35ff] text-white shadow-lg shadow-[#2b35ff]/30'
-                : 'text-slate-400 hover:text-white hover:bg-[#121932]'
+                ? 'bg-blue-600 text-white shadow-sm shadow-blue-900/40 border border-blue-400/20'
+                : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
             }`}
           >
             <Github className="w-4 h-4" />
@@ -678,31 +697,31 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
 
           <button
             onClick={() => setActiveTab('arena')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] ${
               activeTab === 'arena'
-                ? 'bg-[#2b35ff] text-white shadow-lg shadow-[#2b35ff]/30'
-                : 'text-slate-400 hover:text-white hover:bg-[#121932]'
+                ? 'bg-blue-600 text-white shadow-sm shadow-blue-900/40 border border-blue-400/20'
+                : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
             }`}
           >
             <Code2 className="w-4 h-4" />
             <span>Алгоритмическая Арена (IDE)</span>
-            <span className="px-2 py-0.5 rounded-full bg-cyan-500/20 text-[#00f0ff] text-[10px] font-bold border border-cyan-500/30">
+            <span className="px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-300 text-[10px] font-bold border border-blue-500/30">
               Грейд: {candidate.currentGradeAssigned.toUpperCase()}
             </span>
           </button>
 
           <button
             onClick={() => setActiveTab('chat')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] ${
               activeTab === 'chat'
-                ? 'bg-[#2b35ff] text-white shadow-lg shadow-[#2b35ff]/30'
-                : 'text-slate-400 hover:text-white hover:bg-[#121932]'
+                ? 'bg-blue-600 text-white shadow-sm shadow-blue-900/40 border border-blue-400/20'
+                : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
             }`}
           >
             <MessageSquare className="w-4 h-4" />
             <span>Чат с работодателями</span>
             {acceptedInvitations.length > 0 && (
-              <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-bold border border-emerald-500/30">
+              <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 text-[10px] font-bold border border-emerald-500/30">
                 {acceptedInvitations.length} активных
               </span>
             )}
@@ -719,7 +738,7 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
 
       {/* Tab: Assessments & Technical Tests from Employers */}
       {activeTab === 'assessments' && (
-        <div className="space-y-6">
+        <div className="animate-tab-content space-y-6">
           <div className="p-6 rounded-3xl bg-[#0b0f1d] border border-[#1d2645] flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h3 className="text-base font-bold text-white flex items-center gap-2">
@@ -1005,7 +1024,7 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
 
       {/* Tab: Portfolio & OAuth Integrations */}
       {activeTab === 'portfolio' && (
-        <div className="space-y-6">
+        <div className="animate-tab-content space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-3xl bg-[#0b0f1d] border border-[#1d2645]">
             <div className="space-y-1">
               <h3 className="text-base font-bold text-white flex items-center gap-2">
@@ -1351,7 +1370,7 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
 
       {/* Tab 1: Reverse Hiring Invitations */}
       {activeTab === 'invitations' && (
-        <div className="space-y-6">
+        <div className="animate-tab-content space-y-6">
           
           <div className="flex items-center justify-between">
             <div>
@@ -1512,7 +1531,7 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
 
       {/* Tab 2: Code Arena IDE */}
       {activeTab === 'arena' && (
-        <div className="space-y-4">
+        <div className="animate-tab-content space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-lg font-bold text-white flex items-center gap-2">
@@ -1535,7 +1554,7 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
 
       {/* Tab 3: Chat with Employers */}
       {activeTab === 'chat' && (
-        <div className="bg-[#0f172a] rounded-3xl border border-slate-800 shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-12 min-h-[550px]">
+        <div className="animate-tab-content bg-[#0f172a] rounded-3xl border border-slate-800 shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-12 min-h-[550px]">
           
           {/* Left Sidebar: Conversations */}
           <div className="md:col-span-4 bg-[#0b0f19] border-r border-slate-800 p-4 space-y-3">
@@ -1655,7 +1674,7 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
 
       {/* Tab: Achievements & Official FSP Standards */}
       {activeTab === 'achievements' && (
-        <div className="space-y-6">
+        <div className="animate-tab-content space-y-6">
           {/* Header Banner */}
           <div className="p-6 rounded-3xl bg-[#0b0f1d] border border-[#1d2645] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="space-y-1.5 max-w-3xl">
@@ -1892,8 +1911,8 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
 
       {/* 152-ФЗ Consent Modal */}
       {showConsentModalForInvId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-[#0f172a] border border-slate-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
+          <div className="bg-[#0d121f] border border-white/10 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl modal-animate">
             <div className="flex items-center gap-3 text-emerald-400">
               <ShieldCheck className="w-6 h-6" />
               <h3 className="text-base font-bold text-white">
@@ -1938,8 +1957,8 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
 
       {/* Decline Modal */}
       {declineModalInvId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-[#0f172a] border border-slate-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
+          <div className="bg-[#0d121f] border border-white/10 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl modal-animate">
             <h3 className="text-base font-bold text-white">
               Отклонить приглашение работодателя
             </h3>

@@ -70,4 +70,10 @@ public class OfferDto {
 
     @Schema(description = "Дата обновления статуса")
     private OffsetDateTime updatedAt;
+
+    @Schema(description = "Ключ идемпотентности, привязанный к офферу")
+    private String idempotencyKey;
+
+    @Schema(description = "Флаг повторного воспроизведения ответа по ключу идемпотентности (без создания дубликата в БД)")
+    private boolean idempotentReplayed;
 }

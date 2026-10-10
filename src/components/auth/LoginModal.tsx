@@ -33,8 +33,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  if (!isOpen) return null;
+  const [socialProvider, setSocialProvider] = useState<'github' | 'yandex' | 'hh' | null>(null);
+  const [socialUsername, setSocialUsername] = useState('ipesterev');
 
   const POLICY_URL = "https://fsp-russia.ru/files/%D0%9F%D0%BE%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BE%D0%B1%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B0%20%D0%BF%D0%B4%D0%BD%20(1).pdf";
 
@@ -42,6 +42,30 @@ export const LoginModal: React.FC<LoginModalProps> = ({
     setEmail(testEmail);
     setPassword(testPass);
     setError(null);
+  };
+
+  const handleQuickLogin = async (testEmail: string, testPass: string) => {
+    setEmail(testEmail);
+    setPassword(testPass);
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      const response = await api.login(testEmail, testPass);
+      try {
+        confetti({
+          particleCount: 50,
+          spread: 60,
+          origin: { y: 0.6 }
+        });
+      } catch {}
+      onLoginSuccess(response);
+      onClose();
+    } catch (err: any) {
+      setError(err?.message || 'Ошибка аутентификации. Проверьте логин и пароль.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSubmitLogin = async (e: React.FormEvent) => {
@@ -55,16 +79,18 @@ export const LoginModal: React.FC<LoginModalProps> = ({
     setError(null);
 
     try {
-      const response = await api.login(email, password);
-      confetti({
-        particleCount: 50,
-        spread: 60,
-        origin: { y: 0.6 }
-      });
+      const response = await api.login(email.trim(), password);
+      try {
+        confetti({
+          particleCount: 50,
+          spread: 60,
+          origin: { y: 0.6 }
+        });
+      } catch {}
       onLoginSuccess(response);
       onClose();
     } catch (err: any) {
-      setError(err.message || 'Ошибка аутентификации. Проверьте логин и пароль.');
+      setError(err?.message || 'Ошибка аутентификации. Проверьте логин и пароль.');
     } finally {
       setIsLoading(false);
     }
@@ -90,29 +116,28 @@ export const LoginModal: React.FC<LoginModalProps> = ({
 
     try {
       const registeredUser = await api.register({
-        email: regEmail,
+        email: regEmail.trim(),
         password: regPassword,
-        fullName: regName,
+        fullName: regName.trim(),
         role: regRole
       });
 
-      confetti({
-        particleCount: 60,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
+      try {
+        confetti({
+          particleCount: 60,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      } catch {}
 
       onLoginSuccess(registeredUser);
       onClose();
     } catch (err: any) {
-      setError(err.message || 'Ошибка при регистрации');
+      setError(err?.message || 'Ошибка при регистрации');
     } finally {
       setIsLoading(false);
     }
   };
-
-  const [socialProvider, setSocialProvider] = useState<'github' | 'yandex' | 'hh' | null>(null);
-  const [socialUsername, setSocialUsername] = useState('ipesterev');
 
   const handleSocialAuth = async (provider: 'github' | 'yandex' | 'hh') => {
     setIsLoading(true);
@@ -132,11 +157,13 @@ export const LoginModal: React.FC<LoginModalProps> = ({
         // 2. Бэкенд OAuth-пайплайн: запрос GitHub API, парсинг стека, расчет ELO, сохранение в PostgreSQL и генерация AI-саммари
         const resp = await api.handleGithubOAuthCallback(undefined, username);
 
-        confetti({
-          particleCount: 60,
-          spread: 60,
-          origin: { y: 0.6 }
-        });
+        try {
+          confetti({
+            particleCount: 60,
+            spread: 60,
+            origin: { y: 0.6 }
+          });
+        } catch {}
 
         onLoginSuccess(resp);
         onClose();
@@ -149,16 +176,17 @@ export const LoginModal: React.FC<LoginModalProps> = ({
           avatarUrl: '/avatars/user_alina.png',
           role: regRole,
           candidateId: 'cand-ya-' + username.toLowerCase(),
-          fspVerified: true,
           fspRank: 'Кандидат в мастера спорта',
           fspElo: 1850
         };
 
-        confetti({
-          particleCount: 50,
-          spread: 60,
-          origin: { y: 0.6 }
-        });
+        try {
+          confetti({
+            particleCount: 50,
+            spread: 60,
+            origin: { y: 0.6 }
+          });
+        } catch {}
 
         onLoginSuccess(user);
         onClose();
@@ -171,16 +199,17 @@ export const LoginModal: React.FC<LoginModalProps> = ({
           avatarUrl: '/avatars/user_pesterev.png',
           role: 'CANDIDATE',
           candidateId: 'cand-hh-' + username.toLowerCase(),
-          fspVerified: true,
           fspRank: '1-й спортивный разряд',
           fspElo: 1600
         };
 
-        confetti({
-          particleCount: 50,
-          spread: 60,
-          origin: { y: 0.6 }
-        });
+        try {
+          confetti({
+            particleCount: 50,
+            spread: 60,
+            origin: { y: 0.6 }
+          });
+        } catch {}
 
         onLoginSuccess(user);
         onClose();
@@ -192,17 +221,19 @@ export const LoginModal: React.FC<LoginModalProps> = ({
     }
   };
 
+  if (!isOpen) return null;
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md transition-all duration-300">
       <div 
-        className="relative w-full max-w-lg bg-[#0b0f19] border border-white/10 rounded-2xl shadow-2xl overflow-hidden"
+        className="modal-animate relative w-full max-w-lg bg-[#0b0f19] border border-white/10 rounded-2xl shadow-2xl overflow-hidden transition-all duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Header Banner */}
-        <div className="relative px-6 pt-5 pb-4 border-b border-white/[0.08] bg-gradient-to-r from-blue-950/40 via-indigo-950/20 to-transparent">
+        <div className="relative px-6 pt-5 pb-4 border-b border-white/[0.08] bg-[#0e1424]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
+              <div className="w-10 h-10 rounded-xl bg-blue-600 border border-blue-400/20 flex items-center justify-center shadow-md shadow-blue-900/30">
                 <Lock className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -270,12 +301,9 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   <button
                     type="button"
-                    onClick={() => handleQuickFill('candidate@fsp.ru', 'candidate2026')}
-                    className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
-                      email === 'candidate@fsp.ru'
-                        ? 'bg-blue-600/20 border-blue-500 text-white shadow-md shadow-blue-500/10 ring-1 ring-blue-500'
-                        : 'bg-white/[0.03] border-white/10 text-slate-300 hover:bg-white/[0.06] hover:border-white/20'
-                    }`}
+                    onClick={() => handleQuickLogin('candidate@fsp.ru', 'candidate2026')}
+                    disabled={isLoading}
+                    className="group p-3 rounded-xl border text-left transition-all cursor-pointer bg-white/[0.03] border-white/10 text-slate-300 hover:bg-blue-600/15 hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/10 active:scale-[0.98]"
                   >
                     <div className="flex items-center gap-2 mb-1">
                       <UserCheck className="w-4 h-4 text-cyan-400" />
@@ -284,19 +312,19 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                         1200 ELO
                       </span>
                     </div>
-                    <div className="text-[11px] text-slate-300 font-medium">Иван Пестерев</div>
+                    <div className="text-[11px] text-slate-200 font-medium">Иван Пестерев</div>
                     <div className="text-[10px] text-slate-400 font-mono truncate mt-0.5">candidate@fsp.ru</div>
-                    <div className="text-[10px] text-slate-500 font-mono">Пароль: candidate2026</div>
+                    <div className="mt-2 pt-2 border-t border-white/[0.08] flex items-center justify-between text-[11px] text-cyan-400 font-bold group-hover:text-cyan-300">
+                      <span>Войти в 1 клик</span>
+                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                    </div>
                   </button>
 
                   <button
                     type="button"
-                    onClick={() => handleQuickFill('employer@fsp.ru', 'employer2026')}
-                    className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
-                      email === 'employer@fsp.ru'
-                        ? 'bg-indigo-600/20 border-indigo-500 text-white shadow-md shadow-indigo-500/10 ring-1 ring-indigo-500'
-                        : 'bg-white/[0.03] border-white/10 text-slate-300 hover:bg-white/[0.06] hover:border-white/20'
-                    }`}
+                    onClick={() => handleQuickLogin('employer@fsp.ru', 'employer2026')}
+                    disabled={isLoading}
+                    className="group p-3 rounded-xl border text-left transition-all cursor-pointer bg-white/[0.03] border-white/10 text-slate-300 hover:bg-indigo-600/15 hover:border-indigo-500/50 hover:shadow-lg hover:shadow-indigo-500/10 active:scale-[0.98]"
                   >
                     <div className="flex items-center gap-2 mb-1">
                       <Building2 className="w-4 h-4 text-indigo-400" />
@@ -305,9 +333,12 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                         HR
                       </span>
                     </div>
-                    <div className="text-[11px] text-slate-300 font-medium">Елена Романова (СберТех)</div>
+                    <div className="text-[11px] text-slate-200 font-medium">Елена Романова (СберТех)</div>
                     <div className="text-[10px] text-slate-400 font-mono truncate mt-0.5">employer@fsp.ru</div>
-                    <div className="text-[10px] text-slate-500 font-mono">Пароль: employer2026</div>
+                    <div className="mt-2 pt-2 border-t border-white/[0.08] flex items-center justify-between text-[11px] text-indigo-400 font-bold group-hover:text-indigo-300">
+                      <span>Войти в 1 клик</span>
+                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                    </div>
                   </button>
                 </div>
               </div>

@@ -607,6 +607,27 @@ public class AiSummaryService {
         return key == null || key.isBlank() || key.equalsIgnoreCase("mock-ai-key") || key.startsWith("mock-");
     }
 
+    @Transactional
+    public AiSummaryDto saveAiProfile(ru.fsp.careerarena.dto.SaveAiProfileRequest request) {
+        log.info("Saving generated AI profile to database for candidateId={}", request.getCandidateId());
+        CandidateProfile candidate = candidateRepository.findById(request.getCandidateId())
+                .or(() -> candidateRepository.findByUserId(request.getCandidateId()))
+                .orElseThrow(() -> new ru.fsp.careerarena.exception.ResourceNotFoundException("Кандидат не найден"));
+
+        CandidateAiSummary summary = aiSummaryRepository.findByCandidateId(candidate.getId())
+                .orElse(CandidateAiSummary.builder().candidate(candidate).build());
+
+        summary.setCandidate(candidate);
+        summary.setSummaryText(request.getSummaryText());
+        summary.setKeyStrengths(request.getKeyStrengths() != null ? request.getKeyStrengths() : List.of("HighLoad архитектура", "Стресс-тестирование"));
+        summary.setRecommendedRoles(request.getRecommendedRoles() != null ? request.getRecommendedRoles() : List.of("Senior Backend Engineer"));
+        summary.setModelName("MULTI-MODEL-AI (SAVED)");
+        summary.setRecommendationLevel(request.getCodeCleanlinessScore() != null && request.getCodeCleanlinessScore() >= 90 ? "TOP_RECOMMENDED" : "RECOMMENDED");
+
+        CandidateAiSummary saved = aiSummaryRepository.save(summary);
+        return mapToDto(saved);
+    }
+
     private AiSummaryDto mapToDto(CandidateAiSummary entity) {
         return AiSummaryDto.builder()
                 .id(entity.getId())

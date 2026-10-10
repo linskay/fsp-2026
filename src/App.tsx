@@ -84,8 +84,9 @@ export default function App() {
 
   // Active current user contexts
   const [activeCandidateId, setActiveCandidateId] = useState<string>('cand-pesterev');
+  const [activeEmployerId, setActiveEmployerId] = useState<string>('emp-1');
   const currentCandidate = candidates.find(c => c.id === activeCandidateId) || candidates[0];
-  const currentEmployer = employers[0];
+  const currentEmployer = employers.find(e => e.id === activeEmployerId) || employers[0];
 
   // Toast notification
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'fsp' } | null>(null);
@@ -382,7 +383,7 @@ export default function App() {
     );
   };
 
-  const handleSendOffer = (offerData: {
+  const handleSendOffer = async (offerData: {
     candidateId: string;
     candidateName: string;
     vacancyId: string;
@@ -391,43 +392,85 @@ export default function App() {
     message: string;
     projectDetails: string;
     perksOffered: string[];
+    idempotencyKey?: string;
   }) => {
-    const newInv: Invitation = {
-      id: 'inv-' + Date.now(),
-      vacancyId: offerData.vacancyId,
-      vacancyTitle: offerData.vacancyTitle,
-      employerId: currentEmployer.id,
-      companyName: currentEmployer.companyName,
-      companyLogo: currentEmployer.logo,
-      candidateId: offerData.candidateId,
-      candidateName: offerData.candidateName,
-      proposedSalary: offerData.proposedSalary,
-      salaryMin: offerData.proposedSalary * 0.9,
-      salaryMax: offerData.proposedSalary * 1.2,
-      message: offerData.message,
-      projectDetails: offerData.projectDetails,
-      perksOffered: offerData.perksOffered,
-      status: 'sent',
-      sentAt: new Date().toISOString(),
-      contactsRevealed: false,
-      chatMessages: [
-        {
-          id: 'msg-' + Date.now(),
-          sender: 'employer',
-          text: offerData.message,
-          timestamp: new Date().toISOString()
-        }
-      ]
-    };
+    let savedBackendOffer = null;
+    let isReplay = false;
 
-    setInvitations(prev => [newInv, ...prev]);
+    try {
+      savedBackendOffer = await api.createOffer({
+        candidateId: offerData.candidateId,
+        employerId: currentEmployer.id,
+        vacancyId: offerData.vacancyId,
+        positionTitle: offerData.vacancyTitle,
+        salaryFrom: Math.floor(offerData.proposedSalary * 0.9),
+        salaryTo: Math.ceil(offerData.proposedSalary * 1.2),
+        salaryOffered: offerData.proposedSalary,
+        description: offerData.projectDetails,
+        message: offerData.message,
+        idempotencyKey: offerData.idempotencyKey
+      });
 
-    // Update vacancy count
-    setVacancies(prev =>
-      prev.map(v => v.id === offerData.vacancyId ? { ...v, invitationsCount: (v.invitationsCount || 0) + 1 } : v)
-    );
+      if (savedBackendOffer?.idempotentReplayed) {
+        isReplay = true;
+      }
+    } catch (err: any) {
+      console.warn('Backend offer create fallback to local state:', err.message);
+    }
 
-    showToast(`Оффер с окладом ${offerData.proposedSalary.toLocaleString('ru-RU')} ₽ успешно отправлен соискателю ${offerData.candidateName}!`, 'success');
+    const offerId = savedBackendOffer?.id || ('inv-' + Date.now());
+
+    // Prevent duplicate invitations in local state via idempotency key
+    setInvitations(prev => {
+      const alreadyExists = prev.some(inv =>
+        inv.id === offerId || (offerData.idempotencyKey && inv.idempotencyKey === offerData.idempotencyKey)
+      );
+      if (alreadyExists) {
+        return prev;
+      }
+
+      const newInv: Invitation = {
+        id: offerId,
+        vacancyId: offerData.vacancyId,
+        vacancyTitle: offerData.vacancyTitle,
+        employerId: currentEmployer.id,
+        companyName: currentEmployer.companyName,
+        companyLogo: currentEmployer.logo,
+        candidateId: offerData.candidateId,
+        candidateName: offerData.candidateName,
+        proposedSalary: offerData.proposedSalary,
+        salaryMin: Math.floor(offerData.proposedSalary * 0.9),
+        salaryMax: Math.ceil(offerData.proposedSalary * 1.2),
+        message: offerData.message,
+        projectDetails: offerData.projectDetails,
+        perksOffered: offerData.perksOffered,
+        status: 'sent',
+        sentAt: savedBackendOffer?.createdAt || new Date().toISOString(),
+        contactsRevealed: false,
+        idempotencyKey: offerData.idempotencyKey,
+        idempotentReplayed: isReplay,
+        chatMessages: [
+          {
+            id: 'msg-' + Date.now(),
+            sender: 'employer',
+            text: offerData.message,
+            timestamp: new Date().toISOString()
+          }
+        ]
+      };
+
+      return [newInv, ...prev];
+    });
+
+    if (!isReplay) {
+      // Update vacancy count
+      setVacancies(prev =>
+        prev.map(v => v.id === offerData.vacancyId ? { ...v, invitationsCount: (v.invitationsCount || 0) + 1 } : v)
+      );
+      showToast(`Оффер с окладом ${offerData.proposedSalary.toLocaleString('ru-RU')} ₽ успешно отправлен соискателю ${offerData.candidateName}! (Защищен Idempotency-Key)`, 'success');
+    } else {
+      showToast(`Оффер уже был отправлен ранее соискателю ${offerData.candidateName} (восстановлен существующий оффер благодаря идемпотентности API)`, 'info');
+    }
   };
 
   const handleAddVacancy = async (newVacData: Omit<Vacancy, 'id' | 'createdAt' | 'invitationsCount'>) => {
@@ -587,17 +630,24 @@ export default function App() {
     });
 
     if (authResp.role === 'CANDIDATE') {
-      const targetId = authResp.candidateId || ('cand-' + Date.now());
+      const normEmail = authResp.email.toLowerCase();
+      const isPesterev = normEmail === 'candidate@fsp.ru' || normEmail === '89259112970@mail.ru' || (authResp.fullName && authResp.fullName.includes('Пестерев'));
+      const targetId = isPesterev ? 'cand-pesterev' : (authResp.candidateId || ('cand-' + Date.now()));
       
       setCandidates(prev => {
-        const existingIdx = prev.findIndex(c => c.id === targetId || c.email.toLowerCase() === authResp.email.toLowerCase());
+        const existingIdx = prev.findIndex(c => 
+          c.id === targetId || 
+          c.email.toLowerCase() === normEmail ||
+          (isPesterev && c.id === 'cand-pesterev')
+        );
         if (existingIdx !== -1) {
           const updated = [...prev];
           updated[existingIdx] = {
             ...updated[existingIdx],
-            fullName: authResp.fullName,
-            email: authResp.email,
-            avatarUrl: authResp.avatarUrl || updated[existingIdx].avatarUrl
+            fullName: authResp.fullName || updated[existingIdx].fullName,
+            avatarUrl: authResp.avatarUrl || updated[existingIdx].avatarUrl,
+            fspRating: authResp.fspElo || updated[existingIdx].fspRating,
+            fspRank: (authResp.fspRank as FspRank) || updated[existingIdx].fspRank
           };
           return updated;
         }
@@ -610,15 +660,15 @@ export default function App() {
           avatarUrl: authResp.avatarUrl || '/avatars/user_pesterev.png',
           title: 'Middle Java / Backend Developer',
           specialization: 'backend',
-          targetGrade: 'Middle',
-          currentGradeAssigned: 'Middle',
+          targetGrade: 'middle',
+          currentGradeAssigned: 'middle',
           fspId: 'FSP-' + Math.floor(100000 + Math.random() * 900000),
           fspRank: (authResp.fspRank as FspRank) || '1-й спортивный разряд',
           fspRating: authResp.fspElo || 1200,
           fspBadges: ['Участник ФСП 2026', 'Верифицирован'],
           isVerified: true,
           verifiedAt: new Date().toISOString(),
-          keycloakSub: authResp.userId,
+          keycloakSub: authResp.userId || 'fsp-sub',
           achievements: [],
           skills: ['Java', 'Spring Boot 3', 'PostgreSQL', 'Docker', 'REST API'],
           experienceYears: 3,
@@ -635,13 +685,22 @@ export default function App() {
           telegramMasked: '@****_dev',
           telegramReal: '@' + authResp.email.split('@')[0],
           salaryExpectationMin: 150000,
-          salaryExpectationMax: 230000
+          salaryExpectationMax: 230000,
+          isLookingForJob: true,
+          preferredFormat: 'remote'
         };
         return [newCandidate, ...prev];
       });
 
       setActiveCandidateId(targetId);
       setCurrentRole('candidate');
+
+      if (isPesterev) {
+        setGithubData(PESTEREV_GITHUB_PROFILE);
+        setHhData(PESTEREV_HH_RESUME);
+        setYandexEmail('ivan.pesterev@yandex.ru');
+        setYandexConnected(true);
+      }
 
       // Auto-populate GitHub integration if registered with GitHub
       if (authResp.email.endsWith('@github.com')) {
@@ -661,25 +720,58 @@ export default function App() {
         }).catch(() => {});
       }
 
-      showToast(`Успешная регистрация и вход! Добро пожаловать, ${authResp.fullName}`, 'fsp');
+      showToast(`Успешная авторизация! Добро пожаловать, ${authResp.fullName}`, 'fsp');
     } else if (authResp.role === 'EMPLOYER') {
-      const empId = authResp.employerId || ('emp-' + Date.now());
-      setCurrentEmployer(prev => ({
-        ...prev,
-        id: empId,
-        name: authResp.companyName || authResp.fullName,
-        contactPerson: authResp.fullName,
-        email: authResp.email
-      }));
+      const normEmail = authResp.email.toLowerCase();
+      const isSber = normEmail === 'employer@fsp.ru' || (authResp.companyName && authResp.companyName.includes('Сбер'));
+      const empId = isSber ? 'emp-1' : (authResp.employerId || ('emp-' + Date.now()));
+
+      setEmployers(prev => {
+        const existingIdx = prev.findIndex(e => 
+          e.id === empId || 
+          (isSber && e.id === 'emp-1') ||
+          (e.hrEmail && e.hrEmail.toLowerCase() === normEmail)
+        );
+        if (existingIdx !== -1) {
+          const updated = [...prev];
+          updated[existingIdx] = {
+            ...updated[existingIdx],
+            companyName: authResp.companyName || updated[existingIdx].companyName,
+            hrName: authResp.fullName || updated[existingIdx].hrName,
+            hrEmail: authResp.email || updated[existingIdx].hrEmail,
+            logo: authResp.avatarUrl || updated[existingIdx].logo
+          };
+          return updated;
+        }
+        const newEmployer: EmployerProfile = {
+          id: empId,
+          companyName: authResp.companyName || 'ПАО Сбербанк (СберТех)',
+          logo: authResp.avatarUrl || 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=128&auto=format&fit=crop&q=80',
+          verifiedCompany: true,
+          industry: 'IT & Финтех',
+          city: 'Москва',
+          description: 'Ведущая аккредитованная технологическая компания РФ.',
+          hrName: authResp.fullName || 'Елена Романова (СберТех HR)',
+          hrEmail: authResp.email,
+          hrPhone: '+7 (495) 500-55-50',
+          website: 'https://sbertech.ru',
+          fspPartnerLevel: 'Стратегический партнер'
+        };
+        return [newEmployer, ...prev];
+      });
+
+      setActiveEmployerId(empId);
       setCurrentRole('employer');
-      showToast(`Успешная регистрация и вход! Добро пожаловать, ${authResp.fullName} (${authResp.companyName || 'Работодатель'})`, 'fsp');
+      showToast(`Успешная авторизация! Добро пожаловать, ${authResp.fullName} (${authResp.companyName || 'Работодатель'})`, 'fsp');
     }
   };
 
   const handleLogout = () => {
     try {
       localStorage.removeItem('fsp_auth_user');
+      localStorage.removeItem('fsp_jwt_token');
     } catch {}
+    if (api) api.token = null;
     setCurrentUser(null);
     setCurrentRole('landing');
     showToast('Вы вышли из учетной записи', 'info');
@@ -759,88 +851,94 @@ export default function App() {
       {/* Main Container by Active Role */}
       <main className="flex-1 pb-12">
         {currentRole === 'landing' && (
-          <LandingPage
-            onSelectRole={handleRoleChange}
-            onOpenOAuth={(provider) => {
-              setIsOAuthModalOpen(true);
-            }}
-            onOpenLogin={() => setIsLoginModalOpen(true)}
-            candidate={currentCandidate}
-            hhData={hhData}
-            githubData={githubData}
-          />
+          <div className="animate-tab-content">
+            <LandingPage
+              onSelectRole={handleRoleChange}
+              onOpenOAuth={(provider) => {
+                setIsOAuthModalOpen(true);
+              }}
+              onOpenLogin={() => setIsLoginModalOpen(true)}
+              candidate={currentCandidate}
+              hhData={hhData}
+              githubData={githubData}
+            />
+          </div>
         )}
 
         {currentRole === 'candidate' && (
-          <CandidateDashboard
-            candidate={currentCandidate}
-            allCandidates={candidates}
-            onSelectCandidate={(id) => {
-              setActiveCandidateId(id);
-              if (id === 'cand-pesterev') {
-                setGithubData(PESTEREV_GITHUB_PROFILE);
-                setHhData(PESTEREV_HH_RESUME);
-                setYandexEmail('ivan.pesterev@yandex.ru');
-              } else if (id === 'cand-alina') {
-                setGithubData(ALINA_GITHUB_PROFILE);
-                setHhData(ALINA_HH_RESUME);
-                setYandexEmail('alina.dev@yandex.ru');
-              } else if (id === 'cand-1') {
-                setGithubData(MOCK_GITHUB_PROFILE);
-                setHhData(MOCK_HH_RESUME);
-                setYandexEmail('alexander.belov@yandex.ru');
-              } else if (id === 'cand-2') {
-                setHhData(DARIA_HH_RESUME);
-                setYandexEmail('daria.morozova@yandex.ru');
-              } else if (id === 'cand-3') {
-                setHhData(SOKOLOV_HH_RESUME);
-                setYandexEmail('mikhail.sokolov@yandex.ru');
-              } else {
-                const found = candidates.find(c => c.id === id);
-                if (found) {
-                  setYandexEmail(`${found.email.split('@')[0]}@yandex.ru`);
+          <div className="animate-tab-content">
+            <CandidateDashboard
+              candidate={currentCandidate}
+              allCandidates={candidates}
+              onSelectCandidate={(id) => {
+                setActiveCandidateId(id);
+                if (id === 'cand-pesterev') {
+                  setGithubData(PESTEREV_GITHUB_PROFILE);
+                  setHhData(PESTEREV_HH_RESUME);
+                  setYandexEmail('ivan.pesterev@yandex.ru');
+                } else if (id === 'cand-alina') {
+                  setGithubData(ALINA_GITHUB_PROFILE);
+                  setHhData(ALINA_HH_RESUME);
+                  setYandexEmail('alina.dev@yandex.ru');
+                } else if (id === 'cand-1') {
+                  setGithubData(MOCK_GITHUB_PROFILE);
+                  setHhData(MOCK_HH_RESUME);
+                  setYandexEmail('alexander.belov@yandex.ru');
+                } else if (id === 'cand-2') {
+                  setHhData(DARIA_HH_RESUME);
+                  setYandexEmail('daria.morozova@yandex.ru');
+                } else if (id === 'cand-3') {
+                  setHhData(SOKOLOV_HH_RESUME);
+                  setYandexEmail('mikhail.sokolov@yandex.ru');
+                } else {
+                  const found = candidates.find(c => c.id === id);
+                  if (found) {
+                    setYandexEmail(`${found.email.split('@')[0]}@yandex.ru`);
+                  }
                 }
-              }
-            }}
-            invitations={invitations}
-            tasks={tasks}
-            assessments={assessments}
-            onSubmitAssessment={handleSubmitAssessment}
-            githubData={githubData}
-            hhData={hhData}
-            yandexConnected={yandexConnected}
-            yandexEmail={yandexEmail}
-            onOpenOAuthModal={() => setIsOAuthModalOpen(true)}
-            onAcceptInvitation={handleAcceptInvitation}
-            onDeclineInvitation={handleDeclineInvitation}
-            onSendMessage={handleSendMessage}
-            onTaskSolved={handleTaskSolved}
-            onUpdateCandidate={handleUpdateCandidate}
-          />
+              }}
+              invitations={invitations}
+              tasks={tasks}
+              assessments={assessments}
+              onSubmitAssessment={handleSubmitAssessment}
+              githubData={githubData}
+              hhData={hhData}
+              yandexConnected={yandexConnected}
+              yandexEmail={yandexEmail}
+              onOpenOAuthModal={() => setIsOAuthModalOpen(true)}
+              onAcceptInvitation={handleAcceptInvitation}
+              onDeclineInvitation={handleDeclineInvitation}
+              onSendMessage={handleSendMessage}
+              onTaskSolved={handleTaskSolved}
+              onUpdateCandidate={handleUpdateCandidate}
+            />
+          </div>
         )}
 
         {currentRole === 'employer' && (
-          <EmployerDashboard
-            currentEmployer={currentEmployer}
-            candidates={candidates}
-            vacancies={vacancies}
-            invitations={invitations}
-            assessments={assessments}
-            tasks={tasks}
-            onSendOffer={handleSendOffer}
-            onAddVacancy={handleAddVacancy}
-            onSendMessage={handleSendMessage}
-            onAssignTest={handleAssignTest}
-            onReviewTest={handleReviewAssessment}
-            onUpdateCandidate={(id, updated) => {
-              setCandidates(prev => prev.map(c => c.id === id ? { ...c, ...updated } : c));
-              showToast('ИИ-портрет кандидата успешно обновлен!', 'success');
-            }}
-          />
+          <div className="animate-tab-content">
+            <EmployerDashboard
+              currentEmployer={currentEmployer}
+              candidates={candidates}
+              vacancies={vacancies}
+              invitations={invitations}
+              assessments={assessments}
+              tasks={tasks}
+              onSendOffer={handleSendOffer}
+              onAddVacancy={handleAddVacancy}
+              onSendMessage={handleSendMessage}
+              onAssignTest={handleAssignTest}
+              onReviewTest={handleReviewAssessment}
+              onUpdateCandidate={(id, updated) => {
+                setCandidates(prev => prev.map(c => c.id === id ? { ...c, ...updated } : c));
+                showToast('ИИ-портрет кандидата успешно обновлен!', 'success');
+              }}
+            />
+          </div>
         )}
 
         {currentRole === 'arena' && (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-4">
+          <div className="animate-tab-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-black text-white flex items-center gap-2">

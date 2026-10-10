@@ -31,6 +31,15 @@ public class CandidateDto {
     @Schema(description = "Электронная почта", example = "alex.belov@fsp-russia.ru")
     private String email;
 
+    @Schema(description = "Телефон кандидата (маскируется до согласия по 152-ФЗ)", example = "+7 (999) ***-**-21")
+    private String phone;
+
+    @Schema(description = "Telegram кандидата (маскируется до согласия)", example = "@a***v")
+    private String telegram;
+
+    @Schema(description = "Флаг: открыты ли персональные контакты работодателю", example = "false")
+    private boolean contactsRevealed;
+
     @Schema(description = "URL аватара", example = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150")
     private String avatarUrl;
 

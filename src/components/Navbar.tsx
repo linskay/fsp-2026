@@ -56,21 +56,21 @@ export const Navbar: React.FC<NavbarProps> = ({
             <nav className="flex items-center gap-1 bg-white/[0.03] p-1 sm:p-1.5 rounded-2xl border border-white/[0.08] backdrop-blur-md shadow-inner">
               <button
                 onClick={() => onRoleChange('landing')}
-                className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] whitespace-nowrap cursor-pointer ${
                   currentRole === 'landing'
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/30'
+                    ? 'bg-blue-600 text-white shadow-sm shadow-blue-900/40 border border-blue-400/20'
                     : 'text-slate-400 hover:text-white hover:bg-white/[0.05]'
                 }`}
               >
-                <Sparkles className="w-3.5 h-3.5 text-cyan-300" />
+                <Sparkles className="w-3.5 h-3.5 text-blue-300" />
                 <span>Главная</span>
               </button>
 
               <button
                 onClick={() => onRoleChange('candidate')}
-                className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] whitespace-nowrap cursor-pointer ${
                   currentRole === 'candidate'
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/30'
+                    ? 'bg-blue-600 text-white shadow-sm shadow-blue-900/40 border border-blue-400/20'
                     : 'text-slate-400 hover:text-white hover:bg-white/[0.05]'
                 }`}
               >
@@ -85,9 +85,9 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               <button
                 onClick={() => onRoleChange('employer')}
-                className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] whitespace-nowrap cursor-pointer ${
                   currentRole === 'employer'
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/30'
+                    ? 'bg-blue-600 text-white shadow-sm shadow-blue-900/40 border border-blue-400/20'
                     : 'text-slate-400 hover:text-white hover:bg-white/[0.05]'
                 }`}
               >
@@ -102,9 +102,9 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               <button
                 onClick={() => onRoleChange('arena')}
-                className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] whitespace-nowrap cursor-pointer ${
                   currentRole === 'arena'
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-cyan-300 shadow-md shadow-blue-500/30'
+                    ? 'bg-blue-600 text-white shadow-sm shadow-blue-900/40 border border-blue-400/20'
                     : 'text-slate-400 hover:text-white hover:bg-white/[0.05]'
                 }`}
               >
@@ -116,10 +116,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* User State & Login/Logout */}
             {currentUser ? (
               <div className="flex items-center gap-2">
-                <div 
-                  onClick={() => onRoleChange(currentUser.role === 'EMPLOYER' ? 'employer' : 'candidate')}
-                  className="flex items-center gap-2 pl-2 py-1 pr-2.5 rounded-2xl bg-white/[0.04] border border-white/10 hover:border-blue-500/50 cursor-pointer transition-colors"
-                  title={`Вы вошли как ${currentUser.fullName} (${currentUser.email})`}
+                <button
+                  type="button"
+                  onClick={onOpenLoginModal}
+                  className="flex items-center gap-2 pl-2 py-1 pr-2.5 rounded-2xl bg-white/[0.04] border border-white/10 hover:border-blue-500/50 cursor-pointer transition-colors text-left"
+                  title={`Вы вошли как ${currentUser.fullName} (${currentUser.email}). Нажмите для смены профиля`}
                 >
                   <UserAvatar
                     name={currentUser.fullName}
@@ -135,10 +136,23 @@ export const Navbar: React.FC<NavbarProps> = ({
                       {currentUser.role === 'EMPLOYER' ? 'Работодатель' : `${candidate?.fspRating || 1200} ELO`}
                     </span>
                   </div>
-                </div>
+                </button>
+
+                {onOpenLoginModal && (
+                  <button
+                    type="button"
+                    onClick={onOpenLoginModal}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.06] hover:bg-blue-600/25 text-slate-300 hover:text-blue-300 border border-white/10 hover:border-blue-500/30 text-xs font-semibold transition-all cursor-pointer hover:scale-[1.02]"
+                    title="Сменить аккаунт / Войти под другим пользователем"
+                  >
+                    <LogIn className="w-3.5 h-3.5 text-blue-400" />
+                    <span>Сменить профиль</span>
+                  </button>
+                )}
 
                 {onLogout && (
                   <button
+                    type="button"
                     onClick={onLogout}
                     className="p-2 rounded-xl bg-white/[0.04] hover:bg-rose-500/20 text-slate-400 hover:text-rose-300 border border-white/10 hover:border-rose-500/30 transition-all cursor-pointer"
                     title="Выйти из аккаунта"
@@ -150,8 +164,9 @@ export const Navbar: React.FC<NavbarProps> = ({
             ) : (
               onOpenLoginModal && (
                 <button
+                  type="button"
                   onClick={onOpenLoginModal}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-xs text-white font-semibold transition-all cursor-pointer shadow-md shadow-blue-500/20 hover:scale-[1.02]"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-xs text-white font-bold transition-all cursor-pointer shadow-lg shadow-blue-500/25 hover:scale-[1.02] active:scale-[0.98]"
                   title="Войти в личный кабинет"
                 >
                   <LogIn className="w-3.5 h-3.5" />

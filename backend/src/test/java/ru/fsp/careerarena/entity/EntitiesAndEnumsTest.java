@@ -367,6 +367,31 @@ class EntitiesAndEnumsTest {
 
         Invitation empty = new Invitation();
         empty.setStatus(InvitationStatus.ACCEPTED);
+        empty.setIdempotencyKey("idem-test-999");
         assertThat(empty.getStatus()).isEqualTo(InvitationStatus.ACCEPTED);
+        assertThat(empty.getIdempotencyKey()).isEqualTo("idem-test-999");
+    }
+
+    @Test
+    @DisplayName("Проверка сущности IdempotencyRecord: билдер, геттеры и жизненный цикл")
+    void testIdempotencyRecordEntity() {
+        UUID id = UUID.randomUUID();
+        IdempotencyRecord record = IdempotencyRecord.builder()
+                .id(id)
+                .idempotencyKey("idem-key-1")
+                .requestPath("/api/v1/offers")
+                .requestHash("abc123hash")
+                .responseStatus(201)
+                .responseBody("{\"id\":\"test\"}")
+                .build();
+
+        assertThat(record.getId()).isEqualTo(id);
+        assertThat(record.getIdempotencyKey()).isEqualTo("idem-key-1");
+        assertThat(record.getRequestPath()).isEqualTo("/api/v1/offers");
+        assertThat(record.getResponseStatus()).isEqualTo(201);
+
+        record.onCreate();
+        assertThat(record.getCreatedAt()).isNotNull();
+        assertThat(record.getExpiresAt()).isNotNull();
     }
 }

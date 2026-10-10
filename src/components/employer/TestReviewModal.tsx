@@ -58,12 +58,12 @@ export const TestReviewModal: React.FC<TestReviewModalProps> = ({
   const submission = assessment.submission;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-4xl my-8 bg-[#070b19] border border-white/10 rounded-2xl shadow-2xl overflow-hidden text-slate-100 flex flex-col max-h-[92vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md overflow-y-auto">
+      <div className="relative w-full max-w-4xl my-8 bg-[#0d121f] border border-white/10 rounded-2xl shadow-2xl overflow-hidden text-slate-100 flex flex-col max-h-[92vh] modal-animate">
         {/* Хедер */}
-        <div className="p-6 border-b border-white/10 bg-gradient-to-r from-[#0d1430] to-[#070b19] flex items-center justify-between shrink-0">
+        <div className="p-6 border-b border-white/10 bg-[#0d121f] flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-purple-500/20 border border-purple-500/40 text-purple-400">
+            <div className="p-2.5 rounded-xl bg-blue-600/20 border border-blue-500/30 text-blue-400">
               <Code2 className="w-5 h-5" />
             </div>
             <div>

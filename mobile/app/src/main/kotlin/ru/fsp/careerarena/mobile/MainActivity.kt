@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.LocalOffer
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -21,6 +22,7 @@ import ru.fsp.careerarena.mobile.theme.FspPrimaryBlue
 import ru.fsp.careerarena.mobile.theme.FspTheme
 import ru.fsp.careerarena.mobile.ui.ArenaScreen
 import ru.fsp.careerarena.mobile.ui.ChatScreen
+import ru.fsp.careerarena.mobile.ui.OffersScreen
 import ru.fsp.careerarena.mobile.ui.ProfileScreen
 import ru.fsp.careerarena.mobile.viewmodel.MainViewModel
 import ru.fsp.careerarena.mobile.viewmodel.UiState
@@ -43,6 +45,13 @@ class MainActivity : ComponentActivity() {
 fun MainApp(viewModel: MainViewModel) {
     var selectedTab by remember { mutableIntStateOf(0) }
     val candidateState by viewModel.candidateState.collectAsState()
+    val offersState by viewModel.offersState.collectAsState()
+    val assessmentsState by viewModel.assessmentsState.collectAsState()
+    val interviewsState by viewModel.interviewsState.collectAsState()
+    val applicationsState by viewModel.applicationsState.collectAsState()
+    val eloHistoryState by viewModel.eloHistoryState.collectAsState()
+    val gradeCooldownState by viewModel.gradeCooldownState.collectAsState()
+    val notificationsState by viewModel.notificationsState.collectAsState()
     val messages by viewModel.messages.collectAsState()
 
     Scaffold(
@@ -65,8 +74,8 @@ fun MainApp(viewModel: MainViewModel) {
                 NavigationBarItem(
                     selected = selectedTab == 1,
                     onClick = { selectedTab = 1 },
-                    icon = { Icon(Icons.Default.Chat, contentDescription = "Чат") },
-                    label = { Text("Чат") },
+                    icon = { Icon(Icons.Default.LocalOffer, contentDescription = "Офферы") },
+                    label = { Text("Офферы") },
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = Color.White,
                         selectedTextColor = Color.White,
@@ -76,6 +85,17 @@ fun MainApp(viewModel: MainViewModel) {
                 NavigationBarItem(
                     selected = selectedTab == 2,
                     onClick = { selectedTab = 2 },
+                    icon = { Icon(Icons.Default.Chat, contentDescription = "Чат") },
+                    label = { Text("Чат") },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = Color.White,
+                        selectedTextColor = Color.White,
+                        indicatorColor = FspPrimaryBlue
+                    )
+                )
+                NavigationBarItem(
+                    selected = selectedTab == 3,
+                    onClick = { selectedTab = 3 },
                     icon = { Icon(Icons.Default.Code, contentDescription = "Арена") },
                     label = { Text("Арена") },
                     colors = NavigationBarItemDefaults.colors(
@@ -101,7 +121,17 @@ fun MainApp(viewModel: MainViewModel) {
                             }
                         }
                         is UiState.Success -> {
-                            ProfileScreen(candidate = state.data)
+                            val eloHistory = (eloHistoryState as? UiState.Success)?.data ?: emptyList()
+                            val cooldown = (gradeCooldownState as? UiState.Success)?.data
+                            val notifications = (notificationsState as? UiState.Success)?.data ?: emptyList()
+
+                            ProfileScreen(
+                                candidate = state.data,
+                                eloHistory = eloHistory,
+                                cooldown = cooldown,
+                                notifications = notifications,
+                                onNotificationRead = { id -> viewModel.markNotificationAsRead(id) }
+                            )
                         }
                         is UiState.Error -> {
                             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -111,12 +141,27 @@ fun MainApp(viewModel: MainViewModel) {
                     }
                 }
                 1 -> {
+                    val offers = (offersState as? UiState.Success)?.data ?: emptyList()
+                    val assessments = (assessmentsState as? UiState.Success)?.data ?: emptyList()
+                    val interviews = (interviewsState as? UiState.Success)?.data ?: emptyList()
+                    val applications = (applicationsState as? UiState.Success)?.data ?: emptyList()
+
+                    OffersScreen(
+                        offers = offers,
+                        assessments = assessments,
+                        interviews = interviews,
+                        applications = applications,
+                        onAcceptOffer = { id -> viewModel.acceptOffer(id) },
+                        onDeclineOffer = { id -> viewModel.declineOffer(id) }
+                    )
+                }
+                2 -> {
                     ChatScreen(
                         messages = messages,
                         onSendMessage = { text -> viewModel.sendMessage(text) }
                     )
                 }
-                2 -> {
+                3 -> {
                     ArenaScreen()
                 }
             }

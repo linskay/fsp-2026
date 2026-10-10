@@ -94,7 +94,7 @@ public class GithubOAuthService {
         }
 
         if (userJson == null || !userJson.has("login")) {
-            throw new IllegalArgumentException("Не удалось получить данные профиля пользователя от GitHub API");
+            throw new ru.fsp.careerarena.exception.BadRequestException("Не удалось получить данные профиля пользователя от GitHub API");
         }
 
         String login = userJson.get("login").asText();

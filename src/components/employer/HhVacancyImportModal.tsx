@@ -15,6 +15,8 @@ import {
 import { HhEmployerVacancy, Vacancy } from '../../types';
 import { MOCK_HH_EMPLOYER_VACANCIES } from '../../data/mockOAuthData';
 
+import { api } from '../../services/api';
+
 interface HhVacancyImportModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -41,25 +43,45 @@ export const HhVacancyImportModal: React.FC<HhVacancyImportModalProps> = ({
     );
   };
 
-  const handleFetchFromHh = () => {
+  const handleFetchFromHh = async () => {
     setIsLoading(true);
-    setSyncStatusText('Подключение к hh.ru for Employers API v1 (/employers/vacancies/active)...');
+    setSyncStatusText('Подключение к hh.ru for Employers API v1 (/api/v1/integrations/hh/vacancies)...');
     
-    setTimeout(() => {
-      setSyncStatusText('Авторизация токена рекрутера через Spring Security OAuth2 Client...');
-    }, 600);
-
-    setTimeout(() => {
-      setSyncStatusText('Загрузка активных объявлений компании «' + employerName + '»...');
-    }, 1200);
-
-    setTimeout(() => {
+    try {
+      const fetched = await api.getHhVacancies();
+      if (fetched && fetched.length > 0) {
+        const mapped: HhEmployerVacancy[] = fetched.map((item: any) => ({
+          id: item.externalId || item.id,
+          title: item.title,
+          salaryMin: item.salaryMin,
+          salaryMax: item.salaryMax,
+          city: item.city,
+          specialization: (item.specialization || 'backend').toLowerCase(),
+          grade: (item.grade || 'senior').toLowerCase(),
+          skills: item.skills || [],
+          description: item.description,
+          imported: item.imported || false
+        }));
+        setVacanciesList(mapped);
+        setSelectedIds(mapped.filter(m => !m.imported).map(m => m.id));
+      }
+    } catch (e) {
+      console.warn('Fallback to local mock on network issue', e);
+    } finally {
       setIsLoading(false);
       setSyncStatusText('');
-    }, 1800);
+    }
   };
 
-  const handlePerformImport = () => {
+  const handlePerformImport = async () => {
+    setIsLoading(true);
+    try {
+      const result = await api.importHhVacancies(selectedIds);
+      console.log('Import result from backend:', result);
+    } catch (e) {
+      console.warn('Backend import fallback:', e);
+    }
+
     const toImport = vacanciesList.filter(v => selectedIds.includes(v.id));
     
     const formattedVacancies: Array<Omit<Vacancy, 'id' | 'createdAt' | 'invitationsCount'>> = toImport.map(v => ({
@@ -81,13 +103,14 @@ export const HhVacancyImportModal: React.FC<HhVacancyImportModalProps> = ({
       active: true
     }));
 
+    setIsLoading(false);
     onImportVacancies(formattedVacancies);
     onClose();
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="relative w-full max-w-3xl bg-[#090d1a] border border-[#1e294b] rounded-3xl shadow-2xl overflow-hidden my-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4 overflow-y-auto transition-all duration-300">
+      <div className="modal-animate relative w-full max-w-3xl bg-[#090d1a] border border-white/10 rounded-3xl shadow-2xl overflow-hidden my-8 transition-all duration-200">
         
         {/* Modal Header */}
         <div className="px-6 py-5 border-b border-[#141b2e] bg-[#0c1224] flex items-center justify-between">

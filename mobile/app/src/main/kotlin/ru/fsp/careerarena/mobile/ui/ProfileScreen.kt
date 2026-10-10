@@ -4,12 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.EmojiEvents
-import androidx.compose.material.icons.filled.Security
-import androidx.compose.material.icons.filled.Verified
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,10 +20,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.fsp.careerarena.mobile.model.CandidateProfile
+import ru.fsp.careerarena.mobile.model.EloHistoryPoint
+import ru.fsp.careerarena.mobile.model.GradeCooldownInfo
+import ru.fsp.careerarena.mobile.model.UserNotification
 import ru.fsp.careerarena.mobile.theme.*
 
 @Composable
-fun ProfileScreen(candidate: CandidateProfile) {
+fun ProfileScreen(
+    candidate: CandidateProfile,
+    eloHistory: List<EloHistoryPoint> = emptyList(),
+    cooldown: GradeCooldownInfo? = null,
+    notifications: List<UserNotification> = emptyList(),
+    onNotificationRead: ((String) -> Unit)? = null
+) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -32,8 +40,8 @@ fun ProfileScreen(candidate: CandidateProfile) {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        // Profile Header Card
         item {
-            // Profile Header Card
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -48,10 +56,9 @@ fun ProfileScreen(candidate: CandidateProfile) {
             ) {
                 Column {
                     Row(
-                        verticalAlignment = Alignment.CenterVertizally,
+                        verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        // Avatar placeholder
                         Box(
                             modifier = Modifier
                                 .size(64.dp)
@@ -149,8 +156,108 @@ fun ProfileScreen(candidate: CandidateProfile) {
             }
         }
 
+        // Grade Qualification & Cooldown Card
         item {
-            // Verified Skills Card
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(18.dp),
+                colors = CardDefaults.cardColors(containerColor = FspCardDark),
+                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF1E293B))
+            ) {
+                Column(modifier = Modifier.padding(18.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.School, contentDescription = null, tint = FspGold, modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Грейд-квалификация ФСП",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = FspTextWhite
+                            )
+                        }
+
+                        val canTake = cooldown?.canTakeTest ?: true
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(if (canTake) FspEmerald.copy(alpha = 0.2f) else FspGold.copy(alpha = 0.2f))
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        ) {
+                            Text(
+                                text = if (canTake) "Доступно" else "Кулдаун ${cooldown?.waitHoursRemaining ?: 24} ч",
+                                fontSize = 11.sp,
+                                color = if (canTake) FspEmerald else FspGold,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Подтвердите уровень Senior/Lead по официальным тестам ФСП. Защита от накрутки: повторная сдача возможна раз в 24 часа.",
+                        fontSize = 12.sp,
+                        color = FspTextMuted,
+                        lineHeight = 16.sp
+                    )
+                }
+            }
+        }
+
+        // ELO Dynamic History
+        if (eloHistory.isNotEmpty()) {
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(containerColor = FspCardDark),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF1E293B))
+                ) {
+                    Column(modifier = Modifier.padding(18.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Timeline, contentDescription = null, tint = FspCyan, modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Динамика рейтинга ELO",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = FspTextWhite
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            eloHistory.forEach { point ->
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(text = point.reason, fontSize = 12.sp, color = FspTextWhite, fontWeight = FontWeight.Medium)
+                                        Text(text = point.timestamp, fontSize = 10.sp, color = FspTextMuted)
+                                    }
+                                    Text(
+                                        text = "+${point.change} ELO",
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = FspEmerald
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Verified Skills Card
+        item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(18.dp),
@@ -192,8 +299,59 @@ fun ProfileScreen(candidate: CandidateProfile) {
             }
         }
 
+        // Notifications Feed
+        if (notifications.isNotEmpty()) {
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(containerColor = FspCardDark),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF1E293B))
+                ) {
+                    Column(modifier = Modifier.padding(18.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Notifications, contentDescription = null, tint = FspCyan, modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Системные уведомления (${notifications.filter { !it.read }.size})",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = FspTextWhite
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            notifications.forEach { notif ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(RoundedCornerShape(10.dp))
+                                        .background(if (notif.read) Color(0xFF0F172A) else FspPrimaryBlue.copy(alpha = 0.1f))
+                                        .padding(10.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(text = notif.title, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = FspTextWhite)
+                                        Text(text = notif.message, fontSize = 11.sp, color = FspTextMuted)
+                                    }
+                                    if (!notif.read) {
+                                        IconButton(onClick = { onNotificationRead?.invoke(notif.id) }) {
+                                            Icon(Icons.Default.Done, contentDescription = "Прочитано", tint = FspEmerald, modifier = Modifier.size(16.dp))
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Legal Privacy 152-FZ Attribution
         item {
-            // Legal Privacy 152-FZ Attribution
             Row(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
                 verticalAlignment = Alignment.CenterVertically

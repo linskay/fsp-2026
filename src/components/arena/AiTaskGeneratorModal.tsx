@@ -27,8 +27,6 @@ export const AiTaskGeneratorModal: React.FC<AiTaskGeneratorModalProps> = ({
   onTaskGenerated,
   candidateGrade = 'senior'
 }) => {
-  if (!isOpen) return null;
-
   const [topic, setTopic] = useState<'dp' | 'graphs' | 'strings' | 'hashmap' | 'trees' | 'highload'>('dp');
   const [difficulty, setDifficulty] = useState<Grade>(candidateGrade);
   const [provider, setProvider] = useState<'gemini' | 'yandexgpt' | 'openrouter' | 'ollama'>('gemini');
@@ -141,14 +139,16 @@ export const AiTaskGeneratorModal: React.FC<AiTaskGeneratorModalProps> = ({
     }, 700);
   };
 
+  if (!isOpen) return null;
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md overflow-y-auto">
-      <div className="bg-[#0b1022] border border-[#2b35ff]/50 rounded-3xl w-full max-w-xl shadow-2xl overflow-hidden my-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md overflow-y-auto">
+      <div className="bg-[#0d121f] border border-white/10 rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden my-8 modal-animate">
         
         {/* Header */}
-        <div className="flex items-center justify-between p-5 bg-[#0e1630] border-b border-[#1b2548]">
+        <div className="flex items-center justify-between p-5 bg-[#0d121f] border-b border-white/10">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-purple-500/20 text-purple-400 border border-purple-500/30">
+            <div className="p-2.5 rounded-xl bg-blue-600/20 text-blue-400 border border-blue-500/30">
               <Bot className="w-5 h-5" />
             </div>
             <div>

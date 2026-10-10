@@ -71,7 +71,7 @@ public class LeetCodeService {
             JsonNode question = root.path("data").path("question");
 
             if (question.isMissingNode() || question.isNull()) {
-                throw new IllegalArgumentException("Задача с slug '" + titleSlug + "' не найдена на LeetCode");
+                throw new ru.fsp.careerarena.exception.ResourceNotFoundException("Задача с slug '" + titleSlug + "' не найдена на LeetCode");
             }
 
             String title = question.path("title").asText();

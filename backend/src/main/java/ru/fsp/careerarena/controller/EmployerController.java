@@ -34,4 +34,18 @@ public class EmployerController {
     ) {
         return ResponseEntity.ok(employerService.updateEmployer(id, request));
     }
+
+    @PostMapping("/verify")
+    @Operation(summary = "Запрос на верификацию компании-работодателя через базы ФНС / ОГРН (аккредитация партнера ФСП)")
+    public ResponseEntity<ru.fsp.careerarena.dto.EmployerVerifyResponse> verifyEmployer(
+            @Valid @RequestBody ru.fsp.careerarena.dto.EmployerVerifyRequest request
+    ) {
+        return ResponseEntity.ok(employerService.verifyEmployer(request));
+    }
+
+    @GetMapping("/{id}/analytics")
+    @Operation(summary = "Получение сводных метрик для HR-кабинета (воронка найма, конверсия, время ответа, распределение ELO)")
+    public ResponseEntity<ru.fsp.careerarena.dto.EmployerAnalyticsDto> getEmployerAnalytics(@PathVariable UUID id) {
+        return ResponseEntity.ok(employerService.getEmployerAnalytics(id));
+    }
 }

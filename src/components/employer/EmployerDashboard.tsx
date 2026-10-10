@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Building2, 
   Search, 
@@ -26,7 +26,14 @@ import {
   Bot,
   RefreshCw,
   Github,
-  Code2
+  Code2,
+  Radio,
+  FileText,
+  Trash2,
+  Copy,
+  Check,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { CandidateProfile, EmployerProfile, Grade, Invitation, Specialization, Vacancy, CandidateAiSummary, AssessmentAssignment, EmployerAssessmentReview, AlgorithmTask } from '../../types';
 import { SendOfferModal } from './SendOfferModal';
@@ -39,6 +46,8 @@ import { UserAvatar } from '../brand/UserAvatar';
 import { LeetCodeStatsCard } from '../candidate/LeetCodeStatsCard';
 import { CandidateAiSummaryModal } from '../candidate/CandidateAiSummaryModal';
 import { YandexTelemostWidget } from '../common/YandexTelemostWidget';
+import { AuditLogModal } from '../common/AuditLogModal';
+import { api, EmployerWebhookDto, WebhookPingResponse } from '../../services/api';
 import { evaluateCandidateLevel, calculateCandidateAchievementPoints } from '../../utils/ratingEngine';
 
 interface EmployerDashboardProps {
@@ -70,7 +79,7 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
   onReviewTest,
   onUpdateCandidate
 }) => {
-  const [activeTab, setActiveTab] = useState<'candidates' | 'vacancies' | 'ats' | 'chat' | 'assessments'>('candidates');
+  const [activeTab, setActiveTab] = useState<'candidates' | 'vacancies' | 'ats' | 'chat' | 'assessments' | 'webhooks'>('candidates');
   
   // Filters for smart candidate search
   const [searchQuery, setSearchQuery] = useState('');
@@ -79,6 +88,29 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
   const [minRating, setMinRating] = useState<number>(0);
   const [onlyVerifiedFsp, setOnlyVerifiedFsp] = useState(false);
   const [onlyWithAchievements, setOnlyWithAchievements] = useState(false);
+  const [isBlindHiringMode, setIsBlindHiringMode] = useState(false);
+
+  // Webhooks state
+  const [webhooks, setWebhooks] = useState<EmployerWebhookDto[]>([]);
+  const [isNewWebhookModalOpen, setIsNewWebhookModalOpen] = useState(false);
+  const [newWebhookUrl, setNewWebhookUrl] = useState('');
+  const [newWebhookSecret, setNewWebhookSecret] = useState('');
+  const [newWebhookDesc, setNewWebhookDesc] = useState('');
+  const [newWebhookEvents, setNewWebhookEvents] = useState<string[]>([
+    'OFFER_ACCEPTED',
+    'OFFER_DECLINED',
+    'OFFER_SENT',
+    'TEST_PASSED'
+  ]);
+  const [pingResult, setPingResult] = useState<WebhookPingResponse | null>(null);
+  const [isPingingId, setIsPingingId] = useState<string | null>(null);
+  const [copiedWebhookId, setCopiedWebhookId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (currentEmployer?.id) {
+      api.getWebhooks(currentEmployer.id).then(setWebhooks);
+    }
+  }, [currentEmployer?.id]);
 
   // Modals state
   const [isOfferModalOpen, setIsOfferModalOpen] = useState(false);
@@ -92,6 +124,7 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
   const [reviewModalAssessment, setReviewModalAssessment] = useState<AssessmentAssignment | null>(null);
   const [explainModalCandidate, setExplainModalCandidate] = useState<CandidateProfile | null>(null);
   const [aiModalCandidate, setAiModalCandidate] = useState<CandidateProfile | null>(null);
+  const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
 
   // Chat state
   const [selectedChatInvId, setSelectedChatInvId] = useState<string | null>(
@@ -208,9 +241,9 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
           
           <button
             onClick={() => setActiveTab('candidates')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] ${
               activeTab === 'candidates'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
+                ? 'bg-blue-600 text-white shadow-sm shadow-blue-900/40 border border-blue-400/20'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800'
             }`}
           >
@@ -223,9 +256,9 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
 
           <button
             onClick={() => setActiveTab('vacancies')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] ${
               activeTab === 'vacancies'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
+                ? 'bg-blue-600 text-white shadow-sm shadow-blue-900/40 border border-blue-400/20'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800'
             }`}
           >
@@ -238,9 +271,9 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
 
           <button
             onClick={() => setActiveTab('ats')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] ${
               activeTab === 'ats'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
+                ? 'bg-blue-600 text-white shadow-sm shadow-blue-900/40 border border-blue-400/20'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800'
             }`}
           >
@@ -253,15 +286,15 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
 
           <button
             onClick={() => setActiveTab('assessments')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] ${
               activeTab === 'assessments'
-                ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-600/30'
+                ? 'bg-blue-600 text-white shadow-sm shadow-blue-900/40 border border-blue-400/20'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800'
             }`}
           >
-            <Zap className="w-4 h-4 text-amber-400" />
+            <Zap className="w-4 h-4 text-amber-300" />
             <span>Тестирования & Лайв-интервью</span>
-            <span className="px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 text-[10px] font-bold border border-purple-500/30">
+            <span className="px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-300 text-[10px] font-bold border border-blue-500/30">
               {assessments.length}
             </span>
             {assessments.some(a => a.status === 'submitted') && (
@@ -271,9 +304,9 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
 
           <button
             onClick={() => setActiveTab('chat')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] ${
               activeTab === 'chat'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
+                ? 'bg-blue-600 text-white shadow-sm shadow-blue-900/40 border border-blue-400/20'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800'
             }`}
           >
@@ -281,12 +314,39 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
             <span>Диалоги по офферам</span>
           </button>
 
+          <button
+            onClick={() => setActiveTab('webhooks')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] ${
+              activeTab === 'webhooks'
+                ? 'bg-blue-600 text-white shadow-sm shadow-blue-900/40 border border-blue-400/20'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800'
+            }`}
+          >
+            <Radio className="w-4 h-4 text-cyan-300" />
+            <span>Веб-хуки (Webhooks)</span>
+            <span className="px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 text-[10px] font-bold border border-cyan-500/30">
+              {webhooks.length}
+            </span>
+          </button>
+
+        </div>
+
+        {/* 152-FZ Compliance Audit Log */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsAuditModalOpen(true)}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 transition-all duration-200 hover:scale-[1.02] shadow-sm shadow-emerald-950/20"
+            title="Журнал аудита безопасности и доступа к персональным данным соискателей (152-ФЗ)"
+          >
+            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            <span>Журнал аудита 152-ФЗ</span>
+          </button>
         </div>
       </div>
 
       {/* Tab 1: Candidates Smart Search with Explainable AI */}
       {activeTab === 'candidates' && (
-        <div className="space-y-6">
+        <div className="animate-tab-content space-y-6">
           
           {/* Filters Bar */}
           <div className="bg-[#0a0e1c] p-4 sm:p-5 rounded-3xl border border-[#1b233a] space-y-4 shadow-xl">
@@ -377,11 +437,46 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
                 />
                 <span>Верифицированные кандидаты</span>
               </label>
+
+              <label className={`flex items-center gap-2 cursor-pointer select-none px-3 py-1.5 rounded-xl border transition-all ${
+                isBlindHiringMode 
+                  ? 'border-[#00f0ff] bg-[#00f0ff]/15 text-[#00f0ff] shadow-sm shadow-[#00f0ff]/20' 
+                  : 'border-slate-700 bg-slate-800/60 text-slate-300 hover:text-white hover:border-slate-600'
+              }`}>
+                <input
+                  type="checkbox"
+                  checked={isBlindHiringMode}
+                  onChange={(e) => setIsBlindHiringMode(e.target.checked)}
+                  className="rounded bg-[#0e1428] border-[#1e294b] text-[#00f0ff] focus:ring-0 w-4 h-4 cursor-pointer"
+                />
+                <span className="font-bold flex items-center gap-1.5 text-xs">
+                  {isBlindHiringMode ? <EyeOff className="w-3.5 h-3.5 text-[#00f0ff]" /> : <Eye className="w-3.5 h-3.5 text-slate-400" />}
+                  «Слепой» наем (Blind Hiring Mode)
+                </span>
+              </label>
             </div>
           </div>
 
           {/* Candidates List */}
           <div className="space-y-4">
+            {/* Blind Hiring Info Banner */}
+            {isBlindHiringMode && (
+              <div className="bg-gradient-to-r from-indigo-950/70 via-[#101736] to-slate-900 border border-indigo-500/40 rounded-2xl p-4 text-xs flex items-start gap-3.5 text-slate-200 shadow-lg shadow-indigo-950/30 scroll-reveal">
+                <div className="p-2.5 rounded-xl bg-indigo-500/20 text-[#00f0ff] border border-indigo-500/40 shrink-0">
+                  <EyeOff className="w-5 h-5" />
+                </div>
+                <div className="space-y-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h4 className="font-bold text-white text-sm">Режим «Слепого» найма активен (Zero-Bias Standard)</h4>
+                    <span className="px-2 py-0.5 rounded-full bg-indigo-500/30 text-indigo-200 text-[10px] font-mono font-bold border border-indigo-500/40">152-ФЗ & Анонимизация</span>
+                  </div>
+                  <p className="text-slate-300 leading-relaxed text-xs">
+                    ФИО, фотографии и прямые контакты соискателей скрыты для исключения когнитивных искажений и предвзятости. Отбор базируется исключительно на подтвержденном <strong>ELO-рейтинге</strong>, спортивном разряде ФСП, грейде, стеке и решенных алгоритмических задачах. Данные раскрываются автоматически при отправке оффера или взаимном согласии.
+                  </p>
+                </div>
+              </div>
+            )}
+
             <div className="flex items-center justify-between text-xs text-slate-400">
               <span>
                 Найдено верифицированных кандидатов: <strong className="text-white">{filteredCandidates.length}</strong> (ранжированы по алгоритмическому рейтингу ФСП)
@@ -400,10 +495,19 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
                 leetcodeStats: c.leetcodeStats
               });
 
+              const hasConnection = invitations.some(
+                i => (i.candidateId === c.id || (i.candidate && i.candidate.id === c.id)) && 
+                     (i.employerId === currentEmployer.id || i.status === 'accepted' || i.status === 'pending')
+              );
+              const isAnonymized = isBlindHiringMode && !hasConnection;
+              const displayName = isAnonymized
+                ? `Атлет ФСП #${c.fspId ? c.fspId.slice(-4).toUpperCase() : c.id.slice(0, 4).toUpperCase()} (Анонимный профиль)`
+                : c.fullName;
+
               return (
               <div
                 key={c.id}
-                className="bg-[#0b0f1d] rounded-3xl border border-[#1d2645] hover:border-[#2b35ff]/60 p-6 space-y-5 transition-all shadow-xl"
+                className="bg-[#0b0f1d] rounded-3xl border border-[#1d2645] hover:border-[#2b35ff]/60 p-6 space-y-5 transition-all shadow-xl card-fsp-interactive scroll-reveal"
               >
                 {/* Header row */}
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
@@ -412,12 +516,19 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
                     {/* Candidate Avatar with fallback & Rank Index */}
                     <div className="flex flex-col items-center shrink-0">
                       <div className="relative">
-                        <UserAvatar
-                          name={c.fullName}
-                          src={c.avatarUrl}
-                          size="lg"
-                          rank={c.fspRank}
-                        />
+                        {isAnonymized ? (
+                          <div className="w-14 h-14 rounded-2xl bg-[#090d1f] border-2 border-indigo-500/50 flex flex-col items-center justify-center text-indigo-300 shadow-md">
+                            <EyeOff className="w-6 h-6 text-[#00f0ff]" />
+                            <span className="text-[8px] font-mono text-indigo-300 font-bold mt-0.5">BLIND</span>
+                          </div>
+                        ) : (
+                          <UserAvatar
+                            name={c.fullName}
+                            src={c.avatarUrl}
+                            size="lg"
+                            rank={c.fspRank}
+                          />
+                        )}
                         {candidateLvl.isInTop ? (
                           <div className="absolute -top-1.5 -left-1.5 w-6 h-6 rounded-full bg-[#080c18] border border-[#00f0ff]/50 flex items-center justify-center font-black text-[10px] text-[#00f0ff] shadow-md">
                             #{rankIndex + 1}
@@ -437,8 +548,19 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
                     <div className="space-y-1">
                       <div className="flex flex-wrap items-center gap-2">
                         <h3 className="text-base font-bold text-white">
-                          {c.fullName}
+                          {displayName}
                         </h3>
+                        {isAnonymized ? (
+                          <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 text-xs font-bold">
+                            <EyeOff className="w-3 h-3 text-[#00f0ff]" />
+                            Слепой режим
+                          </span>
+                        ) : isBlindHiringMode && hasConnection ? (
+                          <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-bold">
+                            <Eye className="w-3 h-3 text-emerald-400" />
+                            Раскрыто (Оффер отправлен)
+                          </span>
+                        ) : null}
                         <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30 text-xs font-bold">
                           <Trophy className="w-3.5 h-3.5 text-amber-400" />
                           {candidateLvl.shortRank} (Ур. {candidateLvl.levelNumber})
@@ -639,22 +761,25 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
                 )}
 
                 {/* Explainable AI Highlight Box */}
-                <div className="bg-[#0f1734] rounded-2xl p-3.5 border border-[#2b35ff]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-                  <div className="flex items-center gap-2 text-slate-200">
-                    <Sparkles className="w-4 h-4 text-[#00f0ff] shrink-0" />
+                <div className="bg-[#0f1734] rounded-2xl p-3.5 border border-[#2b35ff]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs shadow-md shadow-[#2b35ff]/10">
+                  <div className="flex items-center gap-2.5 text-slate-200">
+                    <div className="p-1.5 rounded-lg bg-[#2b35ff]/20 text-[#00f0ff] shrink-0 border border-[#00f0ff]/30">
+                      <Sparkles className="w-4 h-4 text-[#00f0ff] animate-pulse" />
+                    </div>
                     <div>
                       <strong className="text-[#00f0ff]">Почему в топе выдачи:</strong>{' '}
-                      {c.fspRank.includes('Мастер') || c.fspRank.includes('Победитель')
-                        ? `Победа в чемпионате РФ по СП + решение задач за ${c.avgExecutionTimeMs}мс + 100% совпадение стека.`
-                        : `КМС по СП + 100% прохождение скрытых тестов + стаж ${c.experienceYears} лет.`}
+                      <span className="font-medium text-slate-200">
+                        {c.fspRank?.replace(/\s*\(.*\)/, '') || 'КМС по СП'} + 100% прохождение скрытых тестов + совпадение по стеку {c.skills?.slice(0, 2).join('/') || 'Java/Spring'} на {c.fspRating >= 2400 ? '96%' : c.fspRating >= 2100 ? '94%' : '91%'}
+                      </span>
                     </div>
                   </div>
 
                   <button
                     onClick={() => setExplainModalCandidate(c)}
-                    className="text-xs text-[#00f0ff] hover:text-cyan-300 underline underline-offset-2 shrink-0 font-bold"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#2b35ff]/20 to-[#00f0ff]/20 hover:from-[#2b35ff]/40 hover:to-[#00f0ff]/40 text-xs text-[#00f0ff] hover:text-cyan-200 border border-[#00f0ff]/40 shrink-0 font-bold transition-all shadow-sm group"
                   >
-                    Подробный разбор матчинга →
+                    <SlidersHorizontal className="w-3.5 h-3.5 group-hover:rotate-12 transition-transform" />
+                    <span>Подробный разбор матчинга →</span>
                   </button>
                 </div>
 
@@ -689,6 +814,15 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
                     </div>
 
                     <button
+                      onClick={() => api.downloadOfficialCandidatePdf(c)}
+                      className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-bold transition-all shadow hover:border-[#00f0ff]/40"
+                      title="Скачать официальный стандартизированный PDF-профиль соискателя с символикой ФСП и подтвержденным ELO"
+                    >
+                      <FileText className="w-3.5 h-3.5 text-[#00f0ff]" />
+                      <span>Скачать PDF профиль ФСП</span>
+                    </button>
+
+                    <button
                       onClick={() => {
                         setSelectedCandidateForTest(c);
                         setIsAssignTestModalOpen(true);
@@ -720,7 +854,7 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
 
       {/* Tab 2: Vacancies with Mandatory Salary Fork */}
       {activeTab === 'vacancies' && (
-        <div className="space-y-6">
+        <div className="animate-tab-content space-y-6">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-lg font-bold text-white">
@@ -799,7 +933,7 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
 
       {/* Tab 3: ATS Tracking Kanban */}
       {activeTab === 'ats' && (
-        <div className="space-y-6">
+        <div className="animate-tab-content space-y-6">
           <div>
             <h2 className="text-lg font-bold text-white">
               ATS Трекер приглашений и офферов
@@ -936,7 +1070,7 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
 
       {/* Tab 4: Chat with Candidate */}
       {activeTab === 'chat' && (
-        <div className="bg-[#0f172a] rounded-3xl border border-slate-800 shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-12 min-h-[550px]">
+        <div className="animate-tab-content bg-[#0f172a] rounded-3xl border border-slate-800 shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-12 min-h-[550px]">
           
           <div className="md:col-span-4 bg-[#0b0f19] border-r border-slate-800 p-4 space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
@@ -1044,7 +1178,7 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
 
       {/* Tab 5: Assessments & Live Coding Interviews */}
       {activeTab === 'assessments' && (
-        <div className="space-y-6">
+        <div className="animate-tab-content space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#0b1026] p-5 rounded-2xl border border-white/10">
             <div>
               <h3 className="text-base font-bold text-white flex items-center gap-2">
@@ -1204,69 +1338,579 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
         </div>
       )}
 
+      {/* Tab 6: Webhooks (ATS & Bot Integrations) */}
+      {activeTab === 'webhooks' && (
+        <div className="animate-tab-content space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#0b1026] p-5 rounded-2xl border border-white/10">
+            <div>
+              <div className="flex items-center gap-2">
+                <Radio className="w-5 h-5 text-cyan-400 animate-pulse" />
+                <h3 className="text-base font-bold text-white">Веб-хуки и интеграции (Webhooks ATS & Bots)</h3>
+              </div>
+              <p className="text-xs text-slate-400 mt-1 max-w-2xl">
+                Автоматическая асинхронная отправка событий в корпоративные ATS (Сбер, Яндекс, Huntflow, 1C:ЗУП) и Telegram-боты при принятии/отклонении офферов кандидатами. Защита заголовком <code className="text-cyan-300 font-mono">X-FSP-Signature</code> (HMAC-SHA256).
+              </p>
+            </div>
+
+            <button
+              onClick={() => setIsNewWebhookModalOpen(true)}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 text-xs font-black transition-all shadow-lg shadow-cyan-500/20 shrink-0"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Добавить веб-хук</span>
+            </button>
+          </div>
+
+          {/* Webhooks List */}
+          {webhooks.length === 0 ? (
+            <div className="p-12 text-center bg-[#0d1326] rounded-2xl border border-slate-800 space-y-4">
+              <Radio className="w-12 h-12 text-slate-600 mx-auto" />
+              <div className="text-sm font-semibold text-white">Нет зарегистрированных веб-хуков</div>
+              <p className="text-xs text-slate-400 max-w-md mx-auto">
+                Подключите веб-хук, чтобы моментально получать оповещения об откликах и принятых офферах прямо в вашу ATS-систему.
+              </p>
+              <button
+                onClick={() => {
+                  setNewWebhookUrl('https://ats.sber.ru/api/v1/fsp-hook-receiver');
+                  setNewWebhookDesc('Корпоративная ATS Сбера (Webhooks)');
+                  setNewWebhookSecret('sber_fsp_secret_token_2026');
+                  setIsNewWebhookModalOpen(true);
+                }}
+                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-400 text-xs font-bold border border-cyan-500/30"
+              >
+                + Подключить интеграцию со Сбером
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4">
+              {webhooks.map((hook) => (
+                <div
+                  key={hook.id}
+                  className="bg-[#0f1730] border border-slate-800 hover:border-cyan-500/40 rounded-2xl p-5 space-y-4 transition-all shadow-lg"
+                >
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                        <h4 className="text-sm font-bold text-white">{hook.description || 'Внешний веб-хук'}</h4>
+                        <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 text-[10px] font-bold border border-emerald-500/20">
+                          {hook.active ? 'Активен' : 'Отключен'}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs font-mono text-cyan-300">
+                        <span>{hook.url}</span>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(hook.url);
+                            setCopiedWebhookId(hook.id);
+                            setTimeout(() => setCopiedWebhookId(null), 2000);
+                          }}
+                          className="text-slate-500 hover:text-white p-1"
+                          title="Скопировать URL"
+                        >
+                          {copiedWebhookId === hook.id ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={async () => {
+                          setIsPingingId(hook.id);
+                          try {
+                            const res = await api.testPingWebhook(hook);
+                            setPingResult(res);
+                            const updated = await api.getWebhooks(currentEmployer.id);
+                            setWebhooks(updated);
+                          } finally {
+                            setIsPingingId(null);
+                          }
+                        }}
+                        disabled={isPingingId === hook.id}
+                        className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 text-xs font-bold border border-cyan-500/30 transition-all disabled:opacity-50"
+                      >
+                        <RefreshCw className={`w-3.5 h-3.5 ${isPingingId === hook.id ? 'animate-spin' : ''}`} />
+                        <span>{isPingingId === hook.id ? 'Пинг...' : 'Тестовый пинг (Ping)'}</span>
+                      </button>
+
+                      <button
+                        onClick={async () => {
+                          if (confirm('Удалить данный веб-хук?')) {
+                            await api.deleteWebhook(currentEmployer.id, hook.id);
+                            const updated = await api.getWebhooks(currentEmployer.id);
+                            setWebhooks(updated);
+                          }
+                        }}
+                        className="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition-all"
+                        title="Удалить веб-хук"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Events & Security Details */}
+                  <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-800 text-xs">
+                    <span className="text-slate-400 text-[11px]">События:</span>
+                    {(hook.events || 'OFFER_ACCEPTED,OFFER_DECLINED,OFFER_SENT,TEST_PASSED').split(',').map((ev) => (
+                      <span
+                        key={ev}
+                        className="px-2 py-0.5 rounded bg-blue-950/60 text-blue-300 border border-blue-500/30 text-[10px] font-mono"
+                      >
+                        {ev.trim()}
+                      </span>
+                    ))}
+
+                    <div className="ml-auto flex items-center gap-3 text-[11px] text-slate-400">
+                      {hook.secretToken && (
+                        <span className="flex items-center gap-1 text-emerald-400">
+                          <Lock className="w-3 h-3" />
+                          HMAC-SHA256 подпись
+                        </span>
+                      )}
+                      {hook.lastStatusCode && (
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
+                          hook.lastStatusCode >= 200 && hook.lastStatusCode < 300 
+                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' 
+                            : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                        }`}>
+                          HTTP {hook.lastStatusCode}
+                        </span>
+                      )}
+                      {hook.lastTriggeredAt && (
+                        <span className="text-slate-500">
+                          Посл. вызов: {new Date(hook.lastTriggeredAt).toLocaleTimeString('ru-RU')}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Integration Guide Box */}
+          <div className="p-5 bg-[#0b1026] rounded-2xl border border-slate-800 space-y-3 text-xs">
+            <h4 className="font-bold text-white flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              Спецификация интеграции веб-хуков ФСП Арены (Webhooks RFC)
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-slate-300">
+              <div className="space-y-1.5">
+                <div className="text-cyan-300 font-semibold">Заголовки запроса:</div>
+                <div className="font-mono text-[11px] bg-slate-950/80 p-2.5 rounded-lg border border-slate-800 space-y-1">
+                  <div>Content-Type: application/json</div>
+                  <div>X-FSP-Event: OFFER_ACCEPTED | OFFER_DECLINED | OFFER_SENT</div>
+                  <div>X-FSP-Delivery-Id: e7518117-f0d9-4c2e-9af7-829fecbd9107</div>
+                  <div>X-FSP-Signature: sha256=a5b3c4... (HMAC-SHA256)</div>
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <div className="text-cyan-300 font-semibold">Пример полезной нагрузки (Payload):</div>
+                <div className="font-mono text-[11px] bg-slate-950/80 p-2.5 rounded-lg border border-slate-800">
+                  <pre className="text-slate-300 text-[10px] overflow-x-auto">
+{`{
+  "event": "OFFER_ACCEPTED",
+  "timestamp": "2026-10-10T14:30:00Z",
+  "employerId": "sber-tech-uuid",
+  "data": {
+    "offerId": "offer-001",
+    "candidateName": "Иван Пестерев",
+    "fspElo": 2480,
+    "fspRank": "КМС по СП",
+    "unmaskedContacts": "+7 (999) 123-45-67",
+    "salaryOffered": 320000
+  }
+}`}
+                  </pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Explainable Match Detail Modal */}
-      {explainModalCandidate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-[#0f172a] border border-slate-700 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-indigo-400">
-                <Sparkles className="w-5 h-5 text-yellow-400" />
-                <h3 className="text-base font-bold text-white">
-                  Объяснимость алгоритма ранжирования ФСП
-                </h3>
+      {explainModalCandidate && (() => {
+        const c = explainModalCandidate;
+        const stackPreview = c.skills?.slice(0, 3).join(', ') || 'Java 21, Spring Boot 3, PostgreSQL';
+        const rankName = c.fspRank || 'КМС по СП (ЕВСК)';
+        const eloScore = c.fspRating || 2480;
+        const matchPercent = eloScore >= 2400 ? 96.4 : eloScore >= 2100 ? 94.2 : 89.5;
+        const speedMs = c.avgExecutionTimeMs || 84;
+
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
+            <div className="bg-[#0b1022] border border-[#2b35ff]/50 rounded-3xl max-w-2xl w-full p-6 space-y-5 shadow-2xl modal-animate my-8">
+              
+              {/* Header */}
+              <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-2xl bg-gradient-to-br from-[#2b35ff]/30 to-[#00f0ff]/30 border border-[#00f0ff]/40 text-[#00f0ff]">
+                    <Sparkles className="w-6 h-6 animate-pulse" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-black text-white flex items-center gap-2">
+                      Объяснимый AI-матчинг соискателя
+                      <span className="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 text-xs font-mono font-bold border border-emerald-500/30">
+                        {matchPercent}% Match
+                      </span>
+                    </h3>
+                    <p className="text-xs text-slate-400">
+                      Прозрачный алгоритм ранжирования без предвзятости (Zero-Bias Human-in-the-Loop)
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setExplainModalCandidate(null)}
+                  className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white flex items-center justify-center transition-all"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Candidate Quick Badge */}
+              <div className="p-4 bg-[#0f1734] rounded-2xl border border-[#2b35ff]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <UserAvatar
+                    name={c.fullName}
+                    src={c.avatarUrl}
+                    size="md"
+                    rank={c.fspRank}
+                  />
+                  <div>
+                    <div className="text-sm font-bold text-white flex items-center gap-2">
+                      {c.fullName}
+                      <span className="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 text-[10px] font-bold">
+                        {c.targetGrade} {c.specialization}
+                      </span>
+                    </div>
+                    <div className="text-xs text-slate-400 font-mono mt-0.5">
+                      FSP ID: {c.fspId || 'FSP-RU-2026-0042'} • ELO: <strong className="text-emerald-400">{eloScore} pts</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="text-right shrink-0">
+                  <div className="text-[10px] text-slate-400 uppercase tracking-wider">Итоговый Match Score</div>
+                  <div className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-[#00f0ff] font-mono">
+                    {matchPercent}%
+                  </div>
+                  <span className="text-[10px] text-emerald-400 font-semibold">Топ-1 в выдаче рекрутера</span>
+                </div>
+              </div>
+
+              {/* Criteria Weights Breakdown */}
+              <div className="space-y-3.5">
+                <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                  <SlidersHorizontal className="w-3.5 h-3.5 text-[#00f0ff]" />
+                  Детальный вес и разбор каждого критерия скоринга
+                </h4>
+
+                <div className="space-y-3 text-xs bg-slate-900/80 p-4 rounded-2xl border border-slate-800">
+                  {/* Criterion 1: ЕВСК Разряд */}
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-white flex items-center gap-1.5">
+                        <Award className="w-4 h-4 text-amber-400" />
+                        1. Спортивный разряд ЕВСК Минспорта РФ (Вес 35%)
+                      </span>
+                      <span className="text-amber-400 font-mono font-bold">35 / 35 баллов</span>
+                    </div>
+                    <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                      <div className="bg-amber-400 h-full rounded-full transition-all duration-500" style={{ width: '100%' }} />
+                    </div>
+                    <p className="text-[11px] text-slate-400 pt-0.5">
+                      {rankName}: подтверждено официальным реестром ФСП. Высший уровень алгоритмического мышления и стрессоустойчивости.
+                    </p>
+                  </div>
+
+                  {/* Criterion 2: Docker Sandbox Tests */}
+                  <div className="space-y-1 pt-2 border-t border-slate-800/80">
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-white flex items-center gap-1.5">
+                        <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                        2. Алгоритмический аудит Арены & Docker-песочница (Вес 25%)
+                      </span>
+                      <span className="text-emerald-400 font-mono font-bold">25 / 25 баллов</span>
+                    </div>
+                    <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                      <div className="bg-emerald-400 h-full rounded-full transition-all duration-500" style={{ width: '100%' }} />
+                    </div>
+                    <p className="text-[11px] text-slate-400 pt-0.5">
+                      100% прохождение скрытых стресс-тестов в изолированной среде. Средняя скорость исполнения алгоритма: <strong>{speedMs} мс</strong> (Топ 0.5% платформы), 0 утечек памяти.
+                    </p>
+                  </div>
+
+                  {/* Criterion 3: Tech Stack Match */}
+                  <div className="space-y-1 pt-2 border-t border-slate-800/80">
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-white flex items-center gap-1.5">
+                        <Code2 className="w-4 h-4 text-[#00f0ff]" />
+                        3. Совпадение стека технологий (Вес 25%)
+                      </span>
+                      <span className="text-[#00f0ff] font-mono font-bold">24 / 25 баллов</span>
+                    </div>
+                    <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                      <div className="bg-[#00f0ff] h-full rounded-full transition-all duration-500" style={{ width: '96%' }} />
+                    </div>
+                    <p className="text-[11px] text-slate-400 pt-0.5">
+                      Стек соискателя ({stackPreview}) совпадает на <strong>96%</strong> с технологическими требованиями открытых вакансий компании.
+                    </p>
+                  </div>
+
+                  {/* Criterion 4: Salary Alignment */}
+                  <div className="space-y-1 pt-2 border-t border-slate-800/80">
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-white flex items-center gap-1.5">
+                        <CheckCircle2 className="w-4 h-4 text-purple-400" />
+                        4. Совместимость зарплатной вилки (Вес 10%)
+                      </span>
+                      <span className="text-purple-400 font-mono font-bold">10 / 10 баллов</span>
+                    </div>
+                    <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                      <div className="bg-purple-400 h-full rounded-full transition-all duration-500" style={{ width: '100%' }} />
+                    </div>
+                    <p className="text-[11px] text-slate-400 pt-0.5">
+                      Ожидания кандидата ({c.salaryExpectationMin?.toLocaleString('ru-RU')} – {c.salaryExpectationMax?.toLocaleString('ru-RU')} ₽) полностью попадают в открытую вилку грейда {c.targetGrade}.
+                    </p>
+                  </div>
+
+                  {/* Criterion 5: Keycloak SSO & 152-FZ */}
+                  <div className="space-y-1 pt-2 border-t border-slate-800/80">
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-white flex items-center gap-1.5">
+                        <Lock className="w-4 h-4 text-cyan-400" />
+                        5. Верификация аккаунта & 152-ФЗ (Вес 5%)
+                      </span>
+                      <span className="text-cyan-400 font-mono font-bold">5 / 5 баллов</span>
+                    </div>
+                    <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                      <div className="bg-cyan-400 h-full rounded-full transition-all duration-500" style={{ width: '100%' }} />
+                    </div>
+                    <p className="text-[11px] text-slate-400 pt-0.5">
+                      Профиль подтвержден через ЕСИА / Keycloak SSO. Подписано согласие на обработку персональных данных и реверс-рекрутинг.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Zero-Bias Guarantee Box */}
+              <div className="p-3.5 bg-emerald-950/30 rounded-2xl border border-emerald-500/30 flex items-start gap-3 text-xs">
+                <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                <div className="text-slate-300">
+                  <strong className="text-emerald-400">Гарантия объективности (Zero-Bias AI):</strong>{' '}
+                  Оценка строится исключительно на измеримых спортивных результатах, чистоте кода и объективных тестах песочницы, исключая субъективные суждения и предвзятость.
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+                <button
+                  onClick={() => api.downloadOfficialCandidatePdf(c)}
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-bold border border-cyan-500/30 transition-all"
+                >
+                  <FileText className="w-4 h-4 text-cyan-400" />
+                  <span>Скачать официальный PDF-профиль ФСП</span>
+                </button>
+
+                <div className="w-full sm:w-auto flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      setExplainModalCandidate(null);
+                      handleOpenOfferModal(c);
+                    }}
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#2b35ff] to-[#00f0ff] hover:opacity-95 text-slate-950 text-xs font-black shadow-lg shadow-[#2b35ff]/30 transition-all"
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                    <span>Отправить оффер</span>
+                  </button>
+
+                  <button
+                    onClick={() => setExplainModalCandidate(null)}
+                    className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold"
+                  >
+                    Закрыть
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* New Webhook Modal */}
+      {isNewWebhookModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <div className="bg-[#0d1224] border border-cyan-500/30 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl modal-animate">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <div className="flex items-center gap-2 text-cyan-400">
+                <Radio className="w-5 h-5 text-cyan-400" />
+                <h3 className="text-base font-bold text-white">Новый веб-хук для ATS</h3>
               </div>
               <button
-                onClick={() => setExplainModalCandidate(null)}
+                onClick={() => setIsNewWebhookModalOpen(false)}
                 className="text-slate-400 hover:text-white"
               >
                 ✕
               </button>
             </div>
 
-            <div className="p-4 bg-slate-900 rounded-2xl border border-slate-800 space-y-3 text-xs">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                <span className="text-slate-400">Кандидат:</span>
-                <div className="flex items-center gap-2">
-                  <UserAvatar
-                    name={explainModalCandidate.fullName}
-                    src={explainModalCandidate.avatarUrl}
-                    size="xs"
-                    rank={explainModalCandidate.fspRank}
-                  />
-                  <span className="text-white font-bold">{explainModalCandidate.fullName}</span>
-                </div>
+            <div className="space-y-3.5 text-xs">
+              <div>
+                <label className="block text-slate-300 font-bold mb-1">URL эндпоинта (HTTP POST):</label>
+                <input
+                  type="url"
+                  placeholder="https://ats.sber.ru/api/v1/fsp-hook-receiver"
+                  value={newWebhookUrl}
+                  onChange={(e) => setNewWebhookUrl(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-xs focus:border-cyan-400 focus:outline-none"
+                />
               </div>
 
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-slate-400">1. Спортивные титулы ФСП (+35%):</span>
-                  <span className="text-amber-400 font-bold">{explainModalCandidate.fspRank} (100/100)</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">2. Скорость алгоритмов (+30%):</span>
-                  <span className="text-emerald-400 font-bold">{explainModalCandidate.avgExecutionTimeMs} ms (Топ 0.5%)</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">3. Совпадение стека технологий (+25%):</span>
-                  <span className="text-blue-400 font-bold">100% (Java 21, Spring 3, Postgres)</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">4. Верификация Keycloak SSO (+10%):</span>
-                  <span className="text-purple-400 font-bold">Подтверждено</span>
-                </div>
+              <div>
+                <label className="block text-slate-300 font-bold mb-1">Название / Описание:</label>
+                <input
+                  type="text"
+                  placeholder="Корпоративная ATS Сбер (Webhooks Event Receiver)"
+                  value={newWebhookDesc}
+                  onChange={(e) => setNewWebhookDesc(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs focus:border-cyan-400 focus:outline-none"
+                />
               </div>
 
-              <div className="pt-2 border-t border-slate-800 text-right">
-                <span className="text-xs text-slate-400">Итоговый Match Score:</span>
-                <div className="text-xl font-black text-emerald-400 font-mono">99.4%</div>
+              <div>
+                <label className="block text-slate-300 font-bold mb-1">Секретный ключ подписи (Secret Token HMAC-SHA256):</label>
+                <input
+                  type="text"
+                  placeholder="sber_fsp_secret_webhook_token_2026"
+                  value={newWebhookSecret}
+                  onChange={(e) => setNewWebhookSecret(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-xs focus:border-cyan-400 focus:outline-none"
+                />
+                <span className="text-[10px] text-slate-400">Передается в заголовке X-FSP-Signature для верификации подлинности сообщений.</span>
+              </div>
+
+              <div>
+                <label className="block text-slate-300 font-bold mb-2">Отслеживаемые события:</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { id: 'OFFER_ACCEPTED', label: 'Оффер принят' },
+                    { id: 'OFFER_DECLINED', label: 'Оффер отклонен' },
+                    { id: 'OFFER_SENT', label: 'Оффер отправлен' },
+                    { id: 'TEST_PASSED', label: 'Тестирование сдано' }
+                  ].map((ev) => (
+                    <label key={ev.id} className="flex items-center gap-2 p-2 rounded-lg bg-slate-900 border border-slate-800 cursor-pointer hover:border-slate-700">
+                      <input
+                        type="checkbox"
+                        checked={newWebhookEvents.includes(ev.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setNewWebhookEvents([...newWebhookEvents, ev.id]);
+                          } else {
+                            setNewWebhookEvents(newWebhookEvents.filter((x) => x !== ev.id));
+                          }
+                        }}
+                        className="rounded border-slate-700 text-cyan-500 focus:ring-0"
+                      />
+                      <span className="text-slate-300 font-medium">{ev.label}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
             </div>
 
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-white/10">
+              <button
+                onClick={() => setIsNewWebhookModalOpen(false)}
+                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold"
+              >
+                Отмена
+              </button>
+              <button
+                onClick={async () => {
+                  if (!newWebhookUrl.trim()) {
+                    alert('Укажите URL эндпоинта веб-хука');
+                    return;
+                  }
+                  await api.createWebhook({
+                    employerId: currentEmployer.id,
+                    url: newWebhookUrl.trim(),
+                    secretToken: newWebhookSecret.trim() || undefined,
+                    description: newWebhookDesc.trim() || undefined,
+                    events: newWebhookEvents.join(',')
+                  });
+                  const updated = await api.getWebhooks(currentEmployer.id);
+                  setWebhooks(updated);
+                  setIsNewWebhookModalOpen(false);
+                  setNewWebhookUrl('');
+                  setNewWebhookSecret('');
+                  setNewWebhookDesc('');
+                }}
+                className="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:opacity-95 text-slate-950 text-xs font-black shadow-lg"
+              >
+                Сохранить и активировать
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Ping Result Feedback Modal */}
+      {pingResult && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <div className="bg-[#0b1022] border border-cyan-500/40 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl modal-animate">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <div className="flex items-center gap-2">
+                <span className={`w-3 h-3 rounded-full ${pingResult.success ? 'bg-emerald-400' : 'bg-rose-400'} animate-pulse`} />
+                <h3 className="text-base font-bold text-white">Результат тестового пинга веб-хука</h3>
+              </div>
+              <button
+                onClick={() => setPingResult(null)}
+                className="text-slate-400 hover:text-white"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 space-y-1.5">
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Статус HTTP:</span>
+                  <span className={`font-mono font-bold ${pingResult.success ? 'text-emerald-400' : 'text-rose-400'}`}>
+                    HTTP {pingResult.statusCode} ({pingResult.success ? 'OK' : 'Error'})
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Целевой URL:</span>
+                  <span className="font-mono text-cyan-300 truncate max-w-[240px]">{pingResult.url}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Сообщение:</span>
+                  <span className="text-slate-200">{pingResult.message}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Время отправки:</span>
+                  <span className="text-slate-400 font-mono">{new Date(pingResult.timestamp).toLocaleTimeString('ru-RU')}</span>
+                </div>
+              </div>
+
+              {pingResult.payloadSample && (
+                <div>
+                  <div className="text-slate-300 font-bold mb-1">Образец отправленной полезной нагрузки (JSON):</div>
+                  <pre className="p-3 rounded-xl bg-slate-950 font-mono text-[11px] text-cyan-300 border border-slate-800 overflow-x-auto max-h-48">
+                    {pingResult.payloadSample}
+                  </pre>
+                </div>
+              )}
+            </div>
+
             <button
-              onClick={() => setExplainModalCandidate(null)}
-              className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold"
+              onClick={() => setPingResult(null)}
+              className="w-full py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-black"
             >
-              Закрыть
+              Отлично, понятно
             </button>
           </div>
         </div>
@@ -1345,6 +1989,12 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
           }}
         />
       )}
+
+      {/* 152-FZ Security Audit Log Modal */}
+      <AuditLogModal
+        isOpen={isAuditModalOpen}
+        onClose={() => setIsAuditModalOpen(false)}
+      />
 
     </div>
   );
