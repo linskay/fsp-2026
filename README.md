@@ -120,6 +120,17 @@ docker compose up -d
 * **Lucide Icons**, **Canvas Confetti**, **Monaco Editor** для алгоритмических задач
 * **Адаптивный интерфейс** в фирменном киберспортивном стиле Федерации спортивного программирования РФ.
 
+### 📱 Мобильное приложение (Android / Kotlin 2.0 / Jetpack Compose)
+* **Архитектура:** Clean Architecture + MVVM (Model-View-ViewModel) + StateFlow
+* **Стек:** Kotlin 2.0, Jetpack Compose, Material 3, Navigation Compose, Retrofit 2, Moshi, OkHttp
+* **Экраны:**
+  * **Профиль соискателя:** верифицированный спортсмен ФСП, ELO-рейтинг, спортивный разряд, стек технологий.
+  * **Чат:** прямой диалог с HR/работодателем по полученным офферам и приглашениям.
+  * **Арена:** задачи спортивного программирования с начислением ELO-очков.
+* **Автоматизация и конвертер:**
+  * `python scripts/bootstrap_mobile.py` — проверка и генерация структуры мобильного приложения и Kotlin-модулей.
+  * `python scripts/convert_to_kotlin.py` — конвертер Java DTO и моделей в идиоматичный Kotlin 2.0.
+
 ### 🗄 База данных & Инфраструктура
 * **PostgreSQL 16**
 * **Docker** & **Docker Compose**
@@ -134,23 +145,21 @@ docker compose up -d
 .
 ├── .github/
 │   └── workflows/               # CI/CD пайплайны GitHub Actions
-├── backend/                     # Java 21 / Spring Boot 3 Backend
-│   ├── pom.xml                  # Maven зависимости (Spring Boot 3, JPA, Security, Flyway, etc.)
+├── backend/                     # Java 21 & Kotlin 2.0 / Spring Boot 3 Backend
+│   ├── pom.xml                  # Maven с поддержкой смешанной компиляции Java + Kotlin
 │   ├── Dockerfile               # Multi-stage Dockerfile под Java 21 Alpine
 │   └── src/
 │       └── main/
-│           ├── java/ru/fsp/careerarena/
-│           │   ├── FspCareerArenaApplication.java
-│           │   ├── config/      # SecurityConfig, OpenApiConfig, WebClientConfig
-│           │   ├── controller/  # REST контроллеры (Auth, Candidates, Vacancies, AI)
-│           │   ├── dto/         # DTO с валидацией (@NotNull, @Min, @Max, @Schema)
-│           │   ├── entity/      # JPA сущности (User, CandidateProfile, Vacancy, etc.)
-│           │   ├── exception/   # GlobalExceptionHandler & ErrorResponse
-│           │   ├── repository/  # Spring Data JPA интерфейсы
-│           │   └── service/     # Бизнес-логика, AuthService, CandidateService, AI
-│           └── resources/
-│               ├── application.yml      # Конфигурация Spring Boot
-│               └── db/migration/        # Flyway миграции (V1 init, V2 seed, V3 test users)
+│           ├── java/ru/fsp/careerarena/      # Java сервисы, сущности и контроллеры
+│           ├── kotlin/ru/fsp/careerarena/    # Kotlin Data Classes, Mobile API контроллер
+│           └── resources/                    # application.yml и миграции Flyway
+├── mobile/                      # Нативное Android-приложение (Kotlin + Jetpack Compose)
+│   ├── settings.gradle.kts      # Конфигурация модулей Gradle
+│   ├── build.gradle.kts         # Root Gradle билд
+│   └── app/                     # Android модуль с экранами Профиля, Чата и Арены
+├── scripts/                     # Скрипты автоматизации и конвертации
+│   ├── bootstrap_mobile.py      # Инициализация и валидация мобильного приложения
+│   └── convert_to_kotlin.py     # Конвертер Java DTO в идиоматичный Kotlin
 ├── src/                         # Frontend (React 19 + TypeScript + Tailwind)
 │   ├── components/
 │   │   ├── landing/             # Главный экран (Sport-Tech Landing Page)
