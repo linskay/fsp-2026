@@ -1036,6 +1036,109 @@ class ApiService {
   getCandidatePdfUrl(candidateId: string): string {
     return `${API_BASE}/candidates/${candidateId}/export-pdf`;
   }
+
+  // 22. Code Assessments & Reviews
+  async getAssessmentsByEmployer(employerId: string): Promise<any[]> {
+    try {
+      const res = await fetch(`${API_BASE}/assessments/employer/${employerId}`);
+      if (res.ok) return await res.json();
+    } catch {}
+    return [];
+  }
+
+  async getAssessmentsByCandidate(candidateId: string): Promise<any[]> {
+    try {
+      const res = await fetch(`${API_BASE}/assessments/candidate/${candidateId}`);
+      if (res.ok) return await res.json();
+    } catch {}
+    return [];
+  }
+
+  async assignAssessment(params: {
+    employerId: string;
+    candidateId: string;
+    taskTitle: string;
+    taskDifficulty?: string;
+    taskDescription: string;
+    starterCode?: string;
+    timeLimitMinutes?: number;
+    isLiveInterview?: boolean;
+    scheduledInterviewAt?: string;
+  }): Promise<any> {
+    const res = await fetch(`${API_BASE}/assessments/assign`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || err.message || 'Ошибка назначения задания');
+    }
+    return await res.json();
+  }
+
+  async getAssessmentSubmission(id: string): Promise<any> {
+    const res = await fetch(`${API_BASE}/assessments/submissions/${id}`);
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || err.message || 'Ошибка загрузки решения');
+    }
+    return await res.json();
+  }
+
+  async reviewAssessmentSubmission(id: string, params: {
+    verdict: string;
+    internalNote?: string;
+    candidateFeedbackMessage?: string;
+    reviewerName?: string;
+  }): Promise<any> {
+    const res = await fetch(`${API_BASE}/assessments/submissions/${id}/review`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || err.message || 'Ошибка отправки код-ревью');
+    }
+    return await res.json();
+  }
+
+  // 23. Live Interviews & Yandex Telemost
+  async scheduleInterview(params: {
+    employerId: string;
+    candidateId: string;
+    title: string;
+    scheduledAt: string;
+    telemostRoomUrl?: string;
+  }): Promise<any> {
+    const res = await fetch(`${API_BASE}/interviews/schedule`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || err.message || 'Ошибка планирования интервью');
+    }
+    return await res.json();
+  }
+
+  async getInterviewsByCandidate(candidateId: string): Promise<any[]> {
+    try {
+      const res = await fetch(`${API_BASE}/interviews/candidate/${candidateId}`);
+      if (res.ok) return await res.json();
+    } catch {}
+    return [];
+  }
+
+  async getInterviewsByEmployer(employerId: string): Promise<any[]> {
+    try {
+      const res = await fetch(`${API_BASE}/interviews/employer/${employerId}`);
+      if (res.ok) return await res.json();
+    } catch {}
+    return [];
+  }
 }
 
 export const api = new ApiService();
