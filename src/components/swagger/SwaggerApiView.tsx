@@ -256,6 +256,166 @@ export const SwaggerApiView: React.FC = () => {
           salaryFrom: 'Минимальная зарплата (от) не может превышать максимальную (до)'
         }
       }
+    },
+    {
+      method: 'GET',
+      path: '/api/v1/users/me',
+      summary: 'Данные текущего авторизованного пользователя (RBAC & Session)',
+      tags: ['User Profile & RBAC'],
+      description: 'Возвращает профиль текущей сессии (соискатель/работодатель), статус согласия 152-ФЗ и связанные ID профилей для переключения интерфейса.',
+      security: 'JWT Bearer Token / Keycloak SSO',
+      responseBody: {
+        id: 'u-12345-6789-abcd',
+        email: 'candidate@fsp.ru',
+        fullName: 'Иван Пестерев',
+        role: 'CANDIDATE',
+        avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb',
+        personalDataConsentAccepted: true,
+        candidateProfileId: 'e7518117-f0d9-4c2e-9af7-829fecbd9107'
+      }
+    },
+    {
+      method: 'PUT',
+      path: '/api/v1/users/profile',
+      summary: 'Обновление данных профиля пользователя (ФИО, аватар, пароль)',
+      tags: ['User Profile & RBAC'],
+      description: 'Позволяет соискателю или рекрутеру обновить личные данные, контактный аватар и пароль.',
+      security: 'JWT Bearer Token',
+      requestBody: {
+        fullName: 'Иван Пестерев',
+        avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb',
+        password: 'newSecurePassword2026'
+      },
+      responseBody: {
+        status: 200,
+        message: 'Профиль успешно обновлен',
+        updatedAt: '2026-10-10T18:45:00Z'
+      }
+    },
+    {
+      method: 'POST',
+      path: '/api/v1/files/upload',
+      summary: 'Загрузка медиа-файлов (MultipartFile) в хранилище (аватары, логотипы, резюме)',
+      tags: ['File Upload (S3/Media Storage)'],
+      description: 'Загружает файл (аватар профиля, корпоративный логотип или PDF-резюме) с валидацией размера и генерацией публичной ссылки.',
+      security: 'JWT Bearer Token / Role Authenticated',
+      requestBody: {
+        file: '(binary MultipartFile)',
+        category: 'avatars'
+      },
+      responseBody: {
+        url: 'https://fsp-career.ru/media/avatars/e7518117_avatar.png',
+        filename: 'avatar.png',
+        sizeBytes: 204850,
+        contentType: 'image/png'
+      }
+    },
+    {
+      method: 'GET',
+      path: '/api/v1/system/stats',
+      summary: 'Публичная открытая статистика платформы для лендинга',
+      tags: ['System & Monitoring'],
+      description: 'Возвращает верифицированные метрики платформы (зарегистрированные спортсмены, вакансии, проведенные ревью, отправленные офферы).',
+      security: 'Public Endpoint',
+      responseBody: {
+        registeredAthletesCount: 1420,
+        activeVacanciesCount: 312,
+        solvedTasksAndReviewsCount: 890,
+        offersCount: 425,
+        acceptedOffersCount: 128,
+        accreditedEmployersCount: 84,
+        platformVersion: '2.0.0-ENTERPRISE'
+      }
+    },
+    {
+      method: 'POST',
+      path: '/api/v1/ai/generate-summary',
+      summary: 'Мультимодельная генерация AI-портрета соискателя (Gemini, YandexGPT, OpenRouter, Ollama)',
+      tags: ['AI Summary & Multi-Model Analysis'],
+      description: 'Использует паттерн Strategy для выбора нейросетевого провайдера, формирует системный промт под фокус (Highload, Алгоритмы, Тимлид) и анализирует профиль.',
+      security: 'JWT Bearer Token',
+      requestBody: {
+        candidateId: 'e7518117-f0d9-4c2e-9af7-829fecbd9107',
+        provider: 'GEMINI',
+        modelName: 'gemini-1.5-flash',
+        focus: 'HIGH_LOAD_CORE',
+        customApiKey: 'AIzaSy...'
+      },
+      responseBody: {
+        summaryText: 'Выдающийся Senior Java-инженер с подтвержденным разрядом КМС по спортивному программированию...',
+        codeCleanlinessScore: 98,
+        keyStrengths: ['HighLoad архитектура', 'Чистота алгоритмического кода', '0 утечек памяти в песочнице'],
+        recommendedRoles: ['Senior Java Engineer', 'Core Backend Lead']
+      }
+    },
+    {
+      method: 'POST',
+      path: '/api/v1/ai/save-profile',
+      summary: 'Сохранение сгенерированного ИИ-портрета в профиль соискателя (PostgreSQL)',
+      tags: ['AI Summary & Multi-Model Analysis'],
+      description: 'Фиксирует результат работы нейросети в базе данных соискателя при клике на кнопку «Сохранить в профиле соискателя».',
+      security: 'JWT Bearer Token (ROLE_CANDIDATE / ROLE_ADMIN)',
+      requestBody: {
+        candidateId: 'e7518117-f0d9-4c2e-9af7-829fecbd9107',
+        summaryText: 'Сгенерированное техническое резюме...',
+        codeCleanlinessScore: 98,
+        keyStrengths: ['HighLoad архитектура', 'Алгоритмы'],
+        recommendedRoles: ['Senior Backend Engineer']
+      },
+      responseBody: {
+        status: 200,
+        message: 'ИИ-портрет успешно сохранен в базе данных соискателя',
+        savedAt: '2026-10-10T19:20:00Z'
+      }
+    },
+    {
+      method: 'POST',
+      path: '/api/v1/webhooks',
+      summary: 'Регистрация внешнего веб-хука для ATS работодателя (Сбер, Яндекс, Telegram)',
+      tags: ['Employer Webhooks & Integrations'],
+      description: 'Регистрирует URL для отправки асинхронных уведомлений при событиях найма (OFFER_ACCEPTED, OFFER_DECLINED, OFFER_SENT, TEST_PASSED) с подписью HMAC-SHA256.',
+      security: 'JWT Bearer Token (ROLE_EMPLOYER)',
+      requestBody: {
+        employerId: 'b2c3d4e5-f6a7-48b9-bc01-def234567890',
+        url: 'https://ats.sber.ru/api/v1/fsp-hook-receiver',
+        secretToken: 'sber_fsp_secret_webhook_token_2026',
+        events: 'OFFER_ACCEPTED,OFFER_DECLINED,OFFER_SENT,TEST_PASSED',
+        description: 'Корпоративная ATS Сбера (Webhooks)'
+      },
+      responseBody: {
+        id: 'wh-7f9a8b1c-2d3e-4f5a-6b7c-8d9e0f1a2b3c',
+        status: 'ACTIVE',
+        active: true,
+        signatureHeader: 'X-FSP-Signature (HMAC-SHA256)'
+      }
+    },
+    {
+      method: 'POST',
+      path: '/api/v1/webhooks/{id}/ping',
+      summary: 'Отправка тестового пинга на веб-хук с проверкой доставки',
+      tags: ['Employer Webhooks & Integrations'],
+      description: 'Отправляет тестовый PING-запрос на зарегистрированный адрес внешнего веб-хука с фиксацией HTTP-кода ответа.',
+      security: 'JWT Bearer Token (ROLE_EMPLOYER)',
+      responseBody: {
+        webhookId: 'wh-7f9a8b1c-2d3e-4f5a-6b7c-8d9e0f1a2b3c',
+        statusCode: 200,
+        success: true,
+        message: 'Веб-хук успешно доставлен (HTTP 200 OK)',
+        timestamp: '2026-10-10T19:30:00Z'
+      }
+    },
+    {
+      method: 'GET',
+      path: '/api/v1/candidates/{id}/export-pdf',
+      summary: 'Автогенерация официального PDF-паспорта соискателя (ФСП Profile Card)',
+      tags: ['Candidates'],
+      description: 'Генерирует стандартизированный PDF-документ с символикой Федерации спортивного программирования, ELO-рейтингом, спортивным разрядом ЕВСК и проверенным стеком.',
+      security: 'Public Read / Candidate / Employer',
+      responseBody: {
+        contentType: 'application/pdf',
+        contentDisposition: 'attachment; filename="fsp-candidate-passport.pdf"',
+        pdfBytes: '[Binary PDF 1.4 stream ~ 9.5 KB]'
+      }
     }
   ];
 
@@ -292,14 +452,35 @@ export const SwaggerApiView: React.FC = () => {
                 Springdoc OpenAPI 3.0 / Swagger UI
               </h1>
               <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-xs font-bold">
-                v1.0.0-RELEASE
+                v2.0.0-ENTERPRISE
               </span>
             </div>
             <p className="text-xs text-slate-300">
               Спецификация REST API бэкенда на <strong>Java 21 + Spring Boot 3 + Spring Security + Keycloak</strong>
             </p>
-            <div className="flex flex-wrap items-center gap-3 pt-1 text-[11px] text-slate-400">
-              <span>Base URL: <code className="text-emerald-400 font-mono">https://api.fsp-arena.ru/api/v1</code></span>
+            
+            {/* Servers Selector */}
+            <div className="pt-2 flex flex-wrap items-center gap-3 text-xs">
+              <span className="text-slate-400 font-semibold">Серверы:</span>
+              <span className="px-2.5 py-1 rounded-lg bg-emerald-950/60 text-emerald-300 border border-emerald-500/30 font-mono text-[11px] flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                https://api.fsp-arena.ru (Production Gateway)
+              </span>
+              <span className="px-2.5 py-1 rounded-lg bg-slate-900 text-slate-400 border border-slate-800 font-mono text-[11px]">
+                http://localhost:8080 (Local Dev)
+              </span>
+            </div>
+
+            <div className="pt-2 flex flex-wrap items-center gap-3 text-[11px] text-slate-400">
+              <a
+                href="https://fsp-russia.ru/files/%D0%9F%D0%BE%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BE%D0%B1%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B0%20%D0%BF%D0%B4%D0%BD%20(1).pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2 flex items-center gap-1 font-medium"
+              >
+                <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Соответствие 152-ФЗ: маскирование персональных данных и аудит доступа</span>
+              </a>
               <span>•</span>
               <span>OpenAPI Spec: <code className="text-blue-400 font-mono">/v3/api-docs</code></span>
             </div>

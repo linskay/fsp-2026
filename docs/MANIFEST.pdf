@@ -1,0 +1,2924 @@
+%PDF-1.4
+1 0 obj
+<</Type/Catalog/Pages 2 0 R>>
+endobj
+2 0 obj
+<</Type/Pages/Kids[7 0 R 9 0 R 11 0 R 13 0 R 15 0 R 17 0 R 19 0 R 21 0 R 23 0 R 25 0 R]/Count 10>>
+endobj
+3 0 obj
+<</Type/Font/Subtype/Type1/BaseFont/Helvetica/Encoding/WinAnsiEncoding>>
+endobj
+4 0 obj
+<</Type/Font/Subtype/Type1/BaseFont/Helvetica-Bold/Encoding/WinAnsiEncoding>>
+endobj
+5 0 obj
+<</Type/Font/Subtype/Type1/BaseFont/Courier/Encoding/WinAnsiEncoding>>
+endobj
+6 0 obj
+<</Length 5079>>
+stream
+0.05 0.08 0.18 rg
+0 790 595 52 re f
+0.00 0.90 1.00 RG 2 w
+0 790 m 595 790 l S
+BT
+/F2 10 Tf
+1 1 1 rg
+40 812 Td (RUSSIAN SPORTS PROGRAMMING FEDERATION - FSP CAREER ARENA 2026) Tj
+ET
+BT
+/F1 8 Tf
+0.00 0.90 1.00 rg
+40 798 Td (OFFICIAL TECHNICAL SPECIFICATION & PROJECT MANIFESTO - ITEM 3.4) Tj
+ET
+0.95 0.97 1.00 rg
+40 650 515 85 re f
+0.1 0.4 0.8 RG 1 w
+40 650 515 85 re s
+BT
+/F2 16 Tf
+0.05 0.15 0.35 rg
+55 705 Td (FSP CAREER ARENA: PROJECT MANIFESTO) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.25 0.45 rg
+55 685 Td (Comprehensive Technical Documentation & System Specifications) Tj
+ET
+BT
+/F1 9 Tf
+0.35 0.45 0.55 rg
+55 665 Td (Reverse Recruiting, ELO Algorithms, 152-FZ Privacy, Judge0 Sandboxing) Tj
+ET
+0.00 0.85 0.95 RG 2 w
+40 610 m 555 610 l S
+BT
+/F2 12 Tf
+0.05 0.25 0.55 rg
+40 614 Td (proektnaya dokumentatsiya) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 592 Td (platforma obratnogo nayma s verifikatsiey FSP) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 569 Td (> Komanda: NO PHP  NO PROBLEMS  2026) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 556 Td (> Khakaton: Federatsiya sportivnogo programmirovaniya Rossii \(FSP RF\)  2026) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 543 Td (> Versiya dokumenta: 1.0 | 10 oktyabrya 2026 g.) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 524 Td (---) Tj
+ET
+0.00 0.85 0.95 RG 2 w
+40 501 m 555 501 l S
+BT
+/F2 12 Tf
+0.05 0.25 0.55 rg
+40 505 Td () Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 477 Td (1. [Arkhitektura resheniya]\(#1-arkhitektura-resheniya\)) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 464 Td (2. [Mekhanika obratnogo nayma i ranzhirovaniya]\(#2-mekhanika-obratnogo-nayma-i-ranzhirovaniya\)) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 451 Td (3. [Mekhanika testirovaniya i zashchity ot sliva]\(#3-mekhanika-testirovaniya-i-zashchity-ot-sliva\)) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 438 Td (4. [Skhema integratsii s FSP ID]\(#4-skhema-integratsii-s-fsp-id\)) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 425 Td (5. [Spetsifikatsiya API i bezopasnost]\(#5-spetsifikatsiya-api-i-bezopasnost\)) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 412 Td (6. [Instruktsiya po razvyortyvaniyu]\(#6-instruktsiya-po-razvyortyvaniyu\)) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 399 Td (7. [Komanda proekta]\(#7-komanda-proekta\)) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 380 Td (---) Tj
+ET
+0.00 0.85 0.95 RG 2 w
+40 357 m 555 357 l S
+BT
+/F2 12 Tf
+0.05 0.25 0.55 rg
+40 361 Td (1. Arkhitektura resheniya) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 333 Td (1.1. Obshchee opisanie) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 310 Td (Platforma FSP Karernaya Arena  eto tsifrovaya ekosistema iz tryokh klientskikh prilozheniy \(Web, Mobile) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 291 Td (1.2. Komponentnaya skhema) Tj
+ET
+0.96 0.97 0.98 rg
+40 265 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 268 Td () Tj
+ET
+0.96 0.97 0.98 rg
+40 252 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 255 Td (                            EKOSISTEMA FSP KARERNAYa ARENA                             ) Tj
+ET
+0.96 0.97 0.98 rg
+40 239 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 242 Td () Tj
+ET
+0.96 0.97 0.98 rg
+40 226 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 229 Td (                                                                                          ) Tj
+ET
+0.96 0.97 0.98 rg
+40 213 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 216 Td (        HTTPS / REST          ) Tj
+ET
+0.96 0.97 0.98 rg
+40 200 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 203 Td (      Web Frontend         Spring Boot 3 Backend            ) Tj
+ET
+0.96 0.97 0.98 rg
+40 187 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 190 Td (     React 19 + TS           /api/v1/*           Java 21 + Kotlin 2.0               ) Tj
+ET
+0.96 0.97 0.98 rg
+40 174 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 177 Td (     Tailwind CSS                                                                    ) Tj
+ET
+0.96 0.97 0.98 rg
+40 161 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 164 Td (     Monaco Editor                                     ) Tj
+ET
+0.96 0.97 0.98 rg
+40 148 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 151 Td (     Vite 8                                       Moduli:                          ) Tj
+ET
+0.96 0.97 0.98 rg
+40 135 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 138 Td (                              Spring Security 6 + JWT        ) Tj
+ET
+0.96 0.97 0.98 rg
+40 122 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 125 Td (                                                    Spring Data JPA                ) Tj
+ET
+0.96 0.97 0.98 rg
+40 109 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 112 Td (              Nginx Reverse Proxy                   Flyway Migrations              ) Tj
+ET
+0.96 0.97 0.98 rg
+40 96 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 99 Td (              \(SPA routing\)                         WebClient \(integratsii\)         ) Tj
+ET
+0.96 0.97 0.98 rg
+40 83 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 86 Td (                                                    Springdoc OpenAPI 3            ) Tj
+ET
+0.8 0.8 0.8 RG 1 w
+40 45 m 555 45 l S
+BT
+/F1 8 Tf
+0.5 0.5 0.5 rg
+40 32 Td (FSP Career Arena | Page 1 | Team: NO PHP - NO PROBLEMS - 2026) Tj
+ET
+endstream
+endobj
+7 0 obj
+<</Type/Page/Parent 2 0 R/MediaBox[0 0 595 842]/Resources<</Font<</F1 3 0 R/F2 4 0 R/F3 5 0 R>>>>/Contents 6 0 R>>
+endobj
+8 0 obj
+<</Length 8169>>
+stream
+0.05 0.08 0.18 rg
+0 790 595 52 re f
+0.00 0.90 1.00 RG 2 w
+0 790 m 595 790 l S
+BT
+/F2 10 Tf
+1 1 1 rg
+40 812 Td (RUSSIAN SPORTS PROGRAMMING FEDERATION - FSP CAREER ARENA 2026) Tj
+ET
+BT
+/F1 8 Tf
+0.00 0.90 1.00 rg
+40 798 Td (OFFICIAL TECHNICAL SPECIFICATION & PROJECT MANIFESTO - ITEM 3.4) Tj
+ET
+0.96 0.97 0.98 rg
+40 747 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 750 Td (                              GlobalExceptionHandler         ) Tj
+ET
+0.96 0.97 0.98 rg
+40 734 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 737 Td (      Mobile App                ) Tj
+ET
+0.96 0.97 0.98 rg
+40 721 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 724 Td (     Kotlin 2.0              /api/v1/*                                               ) Tj
+ET
+0.96 0.97 0.98 rg
+40 708 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 711 Td (     Jetpack Compose         \(Retrofit 2\)        Integratsii:                         ) Tj
+ET
+0.96 0.97 0.98 rg
+40 695 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 698 Td (     Material 3                                        ) Tj
+ET
+0.96 0.97 0.98 rg
+40 682 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 685 Td (     MVVM + StateFlow                              GitHub API \(OAuth2\)            ) Tj
+ET
+0.96 0.97 0.98 rg
+40 669 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 672 Td (                              HeadHunter API \(OAuth2\)        ) Tj
+ET
+0.96 0.97 0.98 rg
+40 656 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 659 Td (                                                     Yandeks ID \(OAuth2\)            ) Tj
+ET
+0.96 0.97 0.98 rg
+40 643 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 646 Td (                              LeetCode GraphQL Proxy        ) Tj
+ET
+0.96 0.97 0.98 rg
+40 630 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 633 Td (      Swagger UI            Judge0 Sandbox Engine         ) Tj
+ET
+0.96 0.97 0.98 rg
+40 617 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 620 Td (     OpenAPI v3 Spec        /swagger-ui.html           ) Tj
+ET
+0.96 0.97 0.98 rg
+40 604 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 607 Td (                              ) Tj
+ET
+0.96 0.97 0.98 rg
+40 591 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 594 Td (                                                                                        ) Tj
+ET
+0.96 0.97 0.98 rg
+40 578 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 581 Td (                                                    JDBC / JPA                          ) Tj
+ET
+0.96 0.97 0.98 rg
+40 565 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 568 Td (                                                                                        ) Tj
+ET
+0.96 0.97 0.98 rg
+40 552 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 555 Td (                                                             ) Tj
+ET
+0.96 0.97 0.98 rg
+40 539 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 542 Td (                                                    PostgreSQL 16                    ) Tj
+ET
+0.96 0.97 0.98 rg
+40 526 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 529 Td (                                                   Flyway: V1..V9                      ) Tj
+ET
+0.96 0.97 0.98 rg
+40 513 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 516 Td (                                                   fsp_career_db                       ) Tj
+ET
+0.96 0.97 0.98 rg
+40 500 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 503 Td (                                                                                       ) Tj
+ET
+0.96 0.97 0.98 rg
+40 487 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 490 Td (                                                   Tablitsy:                            ) Tj
+ET
+0.96 0.97 0.98 rg
+40 474 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 477 Td (                                                    users                             ) Tj
+ET
+0.96 0.97 0.98 rg
+40 461 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 464 Td (                                                    candidates                        ) Tj
+ET
+0.96 0.97 0.98 rg
+40 448 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 451 Td (                                                    employers                         ) Tj
+ET
+0.96 0.97 0.98 rg
+40 435 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 438 Td (                                                    vacancies                         ) Tj
+ET
+0.96 0.97 0.98 rg
+40 422 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 425 Td (                                                    offers                            ) Tj
+ET
+0.96 0.97 0.98 rg
+40 409 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 412 Td (                                                    algorithm_tasks                   ) Tj
+ET
+0.96 0.97 0.98 rg
+40 396 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 399 Td (                                                    task_submissions                  ) Tj
+ET
+0.96 0.97 0.98 rg
+40 383 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 386 Td (                                                    security_audit_logs               ) Tj
+ET
+0.96 0.97 0.98 rg
+40 370 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 373 Td (                                                    api_idempotency_records           ) Tj
+ET
+0.96 0.97 0.98 rg
+40 357 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 360 Td (                                                             ) Tj
+ET
+0.96 0.97 0.98 rg
+40 344 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 347 Td (                                                                                          ) Tj
+ET
+0.96 0.97 0.98 rg
+40 331 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 334 Td (       ) Tj
+ET
+0.96 0.97 0.98 rg
+40 318 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 321 Td (                            LLM / AI Provaydery \(II-portret\)                            ) Tj
+ET
+0.96 0.97 0.98 rg
+40 305 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 308 Td (                    ) Tj
+ET
+0.96 0.97 0.98 rg
+40 292 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 295 Td (      Gemini       OpenRouter      YandexGPT     Ollama \(lokalnaya\)            ) Tj
+ET
+0.96 0.97 0.98 rg
+40 279 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 282 Td (      Flash 1.5    Multi-model     Pro           Self-hosted LLM               ) Tj
+ET
+0.96 0.97 0.98 rg
+40 266 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 269 Td (                    ) Tj
+ET
+0.96 0.97 0.98 rg
+40 253 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 256 Td (       ) Tj
+ET
+0.96 0.97 0.98 rg
+40 240 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 243 Td (                                                                                          ) Tj
+ET
+0.96 0.97 0.98 rg
+40 227 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 230 Td (       ) Tj
+ET
+0.96 0.97 0.98 rg
+40 214 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 217 Td (                       Izolirovannaya Docker-pesochnitsa \(Sandbox\)                           ) Tj
+ET
+0.96 0.97 0.98 rg
+40 201 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 204 Td (     Judge0 CE    Docker API    cgroups v2    seccomp    --net=none                 ) Tj
+ET
+0.96 0.97 0.98 rg
+40 188 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 191 Td (       ) Tj
+ET
+0.96 0.97 0.98 rg
+40 175 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 178 Td (                                                                                          ) Tj
+ET
+0.96 0.97 0.98 rg
+40 162 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 165 Td () Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 146 Td (1.3. Potoki dannykh) Tj
+ET
+0.96 0.97 0.98 rg
+40 120 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 123 Td (Soiskatel                   Platforma                      Rabotodatel) Tj
+ET
+0.96 0.97 0.98 rg
+40 107 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 110 Td (                                                           ) Tj
+ET
+0.96 0.97 0.98 rg
+40 94 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 97 Td (  1. Registratsiya /                                         ) Tj
+ET
+0.96 0.97 0.98 rg
+40 81 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 84 Td (     OAuth \(GitHub/hh/Yandeks\)                               ) Tj
+ET
+0.8 0.8 0.8 RG 1 w
+40 45 m 555 45 l S
+BT
+/F1 8 Tf
+0.5 0.5 0.5 rg
+40 32 Td (FSP Career Arena | Page 2 | Team: NO PHP - NO PROBLEMS - 2026) Tj
+ET
+endstream
+endobj
+9 0 obj
+<</Type/Page/Parent 2 0 R/MediaBox[0 0 595 842]/Resources<</Font<</F1 3 0 R/F2 4 0 R/F3 5 0 R>>>>/Contents 8 0 R>>
+endobj
+10 0 obj
+<</Length 6701>>
+stream
+0.05 0.08 0.18 rg
+0 790 595 52 re f
+0.00 0.90 1.00 RG 2 w
+0 790 m 595 790 l S
+BT
+/F2 10 Tf
+1 1 1 rg
+40 812 Td (RUSSIAN SPORTS PROGRAMMING FEDERATION - FSP CAREER ARENA 2026) Tj
+ET
+BT
+/F1 8 Tf
+0.00 0.90 1.00 rg
+40 798 Td (OFFICIAL TECHNICAL SPECIFICATION & PROJECT MANIFESTO - ITEM 3.4) Tj
+ET
+0.96 0.97 0.98 rg
+40 747 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 750 Td (                                 ) Tj
+ET
+0.96 0.97 0.98 rg
+40 734 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 737 Td (                              2. Verifikatsiya FSP ID        ) Tj
+ET
+0.96 0.97 0.98 rg
+40 721 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 724 Td (                                 + raschyot ELO              ) Tj
+ET
+0.96 0.97 0.98 rg
+40 708 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 711 Td (                                                           ) Tj
+ET
+0.96 0.97 0.98 rg
+40 695 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 698 Td (  3. Prokhozhdenie Areny                                     ) Tj
+ET
+0.96 0.97 0.98 rg
+40 682 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 685 Td (                                 ) Tj
+ET
+0.96 0.97 0.98 rg
+40 669 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 672 Td (                              4. ELO pereschyot              ) Tj
+ET
+0.96 0.97 0.98 rg
+40 656 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 659 Td (                                 + II-portret              ) Tj
+ET
+0.96 0.97 0.98 rg
+40 643 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 646 Td (                                                           ) Tj
+ET
+0.96 0.97 0.98 rg
+40 630 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 633 Td (                              5. Poisk kandidatov   ) Tj
+ET
+0.96 0.97 0.98 rg
+40 617 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 620 Td (                                 po ELO/greydu/steku       ) Tj
+ET
+0.96 0.97 0.98 rg
+40 604 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 607 Td (                                                           ) Tj
+ET
+0.96 0.97 0.98 rg
+40 591 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 594 Td (                              6. Offer s vilkoy    ) Tj
+ET
+0.96 0.97 0.98 rg
+40 578 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 581 Td (                                 \(kontakty skryty\)         ) Tj
+ET
+0.96 0.97 0.98 rg
+40 565 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 568 Td (                                                           ) Tj
+ET
+0.96 0.97 0.98 rg
+40 552 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 555 Td (  7. Prinyatie / Otklonenie                                 ) Tj
+ET
+0.96 0.97 0.98 rg
+40 539 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 542 Td (                                 ) Tj
+ET
+0.96 0.97 0.98 rg
+40 526 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 529 Td (                              8. Demaskirovka kontaktov    ) Tj
+ET
+0.96 0.97 0.98 rg
+40 513 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 516 Td (                                 \(152-FZ audit log\)        ) Tj
+ET
+0.96 0.97 0.98 rg
+40 500 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 503 Td (                              ) Tj
+ET
+0.96 0.97 0.98 rg
+40 487 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 490 Td (                                                           ) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 471 Td (1.4. Stek tekhnologiy) Tj
+ET
+0.94 0.96 0.98 rg
+40 446 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 448 Td (Sloy  |  Tekhnologii) Tj
+ET
+0.94 0.96 0.98 rg
+40 433 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 435 Td (Backend  |  Java 21 LTS, Kotlin 2.0, Spring Boot 3.3.4, Spring Security 6, Spring Data JPA, Hib) Tj
+ET
+0.94 0.96 0.98 rg
+40 420 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 422 Td (Frontend  |  React 19, TypeScript 7, Tailwind CSS 4, Vite 8, Monaco Editor, Lucide Icons, Canva) Tj
+ET
+0.94 0.96 0.98 rg
+40 407 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 409 Td (Mobile  |  Kotlin 2.0, Jetpack Compose, Material 3, Navigation Compose, Retrofit 2, Moshi, OkHt) Tj
+ET
+0.94 0.96 0.98 rg
+40 394 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 396 Td (BD  |  PostgreSQL 16 Alpine) Tj
+ET
+0.94 0.96 0.98 rg
+40 381 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 383 Td (Infra  |  Docker, Docker Compose, Nginx \(SPA reverse proxy\), GitHub Actions CI/CD, GHCR) Tj
+ET
+0.94 0.96 0.98 rg
+40 368 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 370 Td (AI/LLM  |  Google Gemini 1.5 Flash, OpenRouter \(multi-model\), YandexGPT Pro, Ollama \(self-hoste) Tj
+ET
+0.94 0.96 0.98 rg
+40 355 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 357 Td (Sandbox  |  Judge0 CE, Docker Container Engine, Linux cgroups v2, seccomp) Tj
+ET
+0.94 0.96 0.98 rg
+40 342 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 344 Td (SSO \(budushchee\)  |  Keycloak 24) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 325 Td (---) Tj
+ET
+0.00 0.85 0.95 RG 2 w
+40 302 m 555 302 l S
+BT
+/F2 12 Tf
+0.05 0.25 0.55 rg
+40 306 Td (2. Mekhanika obratnogo nayma i ranzhirovaniya) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 278 Td (2.1. Kontseptsiya obratnogo nayma \(Reverse Recruiting\)) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 255 Td (V klassicheskom nayme soiskatel otklikaetsya na vakansii. V FSP Karernoy Arene vsyo naoborot:) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 236 Td (1. Rabotodatel izuchaet verifitsirovannyy profil sportsmena FSP \(ELO-reyting, sportivnyy razryad, ste) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 223 Td (2. Rabotodatel otpravlyaet offer s obyazatelnoy vilkoy zarabotnoy platy \(v rublyakh, otdo\).) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 210 Td (3. Soiskatel prinimaet ili otklonyaet offer. Kontakty raskryvayutsya tolko posle prinyatiya.) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 191 Td (> Klyuchevoy printsip: Rabotodateli konkuriruyut za talanty, a ne naoborot.) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 172 Td (2.2. Algoritm matchinga) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 149 Td (Ranzhirovanie kandidatov dlya rabotodatelya osushchestvlyaetsya po kompleksnoy formule CandidateMatchScore:) Tj
+ET
+0.96 0.97 0.98 rg
+40 127 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 130 Td (overallScore = w  fspRankScore + w  algoTestScore + w  stackMatchScore + w  experienceS) Tj
+ET
+0.94 0.96 0.98 rg
+40 109 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 111 Td (Komponent  |  Ves  |  Opisanie) Tj
+ET
+0.94 0.96 0.98 rg
+40 96 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 98 Td (`fspRankScore`  |  35%  |  Sportivnyy razryad FSP \(ELO\). Chem vyshe  tem bolshe ballov) Tj
+ET
+0.94 0.96 0.98 rg
+40 83 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 85 Td (`algoTestScore`  |  25%  |  Rezultaty algoritmicheskogo testirovaniya v Arene \(% prokhozhdeniya, vr) Tj
+ET
+0.8 0.8 0.8 RG 1 w
+40 45 m 555 45 l S
+BT
+/F1 8 Tf
+0.5 0.5 0.5 rg
+40 32 Td (FSP Career Arena | Page 3 | Team: NO PHP - NO PROBLEMS - 2026) Tj
+ET
+endstream
+endobj
+11 0 obj
+<</Type/Page/Parent 2 0 R/MediaBox[0 0 595 842]/Resources<</Font<</F1 3 0 R/F2 4 0 R/F3 5 0 R>>>>/Contents 10 0 R>>
+endobj
+12 0 obj
+<</Length 6083>>
+stream
+0.05 0.08 0.18 rg
+0 790 595 52 re f
+0.00 0.90 1.00 RG 2 w
+0 790 m 595 790 l S
+BT
+/F2 10 Tf
+1 1 1 rg
+40 812 Td (RUSSIAN SPORTS PROGRAMMING FEDERATION - FSP CAREER ARENA 2026) Tj
+ET
+BT
+/F1 8 Tf
+0.00 0.90 1.00 rg
+40 798 Td (OFFICIAL TECHNICAL SPECIFICATION & PROJECT MANIFESTO - ITEM 3.4) Tj
+ET
+0.94 0.96 0.98 rg
+40 748 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 750 Td (`stackMatchScore`  |  25%  |  Sovpadenie tekhnologicheskogo steka kandidata s trebovaniyami vakans) Tj
+ET
+0.94 0.96 0.98 rg
+40 735 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 737 Td (`experienceScore`  |  15%  |  Kommercheskiy opyt raboty \(gody, podtverzhdenie cherez hh.ru\)) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 718 Td (2.3. Sistema ELO-reytinga i sportivnykh razryadov FSP) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 695 Td (Reyting ELO privyazan k ofitsialnoy sisteme EVSK Minsporta RF po sportivnomu programmirovaniyu:) Tj
+ET
+0.94 0.96 0.98 rg
+40 674 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 676 Td (Uroven  |  Razryad FSP  |  ELO diapazon  |  Pertsentil  |  Trebovaniya) Tj
+ET
+0.94 0.96 0.98 rg
+40 661 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 663 Td (1  |  Kvalifikatsionnyy divizion  |  1200  1399  |  Vne TOPa  |  Registratsiya v reestre FSP) Tj
+ET
+0.94 0.96 0.98 rg
+40 648 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 650 Td (2  |  3-y sportivnyy razryad  |  1400  1699  |  TOP-35%  |  1+ dostizhenie, 5+ zadach) Tj
+ET
+0.94 0.96 0.98 rg
+40 635 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 637 Td (3  |  2-y sportivnyy razryad  |  1700  1999  |  TOP-15%  |  Prizovoe mesto, 25+ zadach) Tj
+ET
+0.94 0.96 0.98 rg
+40 622 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 624 Td (4  |  1-y sportivnyy razryad  |  2000  2399  |  TOP-5%  |  2+ dostizheniya, 100+ zadach) Tj
+ET
+0.94 0.96 0.98 rg
+40 609 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 611 Td (5  |  KMS \(Kandidat v Mastera Sporta\)  |  2400  2699  |  TOP-1.5%  |  Pobedy na turnirakh, 300+) Tj
+ET
+0.94 0.96 0.98 rg
+40 596 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 598 Td (6  |  Master sporta RF  |  2700  2999  |  TOP-0.5%  |  1-e mesto ChR, 500+ zadach) Tj
+ET
+0.94 0.96 0.98 rg
+40 583 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 585 Td (7  |  Grossmeyster / Chempion RF  |  3000  3500  |  TOP-0.05%  |  Mnogokratnyy chempion, 800+ za) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 566 Td (2.4. Raschyot ELO) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 543 Td (Formula raschyota ELO iz ratingEngine.ts:) Tj
+ET
+0.96 0.97 0.98 rg
+40 521 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 524 Td (calculatedElo = 1200 \(bazovyy start\)) Tj
+ET
+0.96 0.97 0.98 rg
+40 508 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 511 Td (+ algoScore \(Easy1 + Med2.5 + Hard6\)) Tj
+ET
+0.96 0.97 0.98 rg
+40 495 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 498 Td (+ contestBonus \(\(contestRating - 1500\)  0.35\)) Tj
+ET
+0.96 0.97 0.98 rg
+40 482 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 485 Td (+ arenaBonus \(solvedTasks  65\)) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 466 Td (Pri nalichii kontestnogo reytinga  1600:) Tj
+ET
+0.96 0.97 0.98 rg
+40 450 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 453 Td (targetElo = 0.35  targetElo + 0.65  contestRating) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 434 Td (ELO ogranichen potolkom 3000 dlya areny i 2950 dlya importirovannykh rezultatov LeetCode.) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 415 Td (2.5. Opredelenie greyda \(Junior / Middle / Senior\)) Tj
+ET
+0.94 0.96 0.98 rg
+40 390 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 392 Td (Greyd  |  Usloviya) Tj
+ET
+0.94 0.96 0.98 rg
+40 377 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 379 Td (Senior  |  ELO  2400 ILI \(opyt  5 let I ELO  1800\)) Tj
+ET
+0.94 0.96 0.98 rg
+40 364 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 366 Td (Middle  |  ELO  2000 ILI \(opyt  2 goda I ELO  1400\) ILI opyt  4 goda) Tj
+ET
+0.94 0.96 0.98 rg
+40 351 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 353 Td (Junior  |  Ostalnye sluchai) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 334 Td (2.6. Antifrod-zashchita ranzhirovaniya) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 311 Td (Kriticheski vazhnoe pravilo: kandidat s 0 dostizheniyami i 0 reshyonnymi zadachami ne mozhet popast v TOP n) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+45 292 Td (- Bez istorii FSP  Kvalifikatsionnyy divizion \(Bez istorii FSP\)) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+45 279 Td (- Est ELO, no 0 zadach i 0 turnirov  Vne TOPa \(Kvalifikatsionnyy divizion\)) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 260 Td (2.7. Pravila skrytiya kontaktov \(152-FZ\)) Tj
+ET
+0.94 0.96 0.98 rg
+40 235 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 237 Td (Etap  |  Vidimost kontaktov) Tj
+ET
+0.94 0.96 0.98 rg
+40 222 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 224 Td (Poisk kandidatov  |  Zamaskirovany: `+7 \(9\) *--42`, `@a*v`) Tj
+ET
+0.94 0.96 0.98 rg
+40 209 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 211 Td (Offer otpravlen  |  Zamaskirovany) Tj
+ET
+0.94 0.96 0.98 rg
+40 196 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 198 Td (Offer prinyat soiskatelem  |  Demaskiruyutsya  realnye dannye peredayutsya rabotodatelyu) Tj
+ET
+0.94 0.96 0.98 rg
+40 183 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 185 Td (Kazhdyy dostup  |  Zapis v `security_audit_logs` \(kto, kogda, IP, tsel\)) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 166 Td (2.8. Slepoy nayom \(Anonymized / Blind Hiring Mode\)) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 143 Td (Dlya polnogo ustraneniya kognitivnykh iskazheniy i bessoznatelnoy predvzyatosti \(Zero-Bias Standard\) v p) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+45 124 Td (- Maskirovanie identifikatorov: Imena kandidatov zamenyayutsya na standartizirovannyy psevdonim \(nap) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+45 111 Td (- Sokhranenie klyuchevykh obektivnykh metrik: Rekruter vidit isklyuchitelno obektivnye sportivnye dos) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+45 98 Td (- Uslovie raskrytiya: Polnyy profil soiskatelya raskryvaetsya avtomaticheski posle vzaimnogo otklika) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 79 Td (---) Tj
+ET
+0.8 0.8 0.8 RG 1 w
+40 45 m 555 45 l S
+BT
+/F1 8 Tf
+0.5 0.5 0.5 rg
+40 32 Td (FSP Career Arena | Page 4 | Team: NO PHP - NO PROBLEMS - 2026) Tj
+ET
+endstream
+endobj
+13 0 obj
+<</Type/Page/Parent 2 0 R/MediaBox[0 0 595 842]/Resources<</Font<</F1 3 0 R/F2 4 0 R/F3 5 0 R>>>>/Contents 12 0 R>>
+endobj
+14 0 obj
+<</Length 5702>>
+stream
+0.05 0.08 0.18 rg
+0 790 595 52 re f
+0.00 0.90 1.00 RG 2 w
+0 790 m 595 790 l S
+BT
+/F2 10 Tf
+1 1 1 rg
+40 812 Td (RUSSIAN SPORTS PROGRAMMING FEDERATION - FSP CAREER ARENA 2026) Tj
+ET
+BT
+/F1 8 Tf
+0.00 0.90 1.00 rg
+40 798 Td (OFFICIAL TECHNICAL SPECIFICATION & PROJECT MANIFESTO - ITEM 3.4) Tj
+ET
+0.00 0.85 0.95 RG 2 w
+40 746 m 555 746 l S
+BT
+/F2 12 Tf
+0.05 0.25 0.55 rg
+40 750 Td (3. Mekhanika testirovaniya i zashchity ot sliva) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 722 Td (3.1. Algoritmicheskaya Arena FSP) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 699 Td (Arena  vstroennaya sreda dlya resheniya algoritmicheskikh zadach s veb-IDE \(Monaco Editor\). Podderzhivaemye) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 680 Td (Zadachi importiruyutsya iz tryokh istochnikov:) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 667 Td (1. Vstroennyy bank zadach \(klassicheskie LeetCode-zadachi, adaptirovannye pod FSP\)) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 654 Td (2. Zhivoy import iz LeetCode cherez GraphQL proksi) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 641 Td (3. Kastomnye zadaniya ot rabotodatelya \(cherez AssignTestModal\)) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 622 Td (3.2. Raschyot ELO za reshenie zadach) Tj
+ET
+0.94 0.96 0.98 rg
+40 597 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 599 Td (Slozhnost  |  ELO bonus  |  Primer) Tj
+ET
+0.94 0.96 0.98 rg
+40 584 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 586 Td (Easy  |  +50 ELO  |  Two Sum, Valid Parentheses) Tj
+ET
+0.94 0.96 0.98 rg
+40 571 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 573 Td (Medium  |  +80 ELO  |  LRU Cache, Merge Intervals) Tj
+ET
+0.94 0.96 0.98 rg
+40 558 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 560 Td (Hard  |  +100 ELO  |  Median of Two Sorted Arrays) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 541 Td (3.3. Ogranichenie kuldauna peresdachi) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+45 518 Td (- Polnaya peresdacha vsekh testov vozmozhna odin raz v 3 mesyatsa \(pole `canRetakeAfterDate` v profile ) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+45 505 Td (- Otdelnye novye zadachi mozhno reshat bez ogranicheniy.) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+45 492 Td (- Servernyy taymer blokiruet povtornuyu otpravku resheniya po uzhe sdannoy zadache.) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 473 Td (3.4. Izolirovannaya Docker-pesochnitsa \(Sandbox\)) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 450 Td (Kazhdaya posylka koda vypolnyaetsya v odnorazovom konteynere s polnoy izolyatsiey:) Tj
+ET
+0.96 0.97 0.98 rg
+40 428 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 431 Td ([ Monaco IDE ]  [ Spring Boot 3 Backend ]  [ Sandbox Manager ]) Tj
+ET
+0.96 0.97 0.98 rg
+40 415 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 418 Td () Tj
+ET
+0.96 0.97 0.98 rg
+40 402 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 405 Td (Docker API / cgroups v2 / seccomp) Tj
+ET
+0.96 0.97 0.98 rg
+40 389 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 392 Td () Tj
+ET
+0.96 0.97 0.98 rg
+40 376 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 379 Td () Tj
+ET
+0.96 0.97 0.98 rg
+40 363 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 366 Td (  IZOLIROVANNAYa DOCKER-PESOChNITsA  ) Tj
+ET
+0.96 0.97 0.98 rg
+40 350 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 353 Td (   --net=none \(net seti\)         ) Tj
+ET
+0.96 0.97 0.98 rg
+40 337 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 340 Td (   Memory: 128256 MB \(cgroups\)  ) Tj
+ET
+0.96 0.97 0.98 rg
+40 324 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 327 Td (   CPU: 10002000 ms na test     ) Tj
+ET
+0.96 0.97 0.98 rg
+40 311 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 314 Td (   User: nobody \(non-root\)       ) Tj
+ET
+0.96 0.97 0.98 rg
+40 298 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 301 Td (   FS: Read-Only rootfs          ) Tj
+ET
+0.96 0.97 0.98 rg
+40 285 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 288 Td (   PIDs Limit: 32                ) Tj
+ET
+0.96 0.97 0.98 rg
+40 272 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 275 Td (   seccomp: blocked syscalls     ) Tj
+ET
+0.96 0.97 0.98 rg
+40 259 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 262 Td () Tj
+ET
+0.96 0.97 0.98 rg
+40 246 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 249 Td () Tj
+ET
+0.96 0.97 0.98 rg
+40 233 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 236 Td ([ Servernyy Verdict Validator ]) Tj
+ET
+0.96 0.97 0.98 rg
+40 220 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 223 Td (\(ACCEPTED / WA / TLE / CE / RE\)) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 204 Td (3.5. Parametry izolyatsii) Tj
+ET
+0.94 0.96 0.98 rg
+40 179 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 181 Td (Parametr  |  Znachenie  |  Naznachenie) Tj
+ET
+0.94 0.96 0.98 rg
+40 166 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 168 Td (Limit sessii  |  45 minut  |  Zashchita ot rastyagivaniya) Tj
+ET
+0.94 0.96 0.98 rg
+40 153 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 155 Td (CPU Time  |  10002000 ms / test  |  Otsechka neoptimalnykh O\(N\) resheniy) Tj
+ET
+0.94 0.96 0.98 rg
+40 140 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 142 Td (RAM  |  128256 MB  |  Zashchita ot OOM khosta) Tj
+ET
+0.94 0.96 0.98 rg
+40 127 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 129 Td (Set  |  `--net=none`  |  Isklyuchenie curl / LLM / vneshnikh BD) Tj
+ET
+0.94 0.96 0.98 rg
+40 114 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 116 Td (Faylovaya sistema  |  Read-Only + tmpfs 16MB  |  Zashchita ot vredonosnykh skriptov) Tj
+ET
+0.94 0.96 0.98 rg
+40 101 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 103 Td (Protsessy  |  PIDs  32  |  Zashchita ot fork-bomb) Tj
+ET
+0.94 0.96 0.98 rg
+40 88 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 90 Td (Prava  |  `nobody:65534`, `CAP_DROP_ALL`  |  Isklyuchenie eskalatsii privilegiy) Tj
+ET
+0.8 0.8 0.8 RG 1 w
+40 45 m 555 45 l S
+BT
+/F1 8 Tf
+0.5 0.5 0.5 rg
+40 32 Td (FSP Career Arena | Page 5 | Team: NO PHP - NO PROBLEMS - 2026) Tj
+ET
+endstream
+endobj
+15 0 obj
+<</Type/Page/Parent 2 0 R/MediaBox[0 0 595 842]/Resources<</Font<</F1 3 0 R/F2 4 0 R/F3 5 0 R>>>>/Contents 14 0 R>>
+endobj
+16 0 obj
+<</Length 5491>>
+stream
+0.05 0.08 0.18 rg
+0 790 595 52 re f
+0.00 0.90 1.00 RG 2 w
+0 790 m 595 790 l S
+BT
+/F2 10 Tf
+1 1 1 rg
+40 812 Td (RUSSIAN SPORTS PROGRAMMING FEDERATION - FSP CAREER ARENA 2026) Tj
+ET
+BT
+/F1 8 Tf
+0.00 0.90 1.00 rg
+40 798 Td (OFFICIAL TECHNICAL SPECIFICATION & PROJECT MANIFESTO - ITEM 3.4) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 750 Td (3.6. Antifrod-kontrol) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 727 Td (1. Skrytye test-keysy \(Hidden Suites\): Brauzer poluchaet tolko 2-3 otkrytykh primera. Granichnye i nag) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 714 Td (2. Telemetriya chestnosti:) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+45 701 Td (- Otslezhivanie `window.blur` \(poterya fokusa\)) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+45 688 Td (- Inspektsiya `onPaste` \(massivnaya vstavka chuzhogo koda\)) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+45 675 Td (- Fiksatsiya anomaliy v `security_audit_logs`) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 662 Td (3. Kriptograficheskaya fiksatsiya:) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+45 649 Td (- SHA-256 khesh iskhodnogo koda v tablitse `task_submissions`) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+45 636 Td (- Neizmenyaemye zapisi: vremya vypolneniya, potreblenie pamyati, taymstemp) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 623 Td (4. Dinamicheskaya generatsiya zadach: Bank zadach rasshiryaetsya cherez live-import iz LeetCode API. Rabotodat) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 604 Td (---) Tj
+ET
+0.00 0.85 0.95 RG 2 w
+40 581 m 555 581 l S
+BT
+/F2 12 Tf
+0.05 0.25 0.55 rg
+40 585 Td (4. Skhema integratsii s FSP ID) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 557 Td (4.1. Tekushchaya realizatsiya) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 534 Td (Na tekushchem etape profil kandidata soderzhit:) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+45 521 Td (- `fspId`  unikalnyy identifikator v reestre FSP RF \(naprimer, `FSP-RUS-2026-0088`\)) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+45 508 Td (- `fspRank`  sportivnyy razryad EVSK) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+45 495 Td (- `fspRating`  ELO-reyting) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+45 482 Td (- `isVerified`  status verifikatsii) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+45 469 Td (- `keycloakSub`  identifikator Keycloak \(podgotovlen v skheme dannykh\)) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+45 456 Td (- `fspProfileUrl`  ssylka na profil sportsmena na `fsp-russia.ru`) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 437 Td (4.2. Arkhitekturnyy podkhod k budushchey integratsii s Keycloak) Tj
+ET
+0.96 0.97 0.98 rg
+40 411 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 414 Td (          ) Tj
+ET
+0.96 0.97 0.98 rg
+40 398 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 401 Td (  Polzovatel                  Keycloak 24         ) Tj
+ET
+0.96 0.97 0.98 rg
+40 385 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 388 Td (  \(Brauzer / Mobile\)    Realm: fsp-arena    ) Tj
+ET
+0.96 0.97 0.98 rg
+40 372 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 375 Td (                      OIDC                          ) Tj
+ET
+0.96 0.97 0.98 rg
+40 359 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 362 Td (                      flow      Klienty:            ) Tj
+ET
+0.96 0.97 0.98 rg
+40 346 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 349 Td (             web-frontend      ) Tj
+ET
+0.96 0.97 0.98 rg
+40 333 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 336 Td (   mobile-app        ) Tj
+ET
+0.96 0.97 0.98 rg
+40 320 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 323 Td (   backend-api       ) Tj
+ET
+0.96 0.97 0.98 rg
+40 307 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 310 Td (                      ) Tj
+ET
+0.96 0.97 0.98 rg
+40 294 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 297 Td (  Roli:               ) Tj
+ET
+0.96 0.97 0.98 rg
+40 281 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 284 Td (   CANDIDATE         ) Tj
+ET
+0.96 0.97 0.98 rg
+40 268 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 271 Td (   EMPLOYER          ) Tj
+ET
+0.96 0.97 0.98 rg
+40 255 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 258 Td (   ADMIN             ) Tj
+ET
+0.96 0.97 0.98 rg
+40 242 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 245 Td (                      ) Tj
+ET
+0.96 0.97 0.98 rg
+40 229 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 232 Td (  Federatsiya identiti: ) Tj
+ET
+0.96 0.97 0.98 rg
+40 216 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 219 Td (   fsp-russia.ru IDP ) Tj
+ET
+0.96 0.97 0.98 rg
+40 203 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 206 Td (   GitHub OAuth2     ) Tj
+ET
+0.96 0.97 0.98 rg
+40 190 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 193 Td (   Yandeks ID         ) Tj
+ET
+0.96 0.97 0.98 rg
+40 177 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 180 Td (   hh.ru OAuth2      ) Tj
+ET
+0.96 0.97 0.98 rg
+40 164 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 167 Td () Tj
+ET
+0.96 0.97 0.98 rg
+40 151 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 154 Td () Tj
+ET
+0.96 0.97 0.98 rg
+40 138 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 141 Td (JWT \(RS256\)) Tj
+ET
+0.96 0.97 0.98 rg
+40 125 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 128 Td () Tj
+ET
+0.96 0.97 0.98 rg
+40 112 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 115 Td () Tj
+ET
+0.96 0.97 0.98 rg
+40 99 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 102 Td () Tj
+ET
+0.96 0.97 0.98 rg
+40 86 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 89 Td (  Spring Boot 3       ) Tj
+ET
+0.96 0.97 0.98 rg
+40 73 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 76 Td (  Backend             ) Tj
+ET
+0.8 0.8 0.8 RG 1 w
+40 45 m 555 45 l S
+BT
+/F1 8 Tf
+0.5 0.5 0.5 rg
+40 32 Td (FSP Career Arena | Page 6 | Team: NO PHP - NO PROBLEMS - 2026) Tj
+ET
+endstream
+endobj
+17 0 obj
+<</Type/Page/Parent 2 0 R/MediaBox[0 0 595 842]/Resources<</Font<</F1 3 0 R/F2 4 0 R/F3 5 0 R>>>>/Contents 16 0 R>>
+endobj
+18 0 obj
+<</Length 7093>>
+stream
+0.05 0.08 0.18 rg
+0 790 595 52 re f
+0.00 0.90 1.00 RG 2 w
+0 790 m 595 790 l S
+BT
+/F2 10 Tf
+1 1 1 rg
+40 812 Td (RUSSIAN SPORTS PROGRAMMING FEDERATION - FSP CAREER ARENA 2026) Tj
+ET
+BT
+/F1 8 Tf
+0.00 0.90 1.00 rg
+40 798 Td (OFFICIAL TECHNICAL SPECIFICATION & PROJECT MANIFESTO - ITEM 3.4) Tj
+ET
+0.96 0.97 0.98 rg
+40 747 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 750 Td (                      ) Tj
+ET
+0.96 0.97 0.98 rg
+40 734 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 737 Td (  Spring Security 6   ) Tj
+ET
+0.96 0.97 0.98 rg
+40 721 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 724 Td (  OAuth2 Resource     ) Tj
+ET
+0.96 0.97 0.98 rg
+40 708 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 711 Td (  Server              ) Tj
+ET
+0.96 0.97 0.98 rg
+40 695 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 698 Td (                      ) Tj
+ET
+0.96 0.97 0.98 rg
+40 682 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 685 Td (   Validatsiya JWT     ) Tj
+ET
+0.96 0.97 0.98 rg
+40 669 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 672 Td (   Mapping roley     ) Tj
+ET
+0.96 0.97 0.98 rg
+40 656 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 659 Td (   Sinkhronizatsiya     ) Tj
+ET
+0.96 0.97 0.98 rg
+40 643 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 646 Td (    fspId  keycloakSub) Tj
+ET
+0.96 0.97 0.98 rg
+40 630 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 633 Td () Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 614 Td (Shagi migratsii:) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 595 Td (1. Razvernut Keycloak 24 kak otdelnyy servis v docker-compose.yml) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 582 Td (2. Sozdat Realm fsp-arena s rolyami CANDIDATE, EMPLOYER, ADMIN) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 569 Td (3. Nastroit Identity Federation s reestrom FSP \(fsp-russia.ru\) cherez SAML/OIDC) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 556 Td (4. Pereklyuchit Spring Security s sobstvennogo JWT na OAuth2 Resource Server s validatsiey JWT ot Keyc) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 543 Td (5. Mappirovat keycloakSub na fspId pri pervoy autentifikatsii) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 524 Td (---) Tj
+ET
+0.00 0.85 0.95 RG 2 w
+40 501 m 555 501 l S
+BT
+/F2 12 Tf
+0.05 0.25 0.55 rg
+40 505 Td (5. Spetsifikatsiya API i bezopasnost) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 477 Td (5.1. Swagger UI i OpenAPI) Tj
+ET
+0.94 0.96 0.98 rg
+40 452 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 454 Td (Resurs  |  URL) Tj
+ET
+0.94 0.96 0.98 rg
+40 439 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 441 Td (Swagger UI \(interaktivnaya dokumentatsiya\)  |  `http://localhost:8080/swagger-ui.html`) Tj
+ET
+0.94 0.96 0.98 rg
+40 426 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 428 Td (OpenAPI v3 JSON \(mashinnaya spetsifikatsiya\)  |  `http://localhost:8080/v3/api-docs`) Tj
+ET
+0.94 0.96 0.98 rg
+40 413 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 415 Td (Oblachnyy stend  |  `https://linskay-demo-2026.hf.space`) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 396 Td (5.2. Osnovnye endpointy API \(`/api/v1/`\)) Tj
+ET
+0.94 0.96 0.98 rg
+40 371 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 373 Td (Metod  |  Endpoint  |  Opisanie  |  Rol) Tj
+ET
+0.94 0.96 0.98 rg
+40 358 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 360 Td (`POST`  |  `/auth/login`  |  Autentifikatsiya \(email + parol  JWT\)  |  Vse) Tj
+ET
+0.94 0.96 0.98 rg
+40 345 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 347 Td (`POST`  |  `/auth/register`  |  Registratsiya novogo polzovatelya  |  Vse) Tj
+ET
+0.94 0.96 0.98 rg
+40 332 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 334 Td (`GET`  |  `/auth/test-users`  |  Spisok testovykh akkauntov dlya 1-klik vkhoda  |  Vse) Tj
+ET
+0.94 0.96 0.98 rg
+40 319 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 321 Td (`GET`  |  `/auth/privacy-policy`  |  Politika konfidentsialnosti \(152-FZ\)  |  Vse) Tj
+ET
+0.94 0.96 0.98 rg
+40 306 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 308 Td (`GET`  |  `/users/me`  |  Dannye tekushchey sessii polzovatelya  |  Vse) Tj
+ET
+0.94 0.96 0.98 rg
+40 293 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 295 Td (`PUT`  |  `/users/profile`  |  Obnovlenie profilya polzovatelya  |  Vse) Tj
+ET
+0.94 0.96 0.98 rg
+40 280 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 282 Td (`GET`  |  `/candidates`  |  Unifitsirovannyy poisk i filtratsiya kandidatov  |  EMPLOYER) Tj
+ET
+0.94 0.96 0.98 rg
+40 267 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 269 Td (`GET`  |  `/candidates/{id}/pdf`  |  Avtogeneratsiya ofitsialnogo PDF-pasporta FSP  |  Vse) Tj
+ET
+0.94 0.96 0.98 rg
+40 254 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 256 Td (`GET`  |  `/vacancies/search`  |  Poisk vakansiy s obyazatelnoy vilkoy zarplat  |  CANDIDATE) Tj
+ET
+0.94 0.96 0.98 rg
+40 241 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 243 Td (`POST`  |  `/vacancies`  |  Sozdanie vakansii  |  EMPLOYER) Tj
+ET
+0.94 0.96 0.98 rg
+40 228 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 230 Td (`POST`  |  `/sandbox/execute`  |  Vypolnenie koda v pesochnitse \(Judge0\)  |  CANDIDATE) Tj
+ET
+0.94 0.96 0.98 rg
+40 215 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 217 Td (`POST`  |  `/leetcode/fetch/{slug}`  |  Import zadachi iz LeetCode po slug  |  Vse) Tj
+ET
+0.94 0.96 0.98 rg
+40 202 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 204 Td (`POST`  |  `/ai/generate-summary`  |  Multimodelnaya generatsiya II-portreta \(Strategy\)  |  EMPL) Tj
+ET
+0.94 0.96 0.98 rg
+40 189 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 191 Td (`POST`  |  `/ai/save-profile`  |  Sokhranenie II-rezyume v profil kandidata  |  EMPLOYER) Tj
+ET
+0.94 0.96 0.98 rg
+40 176 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 178 Td (`POST`  |  `/offers`  |  Otpravka offera \(s Idempotency-Key i Webhook\)  |  EMPLOYER) Tj
+ET
+0.94 0.96 0.98 rg
+40 163 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 165 Td (`POST`  |  `/webhooks`  |  Registratsiya iskhodyashchego veb-khuka dlya ATS  |  EMPLOYER) Tj
+ET
+0.94 0.96 0.98 rg
+40 150 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 152 Td (`GET`  |  `/webhooks/employer/{id}`  |  Spisok aktivnykh veb-khukov rabotodatelya  |  EMPLOYER) Tj
+ET
+0.94 0.96 0.98 rg
+40 137 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 139 Td (`POST`  |  `/webhooks/{id}/ping`  |  Testovaya otpravka pinga dlya proverki veb-khuka  |  EMPLOYER) Tj
+ET
+0.94 0.96 0.98 rg
+40 124 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 126 Td (`POST`  |  `/files/upload`  |  Multipart zagruzka rezyume i dokumentov  |  Vse) Tj
+ET
+0.94 0.96 0.98 rg
+40 111 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 113 Td (`GET`  |  `/system/stats`  |  Otkrytaya statistika platformy  |  Vse) Tj
+ET
+0.94 0.96 0.98 rg
+40 98 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 100 Td (`POST`  |  `/auth/sync/github-profile`  |  Sinkhronizatsiya resheniy iz GitHub  |  CANDIDATE) Tj
+ET
+0.94 0.96 0.98 rg
+40 85 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 87 Td (`POST`  |  `/auth/sync/hh-resume`  |  Sinkhronizatsiya rezyume hh.ru  |  CANDIDATE) Tj
+ET
+0.94 0.96 0.98 rg
+40 72 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 74 Td (`GET`  |  `/audit/logs`  |  Zhurnal audita bezopasnosti \(152-FZ\)  |  EMPLOYER) Tj
+ET
+0.8 0.8 0.8 RG 1 w
+40 45 m 555 45 l S
+BT
+/F1 8 Tf
+0.5 0.5 0.5 rg
+40 32 Td (FSP Career Arena | Page 7 | Team: NO PHP - NO PROBLEMS - 2026) Tj
+ET
+endstream
+endobj
+19 0 obj
+<</Type/Page/Parent 2 0 R/MediaBox[0 0 595 842]/Resources<</Font<</F1 3 0 R/F2 4 0 R/F3 5 0 R>>>>/Contents 18 0 R>>
+endobj
+20 0 obj
+<</Length 5270>>
+stream
+0.05 0.08 0.18 rg
+0 790 595 52 re f
+0.00 0.90 1.00 RG 2 w
+0 790 m 595 790 l S
+BT
+/F2 10 Tf
+1 1 1 rg
+40 812 Td (RUSSIAN SPORTS PROGRAMMING FEDERATION - FSP CAREER ARENA 2026) Tj
+ET
+BT
+/F1 8 Tf
+0.00 0.90 1.00 rg
+40 798 Td (OFFICIAL TECHNICAL SPECIFICATION & PROJECT MANIFESTO - ITEM 3.4) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 750 Td (5.3. Rolevaya model \(JWT\)) Tj
+ET
+0.96 0.97 0.98 rg
+40 724 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 727 Td (Authorization: Bearer <JWT>) Tj
+ET
+0.94 0.96 0.98 rg
+40 706 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 708 Td (Rol  |  Opisanie  |  Razresheniya) Tj
+ET
+0.94 0.96 0.98 rg
+40 693 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 695 Td (`CANDIDATE`  |  Soiskatel / Sportsmen FSP  |  Prokhozhdenie Areny, prosmotr offerov, upravlenie ) Tj
+ET
+0.94 0.96 0.98 rg
+40 680 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 682 Td (`EMPLOYER`  |  IT-kompaniya / HR  |  Poisk kandidatov, sozdanie vakansiy, otpravka offerov, nazn) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 663 Td (JWT soderzhit: userId, email, fullName, role, candidateId / employerId, fspElo, fspRank.) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 644 Td (5.4. Idempotentnost API \(RFC 7231\)) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 621 Td (Pri otpravke offera \(POST /api/v1/offers\):) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 602 Td (1. Klient generiruet zagolovok Idempotency-Key: idem-<uuid>) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 589 Td (2. Bekend proveryaet tablitsu api_idempotency_records:) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+45 576 Td (- Pervyy zapros: Sozdayot offer, sokhranyaet klyuch  `HTTP 201 Created`) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+45 563 Td (- Povtornyy zapros \(retray\): Vozvrashchaet sokhranyonnyy offer  `HTTP 200 OK` + zagolovok `Idempotent) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 550 Td (3. Unikalnyy indeks \(employer_id, candidate_id, vacancy_id\) WHERE status = 'PENDING' isklyuchaet dubl) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 531 Td (5.5. Sootvetstvie 152-FZ) Tj
+ET
+0.94 0.96 0.98 rg
+40 506 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 508 Td (Mera  |  Realizatsiya) Tj
+ET
+0.94 0.96 0.98 rg
+40 493 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 495 Td (Maskirovanie PDN  |  Telefon, email, Telegram zamaskirovany v DTO \(`+7 \(9\) *--42`\)) Tj
+ET
+0.94 0.96 0.98 rg
+40 480 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 482 Td (Soglasie polzovatelya  |  Obyazatelnyy chekboks pri registratsii, ssylka na [Polozhenie FSP o PDN]) Tj
+ET
+0.94 0.96 0.98 rg
+40 467 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 469 Td (Demaskirovka po soglasiyu  |  Kontakty raskryvayutsya tolko posle prinyatiya offera kandidatom) Tj
+ET
+0.94 0.96 0.98 rg
+40 454 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 456 Td (Zhurnal audita  |  Tablitsa `security_audit_logs`: actorUserId, actorEmail, targetCandidateId, ip) Tj
+ET
+0.94 0.96 0.98 rg
+40 441 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 443 Td (Dostup k auditu  |  `GET /api/v1/audit/logs` + modalnoe okno `AuditLogModal` v UI) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 424 Td (---) Tj
+ET
+0.00 0.85 0.95 RG 2 w
+40 401 m 555 401 l S
+BT
+/F2 12 Tf
+0.05 0.25 0.55 rg
+40 405 Td (6. Instruktsiya po razvyortyvaniyu) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 377 Td (6.1. Sistemnye trebovaniya) Tj
+ET
+0.94 0.96 0.98 rg
+40 352 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 354 Td (Komponent  |  Minimum) Tj
+ET
+0.94 0.96 0.98 rg
+40 339 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 341 Td (Docker  |  24+) Tj
+ET
+0.94 0.96 0.98 rg
+40 326 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 328 Td (Docker Compose  |  v2+) Tj
+ET
+0.94 0.96 0.98 rg
+40 313 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 315 Td (RAM  |  4 GB) Tj
+ET
+0.94 0.96 0.98 rg
+40 300 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 302 Td (Disk  |  5 GB) Tj
+ET
+0.94 0.96 0.98 rg
+40 287 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 289 Td (OS  |  Windows 10+, macOS 12+, Ubuntu 22.04+) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 270 Td (6.2. Bystryy start \(odna komanda\)) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 247 Td (Linux / macOS:) Tj
+ET
+0.96 0.97 0.98 rg
+40 231 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 234 Td (git clone https://github.com/linskay/fsp-2026.git) Tj
+ET
+0.96 0.97 0.98 rg
+40 218 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 221 Td (cd fsp-2026) Tj
+ET
+0.96 0.97 0.98 rg
+40 205 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 208 Td (chmod +x start.sh) Tj
+ET
+0.96 0.97 0.98 rg
+40 192 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 195 Td (./start.sh) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 176 Td (Windows \(cmd ili PowerShell\):) Tj
+ET
+0.96 0.97 0.98 rg
+40 160 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 163 Td (git clone https://github.com/linskay/fsp-2026.git) Tj
+ET
+0.96 0.97 0.98 rg
+40 147 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 150 Td (cd fsp-2026) Tj
+ET
+0.96 0.97 0.98 rg
+40 134 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 137 Td (start.bat) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 118 Td (Ili napryamuyu cherez Docker Compose:) Tj
+ET
+0.96 0.97 0.98 rg
+40 102 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 105 Td (docker compose up -d) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 86 Td (6.3. Peremennye okruzheniya \(.env\)) Tj
+ET
+0.8 0.8 0.8 RG 1 w
+40 45 m 555 45 l S
+BT
+/F1 8 Tf
+0.5 0.5 0.5 rg
+40 32 Td (FSP Career Arena | Page 8 | Team: NO PHP - NO PROBLEMS - 2026) Tj
+ET
+endstream
+endobj
+21 0 obj
+<</Type/Page/Parent 2 0 R/MediaBox[0 0 595 842]/Resources<</Font<</F1 3 0 R/F2 4 0 R/F3 5 0 R>>>>/Contents 20 0 R>>
+endobj
+22 0 obj
+<</Length 5849>>
+stream
+0.05 0.08 0.18 rg
+0 790 595 52 re f
+0.00 0.90 1.00 RG 2 w
+0 790 m 595 790 l S
+BT
+/F2 10 Tf
+1 1 1 rg
+40 812 Td (RUSSIAN SPORTS PROGRAMMING FEDERATION - FSP CAREER ARENA 2026) Tj
+ET
+BT
+/F1 8 Tf
+0.00 0.90 1.00 rg
+40 798 Td (OFFICIAL TECHNICAL SPECIFICATION & PROJECT MANIFESTO - ITEM 3.4) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 750 Td (Skopiruyte .env.example v .env i pri neobkhodimosti zamenite znacheniya:) Tj
+ET
+0.96 0.97 0.98 rg
+40 728 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 731 Td (cp .env.example .env) Tj
+ET
+0.94 0.96 0.98 rg
+40 710 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 712 Td (Peremennaya  |  Opisanie  |  Po umolchaniyu) Tj
+ET
+0.94 0.96 0.98 rg
+40 697 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 699 Td (`GEMINI_API_KEY`  |  API-klyuch Google Gemini \(II-portret\)  |  Predustanovlen) Tj
+ET
+0.94 0.96 0.98 rg
+40 684 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 686 Td (`OPENROUTER_API_KEY`  |  API-klyuch OpenRouter \(multi-model LLM\)  |  Predustanovlen) Tj
+ET
+0.94 0.96 0.98 rg
+40 671 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 673 Td (`OLLAMA_API_URL`  |  URL lokalnogo Ollama servisa  |  `http://localhost:11434/...`) Tj
+ET
+0.94 0.96 0.98 rg
+40 658 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 660 Td (`YANDEX_API_KEY`  |  API-klyuch YandexGPT  |  \(optsionalno\)) Tj
+ET
+0.94 0.96 0.98 rg
+40 645 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 647 Td (`YANDEX_FOLDER_ID`  |  Folder ID Yandex Cloud  |  \(optsionalno\)) Tj
+ET
+0.94 0.96 0.98 rg
+40 632 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 634 Td (`APP_URL`  |  Adres khostinga  |  `http://localhost:3000`) Tj
+ET
+0.94 0.96 0.98 rg
+40 619 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 621 Td (`GITHUB_CLIENT_ID`  |  GitHub OAuth2 Client ID  |  mock-fallback) Tj
+ET
+0.94 0.96 0.98 rg
+40 606 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 608 Td (`GITHUB_CLIENT_SECRET`  |  GitHub OAuth2 Client Secret  |  mock-fallback) Tj
+ET
+0.94 0.96 0.98 rg
+40 593 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 595 Td (`HH_CLIENT_ID`  |  hh.ru OAuth2 Client ID  |  mock-fallback) Tj
+ET
+0.94 0.96 0.98 rg
+40 580 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 582 Td (`HH_CLIENT_SECRET`  |  hh.ru OAuth2 Client Secret  |  mock-fallback) Tj
+ET
+0.94 0.96 0.98 rg
+40 567 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 569 Td (`JUDGE0_API_URL`  |  URL Judge0 Sandbox API  |  Predustanovlen) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 550 Td (6.4. Docker Compose servisy) Tj
+ET
+0.94 0.96 0.98 rg
+40 525 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 527 Td (Servis  |  Port  |  Opisanie) Tj
+ET
+0.94 0.96 0.98 rg
+40 512 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 514 Td (`postgres`  |  5432  |  PostgreSQL 16 Alpine) Tj
+ET
+0.94 0.96 0.98 rg
+40 499 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 501 Td (`backend`  |  8080  |  Spring Boot 3 \(Java 21\)) Tj
+ET
+0.94 0.96 0.98 rg
+40 486 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 488 Td (`frontend`  |  3000  |  React 19 + Nginx) Tj
+ET
+0.94 0.96 0.98 rg
+40 473 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 475 Td (`ollama`  |  11434  |  Lokalnaya LLM \(optsionalno\)) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 456 Td (6.5. Proverka rabotosposobnosti) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 433 Td (Posle zapuska otkroyte:) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 414 Td (1. Frontend: [http://localhost:3000]\(http://localhost:3000\)  glavnaya stranitsa) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 401 Td (2. Swagger UI: [http://localhost:8080/swagger-ui.html]\(http://localhost:8080/swagger-ui.html\)  API ) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 388 Td (3. Healthcheck: curl http://localhost:8080/api/v1/auth/privacy-policy  status bekenda) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 369 Td (6.6. Testovye uchyotnye zapisi) Tj
+ET
+0.94 0.96 0.98 rg
+40 344 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 346 Td (Rol  |  Email  |  Parol) Tj
+ET
+0.94 0.96 0.98 rg
+40 331 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 333 Td ( Kandidat  |  `candidate@fsp.ru`  |  `candidate2026`) Tj
+ET
+0.94 0.96 0.98 rg
+40 318 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 320 Td ( Rabotodatel  |  `employer@fsp.ru`  |  `employer2026`) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 301 Td (6.7. Ostanovka platformy) Tj
+ET
+0.96 0.97 0.98 rg
+40 275 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 278 Td (docker compose down          # Ostanovit konteynery) Tj
+ET
+0.96 0.97 0.98 rg
+40 262 515 12 re f
+BT
+/F3 7.5 Tf
+0.15 0.2 0.3 rg
+45 265 Td (docker compose down -v       # + udalit dannye \(volumes\)) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 246 Td (---) Tj
+ET
+0.00 0.85 0.95 RG 2 w
+40 223 m 555 223 l S
+BT
+/F2 12 Tf
+0.05 0.25 0.55 rg
+40 227 Td (7. Komanda proekta) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 199 Td (NO PHP  NO PROBLEMS  2026) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 176 Td (Proekt razrabotan v ramkakh ofitsialnogo khakatona Federatsii sportivnogo programmirovaniya Rossii.) Tj
+ET
+0.94 0.96 0.98 rg
+40 155 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 157 Td (Zona otvetstvennosti  |  Opisanie) Tj
+ET
+0.94 0.96 0.98 rg
+40 142 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 144 Td ( Arkhitektura & Backend  |  Spring Boot 3, migratsii PostgreSQL 16 Flyway, Kotlin 2.0 + Java 21) Tj
+ET
+0.94 0.96 0.98 rg
+40 129 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 131 Td ( Frontend & UX/UI  |  React 19 + Vite, Code Arena IDE, integratsiya s GitHub API, OAuth2 avtori) Tj
+ET
+0.94 0.96 0.98 rg
+40 116 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 118 Td ( Mobile App \(Android\)  |  Kotlin 2.0 + Jetpack Compose + Material 3, Clean Architecture + MVV) Tj
+ET
+0.94 0.96 0.98 rg
+40 103 515 12 re f
+BT
+/F1 8 Tf
+0.2 0.25 0.35 rg
+44 105 Td ( DevOps & AI Engine  |  CI/CD na GitHub Actions, multiprovaydernyy II-skoring, deploy na Hug) Tj
+ET
+BT
+/F2 10 Tf
+0.15 0.2 0.3 rg
+40 86 Td (komandy) Tj
+ET
+0.8 0.8 0.8 RG 1 w
+40 45 m 555 45 l S
+BT
+/F1 8 Tf
+0.5 0.5 0.5 rg
+40 32 Td (FSP Career Arena | Page 9 | Team: NO PHP - NO PROBLEMS - 2026) Tj
+ET
+endstream
+endobj
+23 0 obj
+<</Type/Page/Parent 2 0 R/MediaBox[0 0 595 842]/Resources<</Font<</F1 3 0 R/F2 4 0 R/F3 5 0 R>>>>/Contents 22 0 R>>
+endobj
+24 0 obj
+<</Length 1092>>
+stream
+0.05 0.08 0.18 rg
+0 790 595 52 re f
+0.00 0.90 1.00 RG 2 w
+0 790 m 595 790 l S
+BT
+/F2 10 Tf
+1 1 1 rg
+40 812 Td (RUSSIAN SPORTS PROGRAMMING FEDERATION - FSP CAREER ARENA 2026) Tj
+ET
+BT
+/F1 8 Tf
+0.00 0.90 1.00 rg
+40 798 Td (OFFICIAL TECHNICAL SPECIFICATION & PROJECT MANIFESTO - ITEM 3.4) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 750 Td (1. Strogaya staticheskaya tipizatsiya  Java 21, Kotlin 2.0, TypeScript 7) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 737 Td (2. Chistaya arkhitektura  polnoe razdelenie sloyov vo vsekh klientakh) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 724 Td (3. Bezopasnost i zakon  152-FZ, maskirovanie PDN, audit) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 711 Td (4. Inzhenernaya estetika  firmennyy stil FSP, JetBrains Mono) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 692 Td (---) Tj
+ET
+BT
+/F1 8.5 Tf
+0.2 0.25 0.35 rg
+40 673 Td (> NO PHP  NO PROBLEMS  2026  sozdayom tsifrovoe budushchee sportivnogo programmirovaniya Rossii! ) Tj
+ET
+0.8 0.8 0.8 RG 1 w
+40 45 m 555 45 l S
+BT
+/F1 8 Tf
+0.5 0.5 0.5 rg
+40 32 Td (FSP Career Arena | Page 10 | Team: NO PHP - NO PROBLEMS - 2026) Tj
+ET
+endstream
+endobj
+25 0 obj
+<</Type/Page/Parent 2 0 R/MediaBox[0 0 595 842]/Resources<</Font<</F1 3 0 R/F2 4 0 R/F3 5 0 R>>>>/Contents 24 0 R>>
+endobj
+xref
+0 26
+0000000000 65535 f 
+0000000009 00000 n 
+0000000054 00000 n 
+0000000168 00000 n 
+0000000256 00000 n 
+0000000349 00000 n 
+0000000435 00000 n 
+0000005564 00000 n 
+0000005694 00000 n 
+0000013913 00000 n 
+0000014043 00000 n 
+0000020795 00000 n 
+0000020927 00000 n 
+0000027061 00000 n 
+0000027193 00000 n 
+0000032946 00000 n 
+0000033078 00000 n 
+0000038620 00000 n 
+0000038752 00000 n 
+0000045896 00000 n 
+0000046028 00000 n 
+0000051349 00000 n 
+0000051481 00000 n 
+0000057381 00000 n 
+0000057513 00000 n 
+0000058656 00000 n 
+trailer
+<</Size 26/Root 1 0 R>>
+startxref
+58788
+%%EOF

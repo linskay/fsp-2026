@@ -68,7 +68,8 @@ public class SecurityConfig {
                     "/api/v1/tests/categories",
                     "/api/v1/tests/cooldown/**",
                     "/api/v1/leetcode/**",
-                    "/api/v1/sandbox/**"
+                    "/api/v1/sandbox/**",
+                    "/api/v1/system/**"
                 ).permitAll()
 
                 // 4. Strict RBAC: Employer Only Endpoints (Защита функционала работодателя от соискателей)
@@ -99,7 +100,11 @@ public class SecurityConfig {
                     "/api/v1/assessments/**",
                     "/api/v1/interviews/**",
                     "/api/v1/audit/**",
+                    "/api/v1/webhooks/**",
                     "/api/v1/ai-summary/**",
+                    "/api/v1/ai/**",
+                    "/api/v1/users/**",
+                    "/api/v1/files/**",
                     "/ws/**"
                 ).permitAll()
 

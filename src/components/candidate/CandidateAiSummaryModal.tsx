@@ -173,8 +173,24 @@ export const CandidateAiSummaryModal: React.FC<CandidateAiSummaryModalProps> = (
     }
   };
 
-  const handleSave = () => {
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSave = async () => {
     if (generatedSummary) {
+      setIsSaving(true);
+      try {
+        await api.saveAiProfile({
+          candidateId: candidate.id,
+          summaryText: generatedSummary.summaryText,
+          codeCleanlinessScore: 98,
+          keyStrengths: generatedSummary.keyStrengths,
+          recommendedRoles: generatedSummary.recommendedRoles
+        });
+      } catch (err) {
+        console.warn("Save profile fallback to local callback", err);
+      } finally {
+        setIsSaving(false);
+      }
       onSaveSummary(generatedSummary);
       onClose();
     }

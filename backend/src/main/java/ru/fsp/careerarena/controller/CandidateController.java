@@ -22,7 +22,7 @@ public class CandidateController {
 
     private final CandidateService candidateService;
 
-    @GetMapping({"", "/search"})
+    @GetMapping
     @Operation(summary = "Получение списка кандидатов или поиск по фильтрам (специализация, грейд, ELO ФСП, спортивный разряд)")
     public ResponseEntity<List<CandidateDto>> searchCandidates(
             @RequestParam(required = false) Specialization specialization,

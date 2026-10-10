@@ -34,6 +34,7 @@ public class OfferService {
     private final VacancyRepository vacancyRepository;
     private final OfferMapper offerMapper;
     private final IdempotencyService idempotencyService;
+    private final WebhookService webhookService;
 
     @Transactional
     public OfferDto createOffer(CreateOfferRequest request) {
@@ -124,6 +125,13 @@ public class OfferService {
                     saved.getId());
         }
 
+        // Webhook integration: оповещение внешних ATS систем о новом оффере
+        try {
+            webhookService.dispatchOfferEventAsync(employer.getId(), "OFFER_SENT", resultDto);
+        } catch (Exception ex) {
+            log.warn("Failed to dispatch OFFER_SENT webhook: {}", ex.getMessage());
+        }
+
         return resultDto;
     }
 
@@ -165,7 +173,18 @@ public class OfferService {
         invitation.setUpdatedAt(OffsetDateTime.now());
         Invitation saved = invitationRepository.save(invitation);
         log.info("Offer ID={} accepted. Candidate contacts unmasked under 152-FZ", offerId);
-        return offerMapper.toDto(saved);
+        OfferDto dto = offerMapper.toDto(saved);
+
+        // Webhook integration: оповещение ATS/ботов о принятии оффера кандидатом
+        try {
+            if (saved.getEmployer() != null) {
+                webhookService.dispatchOfferEventAsync(saved.getEmployer().getId(), "OFFER_ACCEPTED", dto);
+            }
+        } catch (Exception ex) {
+            log.warn("Failed to dispatch OFFER_ACCEPTED webhook: {}", ex.getMessage());
+        }
+
+        return dto;
     }
 
     @Transactional
@@ -177,7 +196,18 @@ public class OfferService {
         invitation.setStatus(InvitationStatus.DECLINED);
         invitation.setUpdatedAt(OffsetDateTime.now());
         Invitation saved = invitationRepository.save(invitation);
-        return offerMapper.toDto(saved);
+        OfferDto dto = offerMapper.toDto(saved);
+
+        // Webhook integration: оповещение ATS о soft decline оффера
+        try {
+            if (saved.getEmployer() != null) {
+                webhookService.dispatchOfferEventAsync(saved.getEmployer().getId(), "OFFER_DECLINED", dto);
+            }
+        } catch (Exception ex) {
+            log.warn("Failed to dispatch OFFER_DECLINED webhook: {}", ex.getMessage());
+        }
+
+        return dto;
     }
 
     private CandidateProfile findCandidate(UUID candidateId) {
