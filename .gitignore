@@ -10,4 +10,6 @@ coverage/
 target/
 backend/target/
 dist-docs/
-
+.gradle/
+**/build/
+mobile/local.properties

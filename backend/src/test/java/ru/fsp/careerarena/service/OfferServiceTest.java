@@ -12,6 +12,7 @@ import ru.fsp.careerarena.dto.OfferDto;
 import ru.fsp.careerarena.entity.CandidateProfile;
 import ru.fsp.careerarena.entity.EmployerProfile;
 import ru.fsp.careerarena.entity.Invitation;
+import ru.fsp.careerarena.entity.User;
 import ru.fsp.careerarena.entity.Vacancy;
 import ru.fsp.careerarena.entity.enums.InvitationStatus;
 import ru.fsp.careerarena.mapper.OfferMapper;
@@ -25,6 +26,8 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,6 +52,9 @@ class OfferServiceTest {
     @Mock
     private IdempotencyService idempotencyService;
 
+    @Mock
+    private WebhookService webhookService;
+
     private OfferService offerService;
 
     private UUID candidateId;
@@ -63,7 +69,8 @@ class OfferServiceTest {
                 employerRepository,
                 vacancyRepository,
                 offerMapper,
-                idempotencyService
+                idempotencyService,
+                webhookService
         );
 
         candidateId = UUID.randomUUID();
@@ -114,7 +121,8 @@ class OfferServiceTest {
                 .message("Оффер на позицию Senior Java")
                 .build();
 
-        CandidateProfile candidate = CandidateProfile.builder().id(candidateId).fullName("Иван Пестерев").build();
+        User user = User.builder().fullName("Иван Пестерев").build();
+        CandidateProfile candidate = CandidateProfile.builder().id(candidateId).user(user).build();
         EmployerProfile employer = EmployerProfile.builder().id(employerId).companyName("СберТех").build();
         Vacancy vacancy = Vacancy.builder().id(vacancyId).title("Senior Java Core Developer").build();
 
@@ -130,24 +138,24 @@ class OfferServiceTest {
                 .candidate(candidate)
                 .employer(employer)
                 .vacancy(vacancy)
-                .proposedSalary(380000)
+                .salaryOffered(380000)
                 .status(InvitationStatus.PENDING)
                 .build();
 
-        OfferDto expectedDto = OfferDto.builder().id(saved.getId()).proposedSalary(380000).build();
+        OfferDto expectedDto = OfferDto.builder().id(saved.getId()).salaryOffered(380000).build();
 
         when(invitationRepository.save(any(Invitation.class))).thenReturn(saved);
-        when(offerMapper.toDto(saved, false)).thenReturn(expectedDto);
+        when(offerMapper.toDto(any(Invitation.class), anyInt(), anyInt(), eq(false))).thenReturn(expectedDto);
 
         OfferDto result = offerService.createOffer(request);
 
         assertNotNull(result);
-        assertEquals(380000, result.getProposedSalary());
+        assertEquals(380000, result.getSalaryOffered());
 
         ArgumentCaptor<Invitation> captor = ArgumentCaptor.forClass(Invitation.class);
         verify(invitationRepository).save(captor.capture());
-        assertEquals(380000, captor.getValue().getProposedSalary());
-        assertFalse(captor.getValue().isContactsRevealed());
+        assertEquals(380000, captor.getValue().getSalaryOffered());
+        assertEquals(InvitationStatus.PENDING, captor.getValue().getStatus());
     }
 
     @Test
@@ -157,15 +165,21 @@ class OfferServiceTest {
         Invitation offer = Invitation.builder()
                 .id(offerId)
                 .status(InvitationStatus.PENDING)
-                .contactsRevealed(false)
+                .build();
+
+        OfferDto expectedDto = OfferDto.builder()
+                .id(offerId)
+                .status(InvitationStatus.ACCEPTED)
+                .contactsUnmasked(true)
                 .build();
 
         when(invitationRepository.findById(offerId)).thenReturn(Optional.of(offer));
         when(invitationRepository.save(any(Invitation.class))).thenAnswer(i -> i.getArguments()[0]);
+        when(offerMapper.toDto(any(Invitation.class))).thenReturn(expectedDto);
 
-        offerService.acceptOffer(offerId);
+        OfferDto result = offerService.acceptOffer(offerId);
 
-        assertTrue(offer.isContactsRevealed());
+        assertTrue(result.isContactsUnmasked());
         assertEquals(InvitationStatus.ACCEPTED, offer.getStatus());
         verify(invitationRepository).save(offer);
     }

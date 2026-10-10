@@ -9,6 +9,7 @@
 [![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.3.4-65a30d?style=flat-square)](https://spring.io/projects/spring-boot)
 [![React](https://img.shields.io/badge/React-19.0-38bdf8?style=flat-square)](https://react.dev/)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.0_Compose-7c3aed?style=flat-square)](https://kotlinlang.org/)
+[![Android APK](https://img.shields.io/badge/Android-APK_Download-3ddc84?style=flat-square&logo=android&logoColor=white)](https://github.com/linskay/fsp-2026/releases/latest)
 [![152--FZ](https://img.shields.io/badge/Compliance-152--FZ_PDN-blue?style=flat-square)](docs/MANIFEST.md#53-соответствие-152-фз-о-персональных-данных)
 
 ---
@@ -19,6 +20,7 @@
 - **Прямой адрес веб-интерфейса:** [https://linskay-demo-2026.hf.space](https://linskay-demo-2026.hf.space)
 - **Интерактивная документация (GitHub Pages):** [https://linskay.github.io/fsp-2026/](https://linskay.github.io/fsp-2026/)
 - **Интерактивная API спецификация (Swagger UI):** [https://linskay-demo-2026.hf.space/swagger](https://linskay-demo-2026.hf.space/swagger)
+- **Мобильное Android-приложение (APK):** [Скачать в GitHub Releases](https://github.com/linskay/fsp-2026/releases/latest) *(прямая ссылка: [fsp-career-arena.apk](https://linskay.github.io/fsp-2026/fsp-career-arena.apk))*
 
 ---
 

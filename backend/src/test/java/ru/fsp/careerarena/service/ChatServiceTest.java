@@ -7,7 +7,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ru.fsp.careerarena.config.ChatWebSocketHandler;
 import ru.fsp.careerarena.dto.ChatMessageDto;
+import ru.fsp.careerarena.dto.SendMessageRequest;
 import ru.fsp.careerarena.entity.ChatMessage;
 import ru.fsp.careerarena.entity.Invitation;
 import ru.fsp.careerarena.repository.ChatMessageRepository;
@@ -32,11 +34,14 @@ class ChatServiceTest {
     @Mock
     private InvitationRepository invitationRepository;
 
+    @Mock
+    private ChatWebSocketHandler chatWebSocketHandler;
+
     private ChatService chatService;
 
     @BeforeEach
     void setUp() {
-        chatService = new ChatService(chatMessageRepository, invitationRepository);
+        chatService = new ChatService(chatMessageRepository, invitationRepository, chatWebSocketHandler);
     }
 
     @Test
@@ -49,7 +54,7 @@ class ChatServiceTest {
 
         ChatMessage savedMessage = ChatMessage.builder()
                 .id(UUID.randomUUID())
-                .invitation(offer)
+                .offer(offer)
                 .senderRole("CANDIDATE")
                 .senderName("Иван Пестерев")
                 .text("Согласен на проведение интервью!")
@@ -58,7 +63,14 @@ class ChatServiceTest {
 
         when(chatMessageRepository.save(any(ChatMessage.class))).thenReturn(savedMessage);
 
-        ChatMessageDto dto = chatService.sendMessage(offerId, "CANDIDATE", "Иван Пестерев", "Согласен на проведение интервью!");
+        SendMessageRequest request = SendMessageRequest.builder()
+                .offerId(offerId)
+                .senderRole("CANDIDATE")
+                .senderName("Иван Пестерев")
+                .text("Согласен на проведение интервью!")
+                .build();
+
+        ChatMessageDto dto = chatService.sendMessage(request);
 
         assertNotNull(dto);
         assertEquals("Согласен на проведение интервью!", dto.getText());
@@ -76,9 +88,9 @@ class ChatServiceTest {
         ChatMessage msg1 = ChatMessage.builder().id(UUID.randomUUID()).text("Привет").build();
         ChatMessage msg2 = ChatMessage.builder().id(UUID.randomUUID()).text("Добрый день!").build();
 
-        when(chatMessageRepository.findByInvitationIdOrderByCreatedAtAsc(offerId)).thenReturn(List.of(msg1, msg2));
+        when(chatMessageRepository.findByOfferIdOrderByCreatedAtAsc(offerId)).thenReturn(List.of(msg1, msg2));
 
-        List<ChatMessageDto> messages = chatService.getMessagesForOffer(offerId);
+        List<ChatMessageDto> messages = chatService.getMessagesByOfferId(offerId);
 
         assertEquals(2, messages.size());
         assertEquals("Привет", messages.get(0).getText());
