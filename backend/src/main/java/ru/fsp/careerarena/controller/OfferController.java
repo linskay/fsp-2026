@@ -17,7 +17,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/offers")
 @RequiredArgsConstructor
-@Tag(name = "Offers & Reverse Recruiting (35% критерий ТЗ)",
+@Tag(name = "Offers & Reverse Recruiting",
      description = "Ядро Reverse Recruiting: отправка прямого оффера с вилкой 'от-до', сокрытие контактов (152-ФЗ) и их открытие только при взаимном согласии соискателя")
 public class OfferController {
 

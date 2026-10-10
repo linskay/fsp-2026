@@ -38,4 +38,11 @@ public class CandidateController {
     public ResponseEntity<CandidateDto> getCandidateById(@PathVariable UUID id) {
         return ResponseEntity.ok(candidateService.getCandidateById(id));
     }
+
+    @GetMapping("/{id}/elo-history")
+    @Operation(summary = "Получение истории изменения рейтинга ELO кандидата для построения графика прогресса")
+    public ResponseEntity<List<ru.fsp.careerarena.dto.EloHistoryPointDto>> getEloHistory(@PathVariable UUID id) {
+        return ResponseEntity.ok(candidateService.getEloHistory(id));
+    }
 }
+

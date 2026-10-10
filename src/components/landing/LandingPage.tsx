@@ -295,7 +295,7 @@ public class Solution {
                   <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
                     <div className="flex items-center gap-2">
                       <div className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping" />
-                      <span className="text-xs font-bold text-white uppercase tracking-wider">Модель Reverse Recruiting (35% ТЗ)</span>
+                      <span className="text-xs font-bold text-white uppercase tracking-wider">Модель Reverse Recruiting</span>
                     </div>
                     <span className="text-[11px] font-mono text-cyan-400 bg-cyan-500/10 px-2.5 py-0.5 rounded-full border border-cyan-500/20">
                       3 простых шага
