@@ -1,0 +1,105 @@
+name: Automated GitHub Release on Push to Main
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build-and-release:
+    name: Build Artifacts & Publish GitHub Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Java 21 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Build Spring Boot 3 & Kotlin Backend
+        run: |
+          cd backend
+          mvn clean package -DskipTests
+          ls -la target/
+          cp target/*.jar ../fsp-career-backend.jar
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Build React 19 Frontend
+        run: |
+          npm ci || npm install
+          npm run build
+          cd dist
+          zip -r ../fsp-career-frontend.zip .
+          cd ..
+
+      - name: Package Standalone Distribution
+        run: |
+          mkdir -p standalone/dist
+          cp fsp-career-backend.jar standalone/
+          cp -r dist/* standalone/dist/
+          cp docker-compose.yml docker-compose.prod.yml start.sh start.bat README.md standalone/
+          cd standalone
+          zip -r ../fsp-career-arena-standalone.zip .
+          cd ..
+
+      - name: Generate Release Tag & Metadata
+        id: release_info
+        run: |
+          DATE_TAG=$(date +'%Y.%m.%d')
+          TAG_NAME="v${DATE_TAG}-b${{ github.run_number }}"
+          echo "tag_name=${TAG_NAME}" >> $GITHUB_OUTPUT
+          echo "release_title=FSP Career Arena 2026 — Release ${TAG_NAME}" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release with Artifacts
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.release_info.outputs.tag_name }}
+          name: ${{ steps.release_info.outputs.release_title }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          body: |
+            ## 🚀 FSP Career Arena 2026 — Автоматический релиз сборки
+
+            **Команда разработчиков:** «NO PHP — NO PROBLEMS — 2026»
+
+            ### 📦 Содержимое релиза:
+            * **`fsp-career-backend.jar`**: Готовый исполняемый JAR-архив бэкенда (Java 21 / Kotlin 2.0 / Spring Boot 3).
+            * **`fsp-career-frontend.zip`**: Скомпилированный статический бандл веб-интерфейса (React 19 / TypeScript / Vite).
+            * **`fsp-career-arena-standalone.zip`**: Полный автономный дистрибутив (бэкенд + фронтенд + Docker Compose + скрипты быстрого запуска).
+
+            ### ⚡ Быстрый запуск бэкенда:
+            ```bash
+            java -jar fsp-career-backend.jar
+            ```
+
+            ### 🐳 Запуск через Docker Compose:
+            ```bash
+            docker compose -f docker-compose.prod.yml up -d
+            ```
+          files: |
+            fsp-career-backend.jar
+            fsp-career-frontend.zip
+            fsp-career-arena-standalone.zip
+            docker-compose.prod.yml
+            docker-compose.yml
+            start.sh
+            start.bat
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
