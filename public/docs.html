@@ -452,7 +452,7 @@
         <li><a href="#arch-backend">Бэкенд (Java 21 & Kotlin 2.0)</a></li>
         <li><a href="#arch-mobile">Мобильное приложение (Android)</a></li>
         <li><a href="#arch-ai">ИИ-движок оценки кандидатов</a></li>
-        <li><a href="#api-endpoints">Эндпоинты платформы</a></li>
+        <li><a href="#api-endpoints">Эндпоинты платформы (REST API)</a></li>
         <li><a href="#team">Команда проекта</a></li>
       </ul>
       <div style="margin-top: 36px; padding: 16px; border-radius: 12px; background: rgba(0, 229, 255, 0.05); border: 1px solid rgba(0, 229, 255, 0.2); font-size: 11.5px; color: #94a3b8;">
@@ -859,68 +859,186 @@ fun FspRankBadge(rank: String, eLo: Int) {
       <article id="api-endpoints" class="doc-section">
         <div class="doc-section-anchor"></div>
         <h1>Полная спецификация REST API платформы</h1>
-<p>Интерактивная спецификация доступна в Swagger UI по адресу: <strong><a href="https://linskay-demo-2026.hf.space/swagger">/swagger-ui.html</a></strong><br>Машиночитаемый формат: <strong><a href="https://linskay-demo-2026.hf.space/v3/api-docs">/v3/api-docs</a></strong></p>
+<p>Интерактивная спецификация доступна в Swagger UI: <strong><a href="https://linskay-demo-2026.hf.space/swagger">/swagger-ui.html</a></strong><br>Машиночитаемый формат OpenAPI v3: <strong><a href="https://linskay-demo-2026.hf.space/v3/api-docs">/v3/api-docs</a></strong></p>
 <hr>
-<h3>1. Аутентификация, SSO и 152-ФЗ</h3>
+<h3>1. AI Summary (Мультимодельный ИИ-анализ)</h3>
+<p>Генерация технического портрета кандидата на базе LLM (Gemini 1.5 Flash, YandexGPT Pro, OpenRouter, Ollama) с использованием паттерна Strategy.</p>
 <div class="accordion-group">
-  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/auth/login — Вход в систему (JWT)</summary><div class="doc-accordion-content">Аутентифицирует пользователя по паре email + пароль и возвращает stateless JWT токен с ролевыми клеймами (`CANDIDATE` / `EMPLOYER`).</div></details>
-  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/auth/register — Регистрация нового аккаунта</summary><div class="doc-accordion-content">Регистрирует нового соискателя или компанию с фиксацией согласия на обработку ПДН (152-ФЗ).</div></details>
-  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/auth/test-users — Тестовые доступы</summary><div class="doc-accordion-content">Возвращает список предзаполненных аккаунтов (`candidate@fsp.ru`, `employer@fsp.ru`) для мгновенного входа в 1 клик.</div></details>
-  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/auth/privacy-policy — Политика конфиденциальности</summary><div class="doc-accordion-content">Возвращает текст и регламент обработки ПДН по стандарту Федерации спортивного программирования России.</div></details>
-  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /oauth2/authorization/{provider} — Spring Security OAuth2</summary><div class="doc-accordion-content">Инициализирует вход через GitHub, Яндекс ID или HeadHunter OAuth2.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/ai-summary/candidate/{candidateId}</summary><div class="doc-accordion-content">**Получение или генерация AI-Summary для кандидата**
+    - **Параметры пути:** `candidateId` (UUID) — идентификатор соискателя
+    - **Ответ 200 OK:** JSON с сгенерированным резюме, оценкой чистоты кода (`codeQualityScore`), грейдом и списком подтвержденных сильных сторон.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/ai-summary/generate</summary><div class="doc-accordion-content">**Динамическая генерация AI-портрета с выбором провайдера и фокуса**
+    - **Тело запроса (JSON):**
+      ```json
+      {
+        "candidateId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "provider": "YANDEX_GPT",
+        "modelName": "yandexgpt-pro",
+        "focus": "HIGH_LOAD_CORE",
+        "customApiKey": "string (опционально)"
+      }
+      ```
+    - **Фокусы анализа:** `HIGH_LOAD_CORE`, `ALGORITHMS`, `TECH_LEAD`, `BALANCED`</div></details>
 </div><hr>
-<h3>2. Профиль пользователя и управление ролями (RBAC)</h3>
+<h3>2. Assessments &amp; Code Reviews (Технические задания и ревью)</h3>
+<p>Управление техническими заданиями, отправка решений соискателями, просмотр кода и вынесение вердикта ревьюером/тимлидом.</p>
 <div class="accordion-group">
-  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/users/me — Текущая сессия пользователя</summary><div class="doc-accordion-content">Возвращает данные авторизованного пользователя: ID, email, роль, привязанный профиль атлета/рекрутера, текущий ELO и спортивный разряд.</div></details>
-  <details class="doc-accordion"><summary class="doc-accordion-summary">PUT /api/v1/users/profile — Обновление профиля</summary><div class="doc-accordion-content">Обновляет ФИО, аватар и параметры безопасности пользователя.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/assessments/assign</summary><div class="doc-accordion-content">**Отправка кандидату кастомного задания от работодателя**
+    - Назначение практического таска с ограничением по времени (таймер) и опцией лайв-интервью в Яндекс Телемост.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/assessments/candidate/{candidateId}</summary><div class="doc-accordion-content">**Получение списка назначенных соискателю заданий**
+    - Возвращает статус прохождения (`PENDING`, `IN_PROGRESS`, `SUBMITTED`, `REVIEWED`), дедлайн и привязанную вакансию.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/assessments/employer/{employerId}</summary><div class="doc-accordion-content">**Список заданий со стороны работодателя**
+    - Фильтрация по статусам: *«Ожидает код-ревью»*, *«Пройдено»*, *«Отклонено»*.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/assessments/submissions/{id}</summary><div class="doc-accordion-content">**Получение отправленного решения кандидата**
+    - Возвращает исходный код решения, язык программирования, время выполнения (runtime) и результаты автоматических тест-кейсов.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/assessments/submissions/{id}/review</summary><div class="doc-accordion-content">**Сохранение оценки ревьюера**
+    - Вердикт: `HIRED` / `REJECTED`, приватный комментарий для HR-команды и официальный фидбек для соискателя.</div></details>
 </div><hr>
-<h3>3. Соискатели и кандидаты ФСП</h3>
+<h3>3. Authentication &amp; OAuth (Авторизация и SSO)</h3>
+<p>Многофакторная авторизация, внешние провайдеры (GitHub, Яндекс ID, HeadHunter), учетные записи и согласие на обработку ПДН (152-ФЗ).</p>
 <div class="accordion-group">
-  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/candidates — Поиск и фильтрация атлетов</summary><div class="doc-accordion-content">Универсальный эндпоинт поиска кандидатов с фильтрацией по query-параметрам:
-    - `specialization`: BACKEND, FRONTEND, FULLSTACK, DEVOPS, HIGHLOAD
-    - `grade`: JUNIOR, MIDDLE, SENIOR
-    - `minElo`: минимальный ELO-рейтинг ФСП
-    - `fspRank`: спортивный разряд ЕВСК (1-й, 2-й, КМС, МС)</div></details>
-  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/candidates/{id} — Карточка кандидата</summary><div class="doc-accordion-content">Возвращает верифицированный профиль с историей турниров, стеком и LeetCode-метриками.</div></details>
-  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/candidates/{id}/export-pdf — Официальный PDF-паспорт ФСП</summary><div class="doc-accordion-content">Автогенерация стандартизированного PDF-документа с символикой Федерации, подтвержденным ELO и разрядом для HR-отчетов.</div></details>
-  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/candidates/{id}/elo-history — История изменения ELO</summary><div class="doc-accordion-content">Возвращает временной ряд точек изменения рейтинга для построения графика соревновательного прогресса.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/auth/login</summary><div class="doc-accordion-content">**Аутентификация по email и паролю**
+    - Возвращает JWT access-токен с ролями `CANDIDATE` или `EMPLOYER`.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/auth/register</summary><div class="doc-accordion-content">**Регистрация нового пользователя**
+    - Регистрация в PostgreSQL с фиксацией согласия 152-ФЗ.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/auth/test-users</summary><div class="doc-accordion-content">**Предзаполненные тестовые учетные записи**
+    - Быстрый вход в 1 клик для соискателя (`candidate@fsp.ru`) и работодателя (`employer@fsp.ru`).</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/auth/oauth/github/url</summary><div class="doc-accordion-content">**URL для входа через GitHub OAuth2**
+    - Возвращает URL авторизации GitHub с правами чтения публичных репозиториев и профиля.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/auth/oauth/github/callback</summary><div class="doc-accordion-content">**Обработка callback от GitHub**
+    - Обмен authorization code на токен, загрузка коммитов, расчет стартового ELO и ИИ-анализ.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/auth/sync/github-profile</summary><div class="doc-accordion-content">**Принудительная синхронизация профиля GitHub**</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/auth/yandex/login & GET /api/v1/auth/yandex/callback</summary><div class="doc-accordion-content">**OAuth2 вход через Яндекс ID**</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/auth/hh/login & GET /api/v1/auth/hh/callback</summary><div class="doc-accordion-content">**OAuth2 вход через HeadHunter (hh.ru)**</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/auth/sync/hh-resume</summary><div class="doc-accordion-content">**Импорт резюме соискателя из HeadHunter API**
+    - Автоматическое извлечение коммерческого стажа, стека технологий и зарплатных ожиданий.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/auth/connections & DELETE /api/v1/auth/connections/{provider}</summary><div class="doc-accordion-content">**Управление привязанными внешними профилями**
+    - Просмотр списка и отвязка сервисов (GitHub, hh.ru, Яндекс ID, ФСП).</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/auth/privacy-policy</summary><div class="doc-accordion-content">**Положение об обработке ПДН (152-ФЗ РФ)**</div></details>
 </div><hr>
-<h3>4. Вакансии работодателей</h3>
+<h3>4. Candidates (Профили соискателей и спорт-паспорт)</h3>
+<p>Управление карточками кандидатов, ELO-рейтинг, спортивные разряды ЕВСК и PDF-экспорт.</p>
 <div class="accordion-group">
-  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/vacancies/search — Поиск вакансий</summary><div class="doc-accordion-content">Поиск открытых позиций с обязательной рублевой вилкой зарплат (без скрытых условий) и требованиями к ELO.</div></details>
-  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/vacancies — Создание вакансии (HR)</summary><div class="doc-accordion-content">Публикация новой потребности компании с автоматической активацией алгоритма Explainable Matching.</div></details>
-  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/employer/sync/hh-vacancies — Импорт вакансий из hh.ru</summary><div class="doc-accordion-content">Импорт вакансий компании из HeadHunter API в 1 клик через токен работодателя.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/candidates</summary><div class="doc-accordion-content">**Поиск и ранжирование кандидатов**
+    - Query-параметры: `specialization`, `grade` (JUNIOR, MIDDLE, SENIOR), `minElo`, `fspRank`, `isVerified`.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/candidates/{id}</summary><div class="doc-accordion-content">**Получение верифицированного профиля соискателя**</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/candidates/{id}/elo-history</summary><div class="doc-accordion-content">**История динамики ELO-рейтинга**
+    - Точки турниров и испытаний для отрисовки интерактивного графика прогресса.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/candidates/{id}/export-pdf</summary><div class="doc-accordion-content">**Автогенерация официального PDF-паспорта ФСП**
+    - Генерация стандартизированного PDF-документа с гербом Федерации, ELO и проверенным стеком.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/candidates/search</summary><div class="doc-accordion-content">**Расширенный поиск атлетов по ключевым навыкам**</div></details>
 </div><hr>
-<h3>5. Офферы и Обратный найм (Reverse Recruiting)</h3>
+<h3>5. Chat &amp; Real-time Messaging (Чат по офферам)</h3>
+<p>Диалоги между соискателем и работодателем (REST + WebSocket <code>/ws/chat</code>).</p>
 <div class="accordion-group">
-  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/offers — Отправка прямого оффера с вилкой</summary><div class="doc-accordion-content">Создает оффер от работодателя кандидату с поддержкой RFC 7231 ключа идемпотентности (`Idempotency-Key`) и защитой от дублирования.</div></details>
-  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/offers/candidate/{id} — Офферы соискателя</summary><div class="doc-accordion-content">Список полученных предложений кандидата со статусами (PENDING, ACCEPTED, DECLINED).</div></details>
-  <details class="doc-accordion"><summary class="doc-accordion-summary">PUT /api/v1/offers/{id}/accept — Принятие оффера</summary><div class="doc-accordion-content">Кандидат принимает оффер: снимается маскирование контактов по 152-ФЗ и шлется веб-хук во внешнюю ATS работодателя.</div></details>
-  <details class="doc-accordion"><summary class="doc-accordion-summary">PUT /api/v1/offers/{id}/decline — Отклонение оффера</summary><div class="doc-accordion-content">Мягкое отклонение предложения кандидатом с фиксацией обратной связи.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/chat/messages</summary><div class="doc-accordion-content">**Отправка сообщения в диалог по офферу**
+    - Сохранение в БД и мгновенная трансляция собеседнику по WebSocket.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/chat/rooms/{offerId}</summary><div class="doc-accordion-content">**История сообщений конкретного оффера**</div></details>
 </div><hr>
-<h3>6. Веб-хуки и корпоративные интеграции (Webhooks)</h3>
+<h3>6. Code Sandbox (Песочница тестирования кода)</h3>
+<p>Изолированная среда выполнения решений в песочнице Judge0 / Docker.</p>
 <div class="accordion-group">
-  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/webhooks — Регистрация веб-хука для ATS</summary><div class="doc-accordion-content">Регистрирует URL для отправки нотификаций (Сбер, Яндекс, Huntflow, 1C:ЗУП, Telegram-боты). Защита заголовком `X-FSP-Signature` (HMAC-SHA256).</div></details>
-  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/webhooks/employer/{id} — Список веб-хуков</summary><div class="doc-accordion-content">Возвращает зарегистрированные веб-хуки с HTTP-статусами последней доставки.</div></details>
-  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/webhooks/{id}/ping — Тестовый пинг</summary><div class="doc-accordion-content">Проверяет доступность эндпоинта компании с отправкой проверочного пакета PING.</div></details>
-  <details class="doc-accordion"><summary class="doc-accordion-summary">DELETE /api/v1/webhooks/{id} — Удаление веб-хука</summary><div class="doc-accordion-content">Отзывает регистрацию веб-хука.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/sandbox/execute</summary><div class="doc-accordion-content">**Запуск решения алгоритмической задачи**
+    - Поддержка языков: Java, Kotlin, Python, C++, JavaScript, Go.
+    - Ограничения: CPU ≤ 2 сек, RAM ≤ 256 МБ, сеть `--net=none`.
+    - Возвращает вердикт (`ACCEPTED`, `WRONG_ANSWER`, `TIME_LIMIT_EXCEEDED`, `COMPILATION_ERROR`).</div></details>
 </div><hr>
-<h3>7. ИИ-портреты соискателей (Multi-Model AI Summary)</h3>
+<h3>7. Employers (Компании-работодатели)</h3>
+<p>Профили организаций, контакты рекрутеров, HR-аналитика и верификация ФНС.</p>
 <div class="accordion-group">
-  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/ai/generate-summary — Мультимодельная генерация</summary><div class="doc-accordion-content">Использует паттерн Strategy для динамического переключения нейросетей (Google Gemini, YandexGPT, OpenRouter, Ollama) с системным фокусом (Highload, Алгоритмы, Тимлид).</div></details>
-  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/ai/save-profile — Сохранение ИИ-резюме</summary><div class="doc-accordion-content">Фиксирует сформированное досье в базе данных PostgreSQL соискателя.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/employers/{id} & PUT /api/v1/employers/{id}</summary><div class="doc-accordion-content">**Просмотр и редактирование профиля работодателя**</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/employers/{id}/analytics</summary><div class="doc-accordion-content">**HR-аналитика воронки найма**
+    - Метрики: конверсия офферов, среднее время ответа соискателей, медианный ELO нанятых.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/employers/verify</summary><div class="doc-accordion-content">**Запрос на верификацию компании через ФНС / ОГРН**</div></details>
 </div><hr>
-<h3>8. Изолированная песочница и тестирование (Judge0 / Docker)</h3>
+<h3>8. FSP Integration (Реестр Федерации)</h3>
+<p>Интеграция с официальным государственным реестром спортсменов ФСП РФ.</p>
 <div class="accordion-group">
-  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/sandbox/execute — Запуск кода в песочнице</summary><div class="doc-accordion-content">Изолированное выполнение решения в Docker-песочнице (`--net=none`, cgroups v2, лимиты памяти 256MB и времени 1000мс).</div></details>
-  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/assessments/assign — Назначение тестового задания</summary><div class="doc-accordion-content">Работодатель назначает алгоритмическую задачу с дедлайном и ссылкой на Яндекс Телемост.</div></details>
-  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/assessments/review — Ревью и оценка решения</summary><div class="doc-accordion-content">HR/Техлид выставляет вердикт (👍 / 👎) и пишет закрытую внутреннюю заметку.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/fsp/sync</summary><div class="doc-accordion-content">**Синхронизация профиля с Единым реестром спортсменов ФСП**
+    - Подтверждение разрядов (1-й, 2-й, КМС, МС) и привязка официального ELO.</div></details>
 </div><hr>
-<h3>9. Хранилище файлов и мониторинг (S3 &amp; DevOps)</h3>
+<h3>9. Grade Testing &amp; Assessment (Квалификационные тесты)</h3>
+<p>Тестирование для подтверждения грейда и защита от пересдач (кулдаун 3 месяца).</p>
 <div class="accordion-group">
-  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/files/upload — Загрузка файлов (MultipartFile)</summary><div class="doc-accordion-content">Загрузка аватарок, логотипов компаний и PDF-резюме с валидацией размера и генерацией публичной ссылки.</div></details>
-  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/system/stats — Открытая статистика платформы</summary><div class="doc-accordion-content">Возвращает актуальные счетчики для главной страницы лендинга (число атлетов, вакансий, решенных задач, офферов).</div></details>
-  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/audit/logs — Журнал аудита безопасности (152-ФЗ)</summary><div class="doc-accordion-content">Неизменяемый журнал всех обращений к персональным данным и действиям в системе.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/tests/categories</summary><div class="doc-accordion-content">**Список отраслей и специализаций тестирования**</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/tests/cooldown/{candidateId}</summary><div class="doc-accordion-content">**Проверка кулдауна повторной сдачи (3 месяца)**</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/tests/start</summary><div class="doc-accordion-content">**Генерация и запуск квалификационного теста**</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/tests/submit</summary><div class="doc-accordion-content">**Отправка ответов, расчет баллов и присвоение грейда**</div></details>
+</div><hr>
+<h3>10. HeadHunter Integration (Импорт вакансий)</h3>
+<p>Интеграция с кабинетом работодателя на hh.ru.</p>
+<div class="accordion-group">
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/integrations/hh/vacancies</summary><div class="doc-accordion-content">**Список активных вакансий компании на hh.ru**</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/integrations/hh/import</summary><div class="doc-accordion-content">**Массовый импорт выбранных вакансий в Career Arena**</div></details>
+</div><hr>
+<h3>11. Job Applications (Отклики на вакансии)</h3>
+<p>Прямые отклики кандидатов на открытые позиции.</p>
+<div class="accordion-group">
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/applications</summary><div class="doc-accordion-content">**Подача отклика кандидатом на вакансию**</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/applications/candidate/{candidateId}</summary><div class="doc-accordion-content">**История поданных откликов соискателя**</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/applications/vacancy/{vacancyId}</summary><div class="doc-accordion-content">**Просмотр поступивших откликов работодателем**</div></details>
+</div><hr>
+<h3>12. LeetCode Parser (Парсер алгоритмических задач)</h3>
+<div class="accordion-group">
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/leetcode/fetch/{titleSlug}</summary><div class="doc-accordion-content">**Импорт задачи из LeetCode по slug**
+    - Автоматическая загрузка описания, примеров и скрытых тест-кейсов.</div></details>
+</div><hr>
+<h3>13. Live Interviews &amp; Yandex Telemost (Лайв-интервью)</h3>
+<p>Собеседования в реальном времени с автоматическим созданием видеокомнат.</p>
+<div class="accordion-group">
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/interviews/schedule</summary><div class="doc-accordion-content">**Создание комнаты в Яндекс Телемост и планирование интервью**</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/interviews/candidate/{candidateId} & /employer/{employerId}</summary><div class="doc-accordion-content">**Расписание запланированных лайв-интервью**</div></details>
+</div><hr>
+<h3>14. Mobile API (Kotlin / Jetpack Compose)</h3>
+<p>Оптимизированные эндпоинты для нативного Android-клиента.</p>
+<div class="accordion-group">
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/mobile/status</summary><div class="doc-accordion-content">**Проверка статуса мобильного шлюза**</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/mobile/chat/send</summary><div class="doc-accordion-content">**Отправка сообщений из нативного мобильного приложения**</div></details>
+</div><hr>
+<h3>15. Notifications (Системные уведомления)</h3>
+<div class="accordion-group">
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/notifications</summary><div class="doc-accordion-content">**Список входящих уведомлений (офферы, тесты, отклики)**</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/notifications/{id}/read</summary><div class="doc-accordion-content">**Пометить уведомление как прочитанное**</div></details>
+</div><hr>
+<h3>16. Offers &amp; Reverse Recruiting (Ядро обратного найма)</h3>
+<p>Прямые офферы с фиксацией рублевой вилки, сокрытием контактов и идемпотентностью.</p>
+<div class="accordion-group">
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/offers</summary><div class="doc-accordion-content">**Отправка прямого оффера соискателю**
+    - Обязательные поля: `salaryMin`, `salaryMax` в рублях.
+    - Защита от дублирования: заголовок `Idempotency-Key`.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/offers/{id}/accept</summary><div class="doc-accordion-content">**Принятие оффера соискателем**
+    - Взаимный лайк: контакты кандидата раскрываются работодателю по 152-ФЗ.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/offers/{id}/decline</summary><div class="doc-accordion-content">**Отклонение оффера соискателем**</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/offers/candidate/{candidateId} & /employer/{employerId}</summary><div class="doc-accordion-content">**Отслеживание статусов входящих и исходящих офферов**</div></details>
+</div><hr>
+<h3>17. Security Audit (Журнал 152-ФЗ)</h3>
+<div class="accordion-group">
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/audit/log-view-contacts</summary><div class="doc-accordion-content">**Фиксация просмотра контактов соискателя**
+    - Логирование в `security_audit_logs`: дата, время, IP, ID рекрутера, обоснование.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/audit/candidate/{candidateId}</summary><div class="doc-accordion-content">**История просмотров ПДН кандидата**</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/audit/logs</summary><div class="doc-accordion-content">**Полный журнал безопасности для администраторов**</div></details>
+</div><hr>
+<h3>18. Vacancies (Вакансии с рублевыми вилками)</h3>
+<div class="accordion-group">
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/vacancies & GET /api/v1/vacancies/search</summary><div class="doc-accordion-content">**Каталог и поиск открытых вакансий**</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/vacancies</summary><div class="doc-accordion-content">**Публикация вакансии (обязательная рублевая вилка 'от-до')**</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/vacancies/{id}/report</summary><div class="doc-accordion-content">**Жалоба на фиктивную вакансию (Антифрод-система ФСП)**</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/vacancies/employer/{employerId}</summary><div class="doc-accordion-content">**Вакансии конкретной компании**</div></details>
+</div><hr>
+<h3>19. Webhooks (Веб-хуки интеграций)</h3>
+<p>Асинхронные нотификации внешних ATS систем (Сбер, Яндекс, Huntflow).</p>
+<div class="accordion-group">
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/webhooks</summary><div class="doc-accordion-content">**Регистрация веб-хука**
+    - Поля: `url`, `secretKey`, `events` (`OFFER_ACCEPTED`, `TEST_COMPLETED`).</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/webhooks</summary><div class="doc-accordion-content">**Список зарегистрированных веб-хуков**</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/webhooks/test</summary><div class="doc-accordion-content">**Тестовая отправка события с проверкой подписи `X-FSP-Signature` (HMAC-SHA256)**</div></details>
+</div><hr>
+<h3>20. Users &amp; System (Управление сессией и инфраструктура)</h3>
+<div class="accordion-group">
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/users/me</summary><div class="doc-accordion-content">**Данные текущей авторизованной сессии**</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">PUT /api/v1/users/profile</summary><div class="doc-accordion-content">**Редактирование профиля пользователя**</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/files/upload</summary><div class="doc-accordion-content">**Безопасная загрузка файлов (сертификаты, аватары, ТЗ)**</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/system/stats</summary><div class="doc-accordion-content">**Метрики системы (активные атлеты, проверенные офферы, решенные задачи)**</div></details>
 </div>
 
       </article>
