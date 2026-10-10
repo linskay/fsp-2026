@@ -192,7 +192,7 @@ public class Solution {
             </span>
             <span className="text-white/20">|</span>
             <span className="text-[11px] sm:text-xs font-mono font-medium text-cyan-300">
-              152-ФЗ ВЕРИФИКАЦИЯ
+              ЕДИНЫЙ РЕЕСТР
             </span>
           </div>
         </div>
@@ -376,7 +376,7 @@ public class Solution {
                   </h3>
 
                   <p className="text-sm text-slate-300/90 leading-relaxed font-normal">
-                    Доступ к верифицированной базе спортивных программистов России. Просматривайте реальные метрики Judge0, чистоту кода и отправляйте прямой оффер с вилкой.
+                    Доступ к верифицированной базе спортивных программистов России. Просматривайте реальные метрики тестирования, чистоту кода и отправляйте прямой оффер с вилкой.
                   </p>
 
                   {/* Employer Actions */}
@@ -515,7 +515,7 @@ public class Solution {
                     <div className="text-[10px] text-slate-400">Конкретные рубли и задачи сразу</div>
                   </div>
                   <div className="p-3 rounded-2xl bg-[#060a18] border border-slate-800 space-y-1">
-                    <div className="font-bold text-yellow-400 text-[11px]">3. 152-ФЗ контакт</div>
+                    <div className="font-bold text-yellow-400 text-[11px]">3. Прямой контакт</div>
                     <div className="text-[10px] text-slate-400">Контакты открываются по согласию</div>
                   </div>
                 </div>
@@ -578,18 +578,18 @@ public class Solution {
                 </div>
 
                 <h3 className="text-xl font-black text-white">
-                  LeetCode & Judge0 Алгоритмическая Песочница
+                  Интерактивная среда тестирования
                 </h3>
 
                 <p className="text-xs text-slate-300 leading-relaxed">
-                  Изолированное тестирование в Docker-песочнице. Попробуйте нажать <strong>«Запустить тест»</strong> прямо сейчас:
+                  Автоматическая проверка алгоритмов. Нажмите <strong>«Запустить тест»</strong> прямо сейчас:
                 </p>
 
                 {/* Mini Code Terminal */}
                 <div className="rounded-2xl bg-[#060914] border border-slate-800 p-3 font-mono text-[11px] text-slate-300 space-y-2">
                   <div className="flex items-center justify-between text-[10px] text-slate-500 border-b border-slate-800 pb-1.5">
                     <span>Task: Max Flow (Dinic Algo)</span>
-                    <span className="text-[#00f0ff]">Java 21 / Judge0 CE</span>
+                    <span className="text-[#00f0ff]">Java 21 / OpenJDK</span>
                   </div>
 
                   <div className="text-slate-400 max-h-24 overflow-y-auto leading-tight">
@@ -720,7 +720,7 @@ public class Solution {
                   <div className="flex items-center gap-2 text-[11px] text-slate-400 mt-1">
                     <span>GitHub: @{githubLogin}</span>
                     <span>•</span>
-                    <span className="text-emerald-400">152-ФЗ Верифицирован</span>
+                    <span className="text-emerald-400">Верифицирован ФСП</span>
                   </div>
                 </div>
               </div>

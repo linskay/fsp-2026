@@ -369,7 +369,7 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
                   onChange={(e) => setOnlyVerifiedFsp(e.target.checked)}
                   className="rounded bg-[#0e1428] border-[#1e294b] text-[#2b35ff] focus:ring-0 w-4 h-4 cursor-pointer"
                 />
-                <span>Верификация реестра 152-ФЗ</span>
+                <span>Верифицированные кандидаты</span>
               </label>
             </div>
           </div>
@@ -640,7 +640,7 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
                       <strong className="text-[#00f0ff]">Почему в топе выдачи:</strong>{' '}
                       {c.fspRank.includes('Мастер') || c.fspRank.includes('Победитель')
                         ? `Победа в чемпионате РФ по СП + решение задач за ${c.avgExecutionTimeMs}мс + 100% совпадение стека.`
-                        : `КМС по СП + 100% прохождение скрытых тестов Judge0 + стаж ${c.experienceYears} лет.`}
+                        : `КМС по СП + 100% прохождение скрытых тестов + стаж ${c.experienceYears} лет.`}
                     </div>
                   </div>
 
@@ -670,7 +670,7 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
                   {/* 152-FZ Masked Contacts status */}
                   <div className="flex items-center gap-2 text-xs text-slate-400">
                     <Lock className="w-3.5 h-3.5 text-[#00f0ff]" />
-                    <span>Контакты: <strong className="font-mono text-[#00f0ff]">{c.phoneMasked}</strong> (защищены 152-ФЗ)</span>
+                    <span>Контакты: <strong className="font-mono text-[#00f0ff]">{c.phoneMasked}</strong> (скрыты до отклика)</span>
                   </div>
 
                   {/* Actions */}
@@ -880,7 +880,7 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
                         />
                         <span>{inv.candidateName}</span>
                       </div>
-                      <span className="text-emerald-400 text-[10px] font-bold">152-ФЗ ОК</span>
+                      <span className="text-emerald-400 text-[10px] font-bold">Контакты открыты</span>
                     </div>
 
                     <div className="bg-slate-900/90 p-2 rounded-xl border border-emerald-500/30 text-[11px] space-y-1 font-mono">
@@ -1237,7 +1237,7 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
                   <span className="text-amber-400 font-bold">{explainModalCandidate.fspRank} (100/100)</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400">2. Скорость алгоритмов в Judge0 (+30%):</span>
+                  <span className="text-slate-400">2. Скорость алгоритмов (+30%):</span>
                   <span className="text-emerald-400 font-bold">{explainModalCandidate.avgExecutionTimeMs} ms (Топ 0.5%)</span>
                 </div>
                 <div className="flex justify-between">

@@ -42,9 +42,6 @@ import { Navbar } from './components/Navbar';
 import { CandidateDashboard } from './components/candidate/CandidateDashboard';
 import { EmployerDashboard } from './components/employer/EmployerDashboard';
 import { CodeArenaIDE } from './components/arena/CodeArenaIDE';
-import { SwaggerApiView } from './components/swagger/SwaggerApiView';
-import { ArchitectureView } from './components/architecture/ArchitectureView';
-import { RoadmapPresentation } from './components/roadmap/RoadmapPresentation';
 import { LandingPage } from './components/landing/LandingPage';
 import { NotFoundPage } from './components/common/NotFoundPage';
 import { OAuthModal } from './components/auth/OAuthModal';
@@ -131,7 +128,7 @@ export default function App() {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '').toLowerCase();
       if (!hash) return;
-      if (['landing', 'candidate', 'employer', 'arena', 'swagger', 'architecture', 'roadmap'].includes(hash)) {
+      if (['landing', 'candidate', 'employer', 'arena'].includes(hash)) {
         setCurrentRole(hash as UserRole);
       } else if (hash === '404' || hash === 'not_found') {
         setCurrentRole('not_found');
@@ -434,7 +431,7 @@ export default function App() {
               title: `Первая победа в Арене ФСП (${submission.taskTitle})`,
               year: 2026,
               badge: 'Дебют в Арене ФСП',
-              description: `Успешное прохождение тестового набора в Judge0 Sandbox за ${submission.executionTimeMs} мс.`,
+              description: `Успешное прохождение тестового набора за ${submission.executionTimeMs} мс.`,
               event: 'Алгоритмическая Арена ФСП'
             });
           }
@@ -530,20 +527,6 @@ export default function App() {
     showToast('Профиль соискателя обновлен: рейтинг, разряд, грейд и ИИ-портрет пересчитаны!', 'success');
   };
 
-  // Demo Walkthrough helper
-  const runDemoScenario = () => {
-    setCurrentRole('candidate');
-    showToast('▶ Шаг 1: Кандидат изучает офферы от работодателей с обязательной вилкой зарплаты в рублях...', 'fsp');
-    
-    setTimeout(() => {
-      showToast('▶ Шаг 2: Кандидат принимает оффер от СберТех на 520 000 ₽ и подтверждает 152-ФЗ согласие.', 'success');
-    }, 4000);
-
-    setTimeout(() => {
-      setCurrentRole('employer');
-      showToast('▶ Шаг 3: Переключаемся в ЛК Работодателя. В ATS контакты кандидата демаскированы и доступен прямой чат!', 'fsp');
-    }, 8000);
-  };
 
   const candidateInvitationsCount = invitations.filter(i => i.candidateId === activeCandidateId && i.status === 'sent').length;
   const acceptedOffersCount = invitations.filter(i => i.status === 'accepted').length;
@@ -736,7 +719,7 @@ export default function App() {
                   LeetCode & ФСП Интерактивная Арена
                 </h2>
                 <p className="text-xs text-slate-400">
-                  Решение классических задач спортивного программирования с изолированной проверкой в Judge0 Sandbox
+                  Решение классических задач спортивного программирования с автоматической проверкой тестов
                 </p>
               </div>
             </div>
@@ -749,21 +732,6 @@ export default function App() {
               }}
             />
           </div>
-        )}
-
-        {currentRole === 'swagger' && (
-          <SwaggerApiView />
-        )}
-
-        {currentRole === 'architecture' && (
-          <ArchitectureView />
-        )}
-
-        {currentRole === 'roadmap' && (
-          <RoadmapPresentation
-            onNavigateToRole={handleRoleChange}
-            onRunDemoScenario={runDemoScenario}
-          />
         )}
       </main>
 

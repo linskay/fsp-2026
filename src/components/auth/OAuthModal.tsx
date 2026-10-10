@@ -237,7 +237,7 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
     };
 
     setLoadingProvider('hh');
-    setSyncStep('Синхронизация кастомного резюме с профилем кандидата по 152-ФЗ...');
+    setSyncStep('Синхронизация резюме с профилем кандидата...');
     setTimeout(() => {
       api.syncHh(customResume.resumeId).catch(() => {});
       onConnectHh(customResume);
@@ -257,10 +257,10 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
     }
 
     setLoadingProvider('yandex');
-    setSyncStep(`Инициализация Яндекс ID Passport OAuth2 для ${emailToUse}...`);
+    setSyncStep(`Авторизация через Яндекс ID для ${emailToUse}...`);
     
     setTimeout(() => {
-      setSyncStep('Авторизация через Spring Security OAuth2 Client (/login/oauth2/code/yandex)...');
+      setSyncStep('Подключение профиля Яндекс ID...');
     }, 600);
 
     setTimeout(() => {
@@ -287,7 +287,7 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
             </div>
             <div>
               <h3 className="text-base font-black text-white">
-                Spring Security OAuth2 & Внешние интеграции
+                Привязка профилей
               </h3>
               <p className="text-xs text-slate-400">
                 Автоматическое наполнение профиля и портфолио в один клик
@@ -403,18 +403,17 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
                 ) : null}
               </div>
 
-              {/* Privacy Scope Notice (Alina's requirement: private repos are never touched) */}
+              {/* Privacy Notice */}
               <div className="p-3.5 rounded-2xl bg-emerald-950/25 border border-emerald-500/35 space-y-1">
                 <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs">
                   <ShieldCheck className="w-4 h-4 shrink-0" />
-                  <span>Гарантия приватности кода (152-ФЗ & GitHub Scope):</span>
+                  <span>Безопасная интеграция GitHub:</span>
                 </div>
                 <p className="text-[11px] text-slate-300 leading-relaxed">
-                  Запрашивается исключительно минимальный scope: <code className="font-mono text-emerald-300 bg-emerald-900/40 px-1 py-0.5 rounded font-bold">read:user, user:email, public_repo</code>.
+                  Система анализирует исключительно открытые публичные репозитории и коммиты из вашего профиля.
                   <span className="text-white block mt-0.5 font-medium">
-                    🔒 Приватные репозитории и закрытый код пользователей НЕ сканируются и НЕ запрашиваются.
+                    🔒 Приватные репозитории и закрытый код не запрашиваются.
                   </span>
-                  Система анализирует исключительно открытые публичные коммиты и репозитории из открытого профиля.
                 </p>
               </div>
 
@@ -653,7 +652,7 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
                         </span>
                       </div>
                       <p className="text-[11px] text-slate-400 leading-relaxed">
-                        В резюме на hh.ru раздел «Пройденные тесты и экзамены» пока не заполнен. Вы можете подтвердить свой олимпиадный и алгоритмический уровень прямо в Арене ФСП (Judge0) либо сдать квалификацию на hh.ru.
+                        В резюме на hh.ru раздел «Пройденные тесты и экзамены» пока не заполнен. Вы можете подтвердить свой алгоритмический уровень прямо в Арене ФСП либо сдать квалификацию на hh.ru.
                       </p>
                     </div>
                   )}
@@ -719,7 +718,7 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
                           <FileText className="w-3.5 h-3.5 text-[#ff2b42]" />
                           <span>Ссылка или ID резюме / вакансии на hh.ru:</span>
                         </label>
-                        <span className="text-[10px] text-emerald-400/90 font-mono">152-ФЗ Protected API</span>
+                        <span className="text-[10px] text-emerald-400/90 font-mono">hh.ru API</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="relative flex-1">

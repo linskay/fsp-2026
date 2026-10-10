@@ -100,9 +100,9 @@ export const GitHubRepoSyncModal: React.FC<GitHubRepoSyncModalProps> = ({
             <ShieldCheck className="w-5 h-5 text-[#00f0ff] shrink-0 mt-0.5" />
             <div className="space-y-0.5 text-xs">
               <div className="font-bold text-white flex items-center gap-1.5">
-                <span>Гарантия конфиденциальности 152-ФЗ РФ</span>
+                <span>Конфиденциальность и безопасность</span>
                 <span className="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 text-[9px] font-mono border border-emerald-500/30">
-                  public_repo only
+                  Безопасно
                 </span>
               </div>
               <p className="text-slate-300 leading-relaxed text-[11px]">

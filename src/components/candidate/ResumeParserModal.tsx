@@ -62,7 +62,7 @@ export const ResumeParserModal: React.FC<ResumeParserModalProps> = ({
                 {activeMode === 'upload' ? 'AI-Парсер PDF-резюме & Синхронизация с ФСП' : 'Стандартизированный паспорт разработчика ФСП'}
               </h3>
               <p className="text-xs text-slate-400">
-                Автоматическое извлечение стека и верификация по 152-ФЗ
+                Автоматическое извлечение стека и верификация профиля
               </p>
             </div>
           </div>
