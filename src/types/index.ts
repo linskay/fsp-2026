@@ -44,10 +44,10 @@ export interface CandidateAiSummary {
   keyStrengths: string[];
   recommendedProjects: string[];
   recommendedRoles?: string[];
-  recommendationLevel?: 'HIGHLY_RECOMMENDED' | 'RECOMMENDED' | 'ACCEPTABLE';
+  recommendationLevel?: string;
   codeCleanlinessScore: number;
   averageSolveTimeMinutes: number;
-  modelUsed: 'YandexGPT Pro' | 'GigaChat Max' | 'Gemini 2.5 Flash' | 'Spring Boot AI Service';
+  modelUsed: string;
   generatedAt: string;
 }
 

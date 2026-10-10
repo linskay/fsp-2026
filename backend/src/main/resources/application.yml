@@ -68,11 +68,28 @@ integrations:
     api-url: ${JUDGE0_API_URL:https://judge0-ce.p.rapidapi.com}
     api-key: ${JUDGE0_API_KEY:mock-judge0-key}
   ai:
-    provider: ${AI_PROVIDER:yandexgpt}
+    provider: ${AI_PROVIDER:gemini}
+    gemini:
+      api-key: ${GEMINI_API_KEY:AQ.Ab8RN6Kclff0cT3KZgjHJj_h4MgUMqyofqe-VvfDiqhbNekiMg}
+      api-url: ${GEMINI_API_URL:https://generativelanguage.googleapis.com/v1beta/openai/chat/completions}
+      model: ${GEMINI_MODEL:gemini-1.5-flash}
+    openrouter:
+      api-key: ${OPENROUTER_API_KEY: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}
+      api-url: ${OPENROUTER_API_URL:https://openrouter.ai/api/v1/chat/completions}
+      model: ${OPENROUTER_MODEL:meta-llama/llama-3.1-8b-instruct:free}
+    ollama:
+      api-url: ${OLLAMA_API_URL:http://ollama:11434/v1/chat/completions}
+      model: ${OLLAMA_MODEL:llama3:8b}
+    yandex:
+      api-key: ${YANDEX_API_KEY:${AI_API_KEY:mock-ai-key}}
+      folder-id: ${YANDEX_FOLDER_ID:b1gmockfolderid}
+      api-url: ${YANDEX_API_URL:https://llm.api.cloud.yandex.net/foundationModels/v1/completion}
+      model: ${YANDEX_MODEL:yandexgpt}
+    # Legacy fallback parameters
     api-key: ${AI_API_KEY:mock-ai-key}
     folder-id: ${YANDEX_FOLDER_ID:b1gmockfolderid}
     api-url: ${AI_API_URL:https://llm.api.cloud.yandex.net/foundationModels/v1/completion}
-    model: ${AI_MODEL:yandexgpt}
+    model: ${AI_MODEL:gemini-1.5-flash}
 
 jwt:
   secret: ${JWT_SECRET:fsp_career_arena_ultra_secure_jwt_secret_key_2026_at_least_256_bits_long!}

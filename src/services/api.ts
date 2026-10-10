@@ -91,6 +91,17 @@ export interface BackendAiSummaryDto {
   generatedAt: string;
 }
 
+export interface BackendGenerateAiSummaryRequest {
+  candidateId: string;
+  provider?: string;
+  model?: string;
+  apiKey?: string;
+  folderId?: string;
+  endpointUrl?: string;
+  focus?: 'highload' | 'algo' | 'lead' | 'balanced';
+  forceRefresh?: boolean;
+}
+
 export interface TestUserDto {
   role: 'CANDIDATE' | 'EMPLOYER';
   email: string;
@@ -462,7 +473,7 @@ class ApiService {
     try {
       const res = await fetch(`${API_BASE}/ai-summary/candidate/${candidateId}`, {
         headers: { 'Accept': 'application/json' },
-        signal: AbortSignal.timeout(4000)
+        signal: AbortSignal.timeout(10000)
       });
 
       if (res.ok) {
@@ -472,9 +483,45 @@ class ApiService {
           summaryText: dto.summaryText,
           keyStrengths: dto.keyStrengths || [],
           recommendedProjects: dto.recommendedRoles || [],
+          recommendedRoles: dto.recommendedRoles || [],
+          recommendationLevel: dto.recommendationLevel,
           codeCleanlinessScore: 98,
           averageSolveTimeMinutes: 12,
-          modelUsed: 'YandexGPT Pro',
+          modelUsed: dto.modelName || 'Google Gemini 1.5 Flash',
+          generatedAt: dto.generatedAt || new Date().toISOString()
+        };
+      }
+    } catch {
+      this.isOnline = false;
+    }
+    return null;
+  }
+
+  // 6b. Live AI Generation with Provider & Model Selection
+  async generateAiSummary(request: BackendGenerateAiSummaryRequest): Promise<CandidateAiSummary | null> {
+    try {
+      const res = await fetch(`${API_BASE}/ai-summary/generate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(request),
+        signal: AbortSignal.timeout(20000)
+      });
+
+      if (res.ok) {
+        const dto: BackendAiSummaryDto = await res.json();
+        this.isOnline = true;
+        return {
+          summaryText: dto.summaryText,
+          keyStrengths: dto.keyStrengths || [],
+          recommendedProjects: dto.recommendedRoles || [],
+          recommendedRoles: dto.recommendedRoles || [],
+          recommendationLevel: dto.recommendationLevel,
+          codeCleanlinessScore: 98,
+          averageSolveTimeMinutes: 12,
+          modelUsed: dto.modelName || 'Google Gemini 1.5 Flash',
           generatedAt: dto.generatedAt || new Date().toISOString()
         };
       }

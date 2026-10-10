@@ -239,6 +239,35 @@ class DtoTest {
     }
 
     @Test
+    @DisplayName("Проверка DTO запроса на генерацию AI-резюме (GenerateAiSummaryRequest)")
+    void testGenerateAiSummaryRequest() {
+        UUID candId = UUID.randomUUID();
+        GenerateAiSummaryRequest req = GenerateAiSummaryRequest.builder()
+                .candidateId(candId)
+                .provider("gemini")
+                .model("gemini-1.5-pro")
+                .apiKey("test-key")
+                .folderId("folder-1")
+                .endpointUrl("http://localhost:11434/v1")
+                .focus("highload")
+                .forceRefresh(true)
+                .build();
+
+        assertThat(req.getCandidateId()).isEqualTo(candId);
+        assertThat(req.getProvider()).isEqualTo("gemini");
+        assertThat(req.getModel()).isEqualTo("gemini-1.5-pro");
+        assertThat(req.getApiKey()).isEqualTo("test-key");
+        assertThat(req.getFolderId()).isEqualTo("folder-1");
+        assertThat(req.getEndpointUrl()).isEqualTo("http://localhost:11434/v1");
+        assertThat(req.getFocus()).isEqualTo("highload");
+        assertThat(req.isForceRefresh()).isTrue();
+
+        GenerateAiSummaryRequest empty = new GenerateAiSummaryRequest();
+        empty.setProvider("openrouter");
+        assertThat(empty.getProvider()).isEqualTo("openrouter");
+    }
+
+    @Test
     @DisplayName("Проверка DTO приглашений (InvitationDto и SendInvitationRequest)")
     void testInvitationDtos() {
         UUID invId = UUID.randomUUID();

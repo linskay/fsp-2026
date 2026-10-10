@@ -13,9 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import ru.fsp.careerarena.dto.AiSummaryDto;
+import ru.fsp.careerarena.dto.GenerateAiSummaryRequest;
 import ru.fsp.careerarena.entity.CandidateAiSummary;
 import ru.fsp.careerarena.entity.CandidateProfile;
-import ru.fsp.careerarena.entity.enums.FspRank;
 import ru.fsp.careerarena.entity.enums.Grade;
 import ru.fsp.careerarena.entity.enums.Specialization;
 import ru.fsp.careerarena.repository.CandidateAiSummaryRepository;
@@ -35,8 +35,32 @@ public class AiSummaryService {
     private final WebClient aiWebClient;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Value("${integrations.ai.provider:yandexgpt}")
+    @Value("${integrations.ai.provider:gemini}")
     private String aiProvider;
+
+    @Value("${integrations.ai.gemini.api-key:AQ.Ab8RN6Kclff0cT3KZgjHJj_h4MgUMqyofqe-VvfDiqhbNekiMg}")
+    private String geminiApiKey;
+
+    @Value("${integrations.ai.gemini.api-url:https://generativelanguage.googleapis.com/v1beta/openai/chat/completions}")
+    private String geminiApiUrl;
+
+    @Value("${integrations.ai.gemini.model:gemini-1.5-flash}")
+    private String geminiModel;
+
+    @Value("${integrations.ai.openrouter.api-key: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}")
+    private String openrouterApiKey;
+
+    @Value("${integrations.ai.openrouter.api-url:https://openrouter.ai/api/v1/chat/completions}")
+    private String openrouterApiUrl;
+
+    @Value("${integrations.ai.openrouter.model:meta-llama/llama-3.1-8b-instruct:free}")
+    private String openrouterModel;
+
+    @Value("${integrations.ai.ollama.api-url:http://ollama:11434/v1/chat/completions}")
+    private String ollamaApiUrl;
+
+    @Value("${integrations.ai.ollama.model:llama3:8b}")
+    private String ollamaModel;
 
     @Value("${integrations.ai.api-key:mock-ai-key}")
     private String aiApiKey;
@@ -47,7 +71,7 @@ public class AiSummaryService {
     @Value("${integrations.ai.api-url:https://llm.api.cloud.yandex.net/foundationModels/v1/completion}")
     private String aiApiUrl;
 
-    @Value("${integrations.ai.model:yandexgpt}")
+    @Value("${integrations.ai.model:gemini-1.5-flash}")
     private String aiModel;
 
     @Data
@@ -62,151 +86,335 @@ public class AiSummaryService {
 
     @Transactional
     public AiSummaryDto generateOrGetAiSummary(UUID candidateId) {
-        log.info("Processing AI-Summary for candidate ID: {} using provider: {}", candidateId, aiProvider);
+        GenerateAiSummaryRequest request = GenerateAiSummaryRequest.builder()
+                .candidateId(candidateId)
+                .provider(aiProvider)
+                .focus("balanced")
+                .forceRefresh(false)
+                .build();
+        return generateAiSummary(request);
+    }
+
+    @Transactional
+    public AiSummaryDto generateAiSummary(GenerateAiSummaryRequest request) {
+        UUID candidateId = request.getCandidateId();
+        String activeProvider = (request.getProvider() != null && !request.getProvider().isBlank())
+                ? request.getProvider().toLowerCase().trim()
+                : (aiProvider != null ? aiProvider.toLowerCase().trim() : "gemini");
+
+        log.info("Processing AI-Summary for candidate ID: {} using provider: {}", candidateId, activeProvider);
 
         CandidateProfile candidate = candidateRepository.findById(candidateId)
                 .orElseThrow(() -> new IllegalArgumentException("Кандидат с ID " + candidateId + " не найден"));
 
         Optional<CandidateAiSummary> existingOpt = aiSummaryRepository.findByCandidateId(candidateId);
-        if (existingOpt.isPresent()) {
+        if (existingOpt.isPresent() && !request.isForceRefresh()) {
             return mapToDto(existingOpt.get());
         }
 
-        // Real neural network generation
-        AiGenerationResult result = generateWithAi(candidate);
+        AiGenerationResult result = executeAiGeneration(candidate, request, activeProvider);
 
-        CandidateAiSummary aiEntity = CandidateAiSummary.builder()
-                .candidate(candidate)
-                .summaryText(result.getSummaryText())
-                .keyStrengths(result.getKeyStrengths())
-                .recommendationLevel(result.getRecommendationLevel())
-                .recommendedRoles(result.getRecommendedRoles())
-                .modelName(result.getModelName())
-                .build();
+        CandidateAiSummary aiEntity = existingOpt.orElseGet(() -> CandidateAiSummary.builder().candidate(candidate).build());
+        aiEntity.setSummaryText(result.getSummaryText());
+        aiEntity.setKeyStrengths(result.getKeyStrengths());
+        aiEntity.setRecommendationLevel(result.getRecommendationLevel());
+        aiEntity.setRecommendedRoles(result.getRecommendedRoles());
+        aiEntity.setModelName(result.getModelName());
 
         CandidateAiSummary saved = aiSummaryRepository.save(aiEntity);
-        log.info("AI-Summary successfully generated and saved for candidate ID: {} with model: {}", candidateId, result.getModelName());
+        log.info("AI-Summary saved for candidate ID: {} with model: {}", candidateId, result.getModelName());
         return mapToDto(saved);
     }
 
-    /**
-     * Executes live AI generation via API (YandexGPT or OpenAI-compatible),
-     * or gracefully engages dynamic neural assessment if API key is not configured or network call fails.
-     */
-    private AiGenerationResult generateWithAi(CandidateProfile candidate) {
-        boolean isLiveKeyProvided = aiApiKey != null 
-                && !aiApiKey.isBlank() 
-                && !aiApiKey.equalsIgnoreCase("mock-ai-key") 
-                && !aiApiKey.startsWith("mock-");
-
-        if (isLiveKeyProvided) {
-            try {
-                log.info("Connecting to live {} API at: {}", aiProvider, aiApiUrl);
-                return callLiveAiApi(candidate);
-            } catch (Exception e) {
-                log.warn("Live AI API call failed ({}). Reason: {}. Engaging dynamic algorithmic assessment engine.", aiProvider, e.getMessage());
-            }
-        } else {
-            log.info("AI API key is in demo/mock mode. Running live dynamic profile generation engine for candidate: {}", candidate.getId());
-        }
-
-        // Intelligent dynamic profiling engine based on real candidate data
-        return generateDynamicProfile(candidate);
-    }
-
-    /**
-     * Live HTTP request to Yandex Foundation Models / OpenAI / GigaChat
-     */
-    private AiGenerationResult callLiveAiApi(CandidateProfile candidate) throws Exception {
-        String prompt = buildPrompt(candidate);
-        String systemInstruction = "Ты — ведущий технический HR-архитектор и ИИ-аналитик Федерации спортивного программирования России (ФСП РФ). " +
-                "Твоя задача — объективно оценить квалификацию инженера-спортсмена на основе ELO-рейтинга, спортивного разряда ФСП, навыков и открытых репозиториев GitHub. " +
-                "Ответь строго валидным JSON-объектом без лишнего текста с ключами: summaryText (строка), keyStrengths (массив из 4 строк), recommendationLevel (строка: HIGHLY_RECOMMENDED, RECOMMENDED или QUALIFIED), recommendedRoles (массив из 3-4 строк).";
-
-        String responseBody;
-
-        if ("yandexgpt".equalsIgnoreCase(aiProvider)) {
-            String resolvedFolder = (folderId != null && !folderId.isBlank()) ? folderId : "b1gmockfolderid";
-            String modelUri = "gpt://" + resolvedFolder + "/" + (aiModel != null ? aiModel : "yandexgpt") + "/latest";
-
-            Map<String, Object> yandexPayload = Map.of(
-                    "modelUri", modelUri,
-                    "completionOptions", Map.of(
-                            "stream", false,
-                            "temperature", 0.3,
-                            "maxTokens", "2000"
-                    ),
-                    "messages", List.of(
-                            Map.of("role", "system", "text", systemInstruction),
-                            Map.of("role", "user", "text", prompt)
-                    )
-            );
-
-            responseBody = aiWebClient.post()
-                    .uri(aiApiUrl)
-                    .header(HttpHeaders.AUTHORIZATION, "Api-Key " + aiApiKey)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .bodyValue(yandexPayload)
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .timeout(Duration.ofSeconds(15))
-                    .block();
-
-            return parseYandexGptResponse(responseBody, candidate);
-        } else {
-            // OpenAI / Generic OpenAI-compatible API (GigaChat / OpenRouter / DeepSeek)
-            Map<String, Object> openAiPayload = Map.of(
-                    "model", (aiModel != null && !aiModel.isBlank()) ? aiModel : "gpt-4o-mini",
-                    "temperature", 0.3,
-                    "messages", List.of(
-                            Map.of("role", "system", "content", systemInstruction),
-                            Map.of("role", "user", "content", prompt)
-                    )
-            );
-
-            responseBody = aiWebClient.post()
-                    .uri(aiApiUrl)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + aiApiKey)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .bodyValue(openAiPayload)
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .timeout(Duration.ofSeconds(15))
-                    .block();
-
-            return parseOpenAiResponse(responseBody, candidate);
+    private AiGenerationResult executeAiGeneration(CandidateProfile candidate, GenerateAiSummaryRequest request, String provider) {
+        try {
+            return switch (provider) {
+                case "gemini" -> callGeminiApi(candidate, request);
+                case "openrouter" -> callOpenRouterApi(candidate, request);
+                case "ollama", "local", "docker" -> callOllamaApi(candidate, request);
+                case "yandexgpt", "yandex" -> callYandexGptApi(candidate, request);
+                default -> callGenericOpenAiApi(candidate, request, provider);
+            };
+        } catch (Exception e) {
+            log.warn("Live AI generation with provider '{}' failed ({}). Falling back to dynamic algorithmic profiler.", provider, e.getMessage());
+            return generateDynamicProfile(candidate, request.getFocus());
         }
     }
 
-    private AiGenerationResult parseYandexGptResponse(String json, CandidateProfile candidate) {
+    /**
+     * Unified system instruction for all LLM providers
+     */
+    private String getUnifiedSystemPrompt() {
+        return "Ты — главный технический HR-архитектор и ИИ-аналитик Федерации спортивного программирования России (ФСП РФ). " +
+                "Твоя задача — объективно оценить квалификацию инженера-спортсмена на основе спортивного ELO-рейтинга, " +
+                "официального разряда ФСП, навыков, метрик олимпиадного программирования и открытых репозиториев GitHub. " +
+                "Ответь СТРОГО валидным JSON-объектом без каких-либо вводных слов, пояснений и без markdown-разметки. " +
+                "JSON обязан содержать 4 ключа: " +
+                "\"summaryText\" (развернутый связный аналитический отчет на русском из 3-5 предложений), " +
+                "\"keyStrengths\" (массив строго из 4 строк с ключевыми техническими преимуществами), " +
+                "\"recommendationLevel\" (строка: HIGHLY_RECOMMENDED, RECOMMENDED или QUALIFIED), " +
+                "\"recommendedRoles\" (массив из 3-4 строк с рекомендуемыми инженерными ролями).";
+    }
+
+    /**
+     * Unified user prompt tailored to candidate profile and requested focus
+     */
+    private String buildUnifiedUserPrompt(CandidateProfile c, String focus) {
+        String name = c.getUser() != null ? c.getUser().getFullName() : "Кандидат";
+        String rank = c.getFspRank() != null ? c.getFspRank().getDisplayName() : "Спортсмен ФСП";
+        String skillsList = c.getSkills() != null && !c.getSkills().isEmpty()
+                ? String.join(", ", c.getSkills())
+                : "Java, Spring Boot, PostgreSQL, Docker";
+
+        String focusInstruction = switch (focus != null ? focus.toLowerCase() : "balanced") {
+            case "highload" -> "Сделай особый акцент на масштабируемости, отказоустойчивости, микросервисах и высоконагруженных системах (HighLoad).";
+            case "algo" -> "Сделай особый акцент на олимпиадной алгоритмической базе, скорости решения задач и математической культуре.";
+            case "lead" -> "Сделай особый акцент на лидерском потенциале, менторстве, архитектурных решениях и роли техлида.";
+            default -> "Дай сбалансированную оценку спортивных достижений и прикладных инженерных навыков.";
+        };
+
+        return String.format(
+                "Данные кандидата для экспертного анализа:\n" +
+                "- ФИО: %s\n" +
+                "- Специализация: %s (Грейд: %s)\n" +
+                "- Спортивный рейтинг ФСП ELO: %d (Официальный разряд: %s, Верификация ФСП: %s)\n" +
+                "- Ожидания по зарплате: %d руб.\n" +
+                "- Локация: %s\n" +
+                "- Подтвержденный стек навыков: %s\n" +
+                "- GitHub статистика: username @%s, публичных репозиториев: %d, коммитов за год: %d\n" +
+                "- Резюме / О себе: %s\n" +
+                "Фокус отчета для работодателя: %s\n\n" +
+                "Сформируй валидный JSON согласно инструкции.",
+                name,
+                c.getSpecialization(),
+                c.getGrade(),
+                c.getFspElo(),
+                rank,
+                c.isFspVerified() ? "Подтвержден" : "В процессе",
+                c.getSalaryExpectation(),
+                c.getLocation(),
+                skillsList,
+                c.getGithubUsername() != null ? c.getGithubUsername() : "отсутствует",
+                c.getGithubReposCount(),
+                c.getGithubCommitsCount(),
+                c.getBio() != null ? c.getBio() : "Специалист по спортивному программированию и разработке ПО",
+                focusInstruction
+        );
+    }
+
+    /**
+     * 1. Google Gemini via OpenAI-compatible endpoint
+     */
+    private AiGenerationResult callGeminiApi(CandidateProfile candidate, GenerateAiSummaryRequest request) {
+        String key = resolveApiKey(request.getApiKey(), geminiApiKey);
+        if (isMockKey(key)) {
+            log.info("Gemini key is mock/demo. Running dynamic assessment engine.");
+            return generateDynamicProfile(candidate, request.getFocus());
+        }
+
+        String targetModel = (request.getModel() != null && !request.getModel().isBlank()) ? request.getModel() : geminiModel;
+        String prompt = buildUnifiedUserPrompt(candidate, request.getFocus());
+
+        Map<String, Object> payload = Map.of(
+                "model", targetModel,
+                "temperature", 0.3,
+                "messages", List.of(
+                        Map.of("role", "system", "content", getUnifiedSystemPrompt()),
+                        Map.of("role", "user", "content", prompt)
+                )
+        );
+
+        String responseBody = aiWebClient.post()
+                .uri(geminiApiUrl)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + key)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(payload)
+                .retrieve()
+                .bodyToMono(String.class)
+                .timeout(Duration.ofSeconds(15))
+                .block();
+
+        return parseOpenAiFormatResponse(responseBody, "Google Gemini " + targetModel + " (Live API)", candidate, request.getFocus());
+    }
+
+    /**
+     * 2. OpenRouter API
+     */
+    private AiGenerationResult callOpenRouterApi(CandidateProfile candidate, GenerateAiSummaryRequest request) {
+        String key = resolveApiKey(request.getApiKey(), openrouterApiKey);
+        if (isMockKey(key)) {
+            log.info("OpenRouter key is mock/demo. Running dynamic assessment engine.");
+            return generateDynamicProfile(candidate, request.getFocus());
+        }
+
+        String targetModel = (request.getModel() != null && !request.getModel().isBlank()) ? request.getModel() : openrouterModel;
+        String prompt = buildUnifiedUserPrompt(candidate, request.getFocus());
+
+        Map<String, Object> payload = Map.of(
+                "model", targetModel,
+                "temperature", 0.3,
+                "messages", List.of(
+                        Map.of("role", "system", "content", getUnifiedSystemPrompt()),
+                        Map.of("role", "user", "content", prompt)
+                )
+        );
+
+        String responseBody = aiWebClient.post()
+                .uri(openrouterApiUrl)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + key)
+                .header("HTTP-Referer", "https://fsp-russia.ru")
+                .header("X-Title", "FSP Career Arena")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(payload)
+                .retrieve()
+                .bodyToMono(String.class)
+                .timeout(Duration.ofSeconds(15))
+                .block();
+
+        return parseOpenAiFormatResponse(responseBody, "OpenRouter (" + targetModel + ")", candidate, request.getFocus());
+    }
+
+    /**
+     * 3. Local Model (Ollama in Docker)
+     */
+    private AiGenerationResult callOllamaApi(CandidateProfile candidate, GenerateAiSummaryRequest request) {
+        String url = (request.getEndpointUrl() != null && !request.getEndpointUrl().isBlank())
+                ? request.getEndpointUrl()
+                : ollamaApiUrl;
+        String targetModel = (request.getModel() != null && !request.getModel().isBlank())
+                ? request.getModel()
+                : ollamaModel;
+
+        String prompt = buildUnifiedUserPrompt(candidate, request.getFocus());
+
+        Map<String, Object> payload = Map.of(
+                "model", targetModel,
+                "temperature", 0.3,
+                "messages", List.of(
+                        Map.of("role", "system", "content", getUnifiedSystemPrompt()),
+                        Map.of("role", "user", "content", prompt)
+                )
+        );
+
+        String responseBody = aiWebClient.post()
+                .uri(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(payload)
+                .retrieve()
+                .bodyToMono(String.class)
+                .timeout(Duration.ofSeconds(20))
+                .block();
+
+        return parseOpenAiFormatResponse(responseBody, "Ollama Local Docker (" + targetModel + ")", candidate, request.getFocus());
+    }
+
+    /**
+     * 4. Yandex Foundation Models (YandexGPT)
+     */
+    private AiGenerationResult callYandexGptApi(CandidateProfile candidate, GenerateAiSummaryRequest request) {
+        String key = resolveApiKey(request.getApiKey(), aiApiKey);
+        if (isMockKey(key)) {
+            log.info("YandexGPT key is mock/demo. Running dynamic assessment engine.");
+            return generateDynamicProfile(candidate, request.getFocus());
+        }
+
+        String activeFolder = (request.getFolderId() != null && !request.getFolderId().isBlank())
+                ? request.getFolderId()
+                : ((folderId != null && !folderId.isBlank()) ? folderId : "b1gmockfolderid");
+        String activeModel = (request.getModel() != null && !request.getModel().isBlank())
+                ? request.getModel()
+                : ((aiModel != null && !aiModel.isBlank()) ? aiModel : "yandexgpt");
+
+        String modelUri = "gpt://" + activeFolder + "/" + activeModel + "/latest";
+        String prompt = buildUnifiedUserPrompt(candidate, request.getFocus());
+
+        Map<String, Object> yandexPayload = Map.of(
+                "modelUri", modelUri,
+                "completionOptions", Map.of(
+                        "stream", false,
+                        "temperature", 0.3,
+                        "maxTokens", "2000"
+                ),
+                "messages", List.of(
+                        Map.of("role", "system", "text", getUnifiedSystemPrompt()),
+                        Map.of("role", "user", "text", prompt)
+                )
+        );
+
+        String responseBody = aiWebClient.post()
+                .uri(aiApiUrl)
+                .header(HttpHeaders.AUTHORIZATION, "Api-Key " + key)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(yandexPayload)
+                .retrieve()
+                .bodyToMono(String.class)
+                .timeout(Duration.ofSeconds(15))
+                .block();
+
+        return parseYandexGptResponse(responseBody, candidate, request.getFocus());
+    }
+
+    private AiGenerationResult callGenericOpenAiApi(CandidateProfile candidate, GenerateAiSummaryRequest request, String provider) {
+        String key = resolveApiKey(request.getApiKey(), aiApiKey);
+        if (isMockKey(key)) {
+            return generateDynamicProfile(candidate, request.getFocus());
+        }
+
+        String targetModel = (request.getModel() != null && !request.getModel().isBlank()) ? request.getModel() : "gpt-4o-mini";
+        String prompt = buildUnifiedUserPrompt(candidate, request.getFocus());
+
+        Map<String, Object> openAiPayload = Map.of(
+                "model", targetModel,
+                "temperature", 0.3,
+                "messages", List.of(
+                        Map.of("role", "system", "content", getUnifiedSystemPrompt()),
+                        Map.of("role", "user", "content", prompt)
+                )
+        );
+
+        String responseBody = aiWebClient.post()
+                .uri(aiApiUrl)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + key)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(openAiPayload)
+                .retrieve()
+                .bodyToMono(String.class)
+                .timeout(Duration.ofSeconds(15))
+                .block();
+
+        String providerName = provider.equalsIgnoreCase("openai") ? "OpenAI" : provider;
+        return parseOpenAiFormatResponse(responseBody, providerName + " " + targetModel + " (Live API)", candidate, request.getFocus());
+    }
+
+    private AiGenerationResult parseYandexGptResponse(String json, CandidateProfile candidate, String focus) {
         try {
             JsonNode root = objectMapper.readTree(json);
             JsonNode alternatives = root.path("result").path("alternatives");
             if (alternatives.isArray() && !alternatives.isEmpty()) {
                 String rawText = alternatives.get(0).path("message").path("text").asText();
-                return parseJsonFromLlmText(rawText, "YandexGPT 3 Pro (Live Cloud API)", candidate);
+                return parseJsonFromLlmText(rawText, "YandexGPT 3 Pro (Live Cloud API)", candidate, focus);
             }
         } catch (Exception e) {
             log.error("Failed to parse YandexGPT JSON response: {}", e.getMessage());
         }
-        return generateDynamicProfile(candidate);
+        return generateDynamicProfile(candidate, focus);
     }
 
-    private AiGenerationResult parseOpenAiResponse(String json, CandidateProfile candidate) {
+    private AiGenerationResult parseOpenAiFormatResponse(String json, String liveModelName, CandidateProfile candidate, String focus) {
         try {
             JsonNode root = objectMapper.readTree(json);
             JsonNode choices = root.path("choices");
             if (choices.isArray() && !choices.isEmpty()) {
                 String rawText = choices.get(0).path("message").path("content").asText();
-                return parseJsonFromLlmText(rawText, "OpenAI " + aiModel + " (Live API)", candidate);
+                return parseJsonFromLlmText(rawText, liveModelName, candidate, focus);
             }
         } catch (Exception e) {
-            log.error("Failed to parse OpenAI JSON response: {}", e.getMessage());
+            log.error("Failed to parse OpenAI-compatible JSON response: {}", e.getMessage());
         }
-        return generateDynamicProfile(candidate);
+        return generateDynamicProfile(candidate, focus);
     }
 
-    private AiGenerationResult parseJsonFromLlmText(String rawText, String liveModelName, CandidateProfile candidate) {
+    private AiGenerationResult parseJsonFromLlmText(String rawText, String liveModelName, CandidateProfile candidate, String focus) {
         try {
             String cleanJson = rawText.trim();
             if (cleanJson.startsWith("```json")) {
@@ -221,7 +429,7 @@ public class AiSummaryService {
 
             JsonNode parsed = objectMapper.readTree(cleanJson);
             String summaryText = parsed.path("summaryText").asText();
-            
+
             List<String> keyStrengths = new ArrayList<>();
             if (parsed.has("keyStrengths") && parsed.get("keyStrengths").isArray()) {
                 for (JsonNode item : parsed.get("keyStrengths")) {
@@ -260,50 +468,10 @@ public class AiSummaryService {
             }
         }
 
-        return generateDynamicProfile(candidate);
+        return generateDynamicProfile(candidate, focus);
     }
 
-    /**
-     * Builds comprehensive candidate prompt with real metrics
-     */
-    private String buildPrompt(CandidateProfile c) {
-        String name = c.getUser() != null ? c.getUser().getFullName() : "Кандидат";
-        String rank = c.getFspRank() != null ? c.getFspRank().getDisplayName() : "Спортсмен ФСП";
-        String skillsList = c.getSkills() != null && !c.getSkills().isEmpty() 
-                ? String.join(", ", c.getSkills()) 
-                : "Java, Spring Boot, PostgreSQL, Docker";
-
-        return String.format(
-                "Данные кандидата для оценки:\n" +
-                "- ФИО: %s\n" +
-                "- Специализация: %s (%s)\n" +
-                "- Рейтинг ФСП ELO: %d (Разряд: %s, Верификация ФСП: %s)\n" +
-                "- Ожидания по зарплате: %d руб.\n" +
-                "- Локация: %s\n" +
-                "- Подтвержденные навыки: %s\n" +
-                "- Активность на GitHub: username @%s, репозиториев: %d, коммитов за год: %d\n" +
-                "- Описание / резюме: %s\n\n" +
-                "Сформируй объективный технический портрет.",
-                name,
-                c.getGrade(),
-                c.getSpecialization(),
-                c.getFspElo(),
-                rank,
-                c.isFspVerified() ? "Подтвержден" : "В процессе",
-                c.getSalaryExpectation(),
-                c.getLocation(),
-                skillsList,
-                c.getGithubUsername() != null ? c.getGithubUsername() : "отсутствует",
-                c.getGithubReposCount(),
-                c.getGithubCommitsCount(),
-                c.getBio() != null ? c.getBio() : "Специалист по спортивному программированию и highload разработке"
-        );
-    }
-
-    /**
-     * Dynamic algorithmic evaluation of candidate based on real metrics, skills, ELO and GitHub stats
-     */
-    private AiGenerationResult generateDynamicProfile(CandidateProfile c) {
+    private AiGenerationResult generateDynamicProfile(CandidateProfile c, String focus) {
         String name = c.getUser() != null ? c.getUser().getFullName() : "Специалист";
         String rank = c.getFspRank() != null ? c.getFspRank().getDisplayName() : "Спортсмен ФСП";
         int elo = c.getFspElo();
@@ -323,9 +491,9 @@ public class AiSummaryService {
         }
 
         String githubAnalysis = c.getGithubCommitsCount() > 500
-                ? String.format("Анализ GitHub (@%s) выявил высокую инженерную дисциплину: %d коммитов за последний год в %d проектах с акцентом на чистый продакшен-код.", 
+                ? String.format("Анализ GitHub (@%s) выявил высокую инженерную дисциплину: %d коммитов за последний год в %d проектах с акцентом на чистый продакшен-код.",
                     c.getGithubUsername() != null ? c.getGithubUsername() : "code", c.getGithubCommitsCount(), c.getGithubReposCount())
-                : String.format("Профиль GitHub (@%s) содержит %d репозиториев с реализацией прикладных решений на стеке %s.", 
+                : String.format("Профиль GitHub (@%s) содержит %d репозиториев с реализацией прикладных решений на стеке %s.",
                     c.getGithubUsername() != null ? c.getGithubUsername() : "code", c.getGithubReposCount(), skills);
 
         String summary = String.format(
@@ -353,7 +521,7 @@ public class AiSummaryService {
 
     private List<String> deriveKeyStrengths(CandidateProfile c) {
         List<String> strengths = new ArrayList<>();
-        
+
         if (c.getFspElo() >= 1800) {
             strengths.add("Олимпиадный уровень: решение сложных динамических и графовых задач за нормативное время");
         } else if (c.getFspElo() >= 1400) {
@@ -426,6 +594,17 @@ public class AiSummaryService {
                     "Algorithmic Solution Developer"
             );
         };
+    }
+
+    private String resolveApiKey(String requestKey, String defaultKey) {
+        if (requestKey != null && !requestKey.isBlank()) {
+            return requestKey.trim();
+        }
+        return defaultKey;
+    }
+
+    private boolean isMockKey(String key) {
+        return key == null || key.isBlank() || key.equalsIgnoreCase("mock-ai-key") || key.startsWith("mock-");
     }
 
     private AiSummaryDto mapToDto(CandidateAiSummary entity) {

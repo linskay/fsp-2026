@@ -42,10 +42,22 @@ services:
       HH_CLIENT_SECRET: ${HH_CLIENT_SECRET:-mock-hh-client-secret}
       JUDGE0_API_URL: ${JUDGE0_API_URL:-https://judge0-ce.p.rapidapi.com}
       JUDGE0_API_KEY: ${JUDGE0_API_KEY:-mock-judge0-key}
-      AI_PROVIDER: ${AI_PROVIDER:-yandexgpt}
-      AI_API_KEY: ${AI_API_KEY:-mock-ai-key}
+      AI_PROVIDER: ${AI_PROVIDER:-gemini}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-AQ.Ab8RN6Kclff0cT3KZgjHJj_h4MgUMqyofqe-VvfDiqhbNekiMg}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-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}
+      OLLAMA_API_URL: ${OLLAMA_API_URL:-http://ollama:11434/v1/chat/completions}
     ports:
       - "8080:8080"
+
+  # Local LLM Service (Ollama in Docker)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: fsp-ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
 
   # Frontend (React + Vite)
   frontend:
@@ -61,3 +73,4 @@ services:
 
 volumes:
   pgdata:
+  ollama_data:
