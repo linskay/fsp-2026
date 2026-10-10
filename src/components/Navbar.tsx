@@ -113,41 +113,53 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             </nav>
 
-            {/* Login Button */}
-            {onOpenLoginModal && (
-              <button
-                onClick={onOpenLoginModal}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-xs text-white font-semibold transition-all cursor-pointer shadow-md shadow-blue-500/20 hover:scale-[1.02]"
-                title="Войти в личный кабинет"
-              >
-                <LogIn className="w-3.5 h-3.5" />
-                <span>Войти</span>
-              </button>
+            {/* User State & Login/Logout */}
+            {currentUser ? (
+              <div className="flex items-center gap-2">
+                <div 
+                  onClick={() => onRoleChange(currentUser.role === 'EMPLOYER' ? 'employer' : 'candidate')}
+                  className="flex items-center gap-2 pl-2 py-1 pr-2.5 rounded-2xl bg-white/[0.04] border border-white/10 hover:border-blue-500/50 cursor-pointer transition-colors"
+                  title={`Вы вошли как ${currentUser.fullName} (${currentUser.email})`}
+                >
+                  <UserAvatar
+                    name={currentUser.fullName}
+                    src={currentUser.avatarUrl || candidate?.avatarUrl}
+                    size="sm"
+                    rank={candidate?.fspRank}
+                  />
+                  <div className="hidden sm:flex flex-col text-left">
+                    <span className="text-[11px] font-bold text-white leading-tight truncate max-w-[120px]">
+                      {currentUser.fullName}
+                    </span>
+                    <span className="text-[9px] font-mono text-cyan-400 leading-tight">
+                      {currentUser.role === 'EMPLOYER' ? 'Работодатель' : `${candidate?.fspRating || 1200} ELO`}
+                    </span>
+                  </div>
+                </div>
+
+                {onLogout && (
+                  <button
+                    onClick={onLogout}
+                    className="p-2 rounded-xl bg-white/[0.04] hover:bg-rose-500/20 text-slate-400 hover:text-rose-300 border border-white/10 hover:border-rose-500/30 transition-all cursor-pointer"
+                    title="Выйти из аккаунта"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+            ) : (
+              onOpenLoginModal && (
+                <button
+                  onClick={onOpenLoginModal}
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-xs text-white font-semibold transition-all cursor-pointer shadow-md shadow-blue-500/20 hover:scale-[1.02]"
+                  title="Войти в личный кабинет"
+                >
+                  <LogIn className="w-3.5 h-3.5" />
+                  <span>Войти</span>
+                </button>
+              )
             )}
 
-            {/* Logged In Candidate Avatar */}
-            {candidate && (
-              <div
-                onClick={() => onRoleChange('candidate')}
-                className="flex items-center gap-2.5 pl-1 sm:pl-2 py-1 pr-2 rounded-2xl hover:bg-[#0b0f1d] cursor-pointer transition-colors border border-transparent hover:border-[#162038]"
-                title={`Профиль: ${candidate.fullName} (${candidate.fspRank})`}
-              >
-                <UserAvatar
-                  name={candidate.fullName}
-                  src={candidate.avatarUrl}
-                  size="sm"
-                  rank={candidate.fspRank}
-                />
-                <div className="hidden lg:flex flex-col text-left">
-                  <span className="text-[11px] font-bold text-white leading-tight truncate max-w-[120px]">
-                    {candidate.fullName.split(' ')[0]}
-                  </span>
-                  <span className="text-[9px] font-mono text-amber-400 leading-tight">
-                    {candidate.fspRating} ELO
-                  </span>
-                </div>
-              </div>
-            )}
           </div>
 
         </div>

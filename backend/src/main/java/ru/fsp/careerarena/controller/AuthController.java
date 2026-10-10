@@ -6,17 +6,25 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.transaction.annotation.Transactional;
 import ru.fsp.careerarena.entity.User;
+import ru.fsp.careerarena.entity.CandidateProfile;
+import ru.fsp.careerarena.entity.EmployerProfile;
+import ru.fsp.careerarena.entity.enums.FspRank;
+import ru.fsp.careerarena.entity.enums.Grade;
+import ru.fsp.careerarena.entity.enums.Specialization;
+import ru.fsp.careerarena.entity.enums.UserRole;
 import ru.fsp.careerarena.repository.CandidateProfileRepository;
 import ru.fsp.careerarena.repository.EmployerProfileRepository;
 import ru.fsp.careerarena.repository.UserRepository;
 
+import java.time.OffsetDateTime;
 import java.util.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
-@Tag(name = "Authentication & OAuth", description = "Авторизация кандидатов и работодателей (GitHub, Yandex, HH.ru), тестовые учетные записи и 152-ФЗ")
+@Tag(name = "Authentication & OAuth", description = "Авторизация кандидатов и работодателей (GitHub, Yandex, HH.ru), тестовые учетные записи и регистрация")
 public class AuthController {
 
     private final UserRepository userRepository;
@@ -121,12 +129,85 @@ public class AuthController {
         ));
     }
 
+    @PostMapping("/register")
+    @Operation(summary = "Регистрация нового пользователя (Кандидат или Работодатель) в PostgreSQL")
+    @Transactional
+    public ResponseEntity<Map<String, Object>> register(@RequestBody Map<String, Object> req) {
+        String email = (String) req.get("email");
+        String password = (String) req.get("password");
+        String fullName = (String) req.get("fullName");
+        String roleStr = (String) req.get("role");
+
+        if (email == null || email.isBlank() || password == null || password.isBlank() || fullName == null || fullName.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Email, пароль и имя обязательны для заполнения"));
+        }
+
+        String normalizedEmail = email.trim().toLowerCase();
+        if (userRepository.findByEmail(normalizedEmail).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", "Пользователь с таким email уже зарегистрирован"));
+        }
+
+        UserRole role = "EMPLOYER".equalsIgnoreCase(roleStr) ? UserRole.EMPLOYER : UserRole.CANDIDATE;
+
+        User newUser = User.builder()
+                .email(normalizedEmail)
+                .password(password)
+                .fullName(fullName.trim())
+                .role(role)
+                .avatarUrl(role == UserRole.CANDIDATE ? "/avatars/user_pesterev.png" : "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80")
+                .personalDataConsentAccepted(true)
+                .personalDataConsentDate(OffsetDateTime.now())
+                .build();
+
+        User savedUser = userRepository.save(newUser);
+
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("status", "SUCCESS");
+        resp.put("userId", savedUser.getId().toString());
+        resp.put("email", savedUser.getEmail());
+        resp.put("fullName", savedUser.getFullName());
+        resp.put("role", savedUser.getRole().name());
+        resp.put("avatarUrl", savedUser.getAvatarUrl());
+        resp.put("token", "fsp-jwt-" + UUID.randomUUID());
+
+        if (role == UserRole.CANDIDATE) {
+            CandidateProfile profile = CandidateProfile.builder()
+                    .user(savedUser)
+                    .fspId("FSP-" + String.format("%06d", new Random().nextInt(999999)))
+                    .fspElo(1200)
+                    .fspRank(FspRank.UNRANKED)
+                    .specialization(Specialization.BACKEND)
+                    .grade(Grade.MIDDLE)
+                    .salaryExpectation(150000)
+                    .location("Москва / Удаленно")
+                    .bio("Зарегистрированный разработчик FSP Career Arena")
+                    .isFspVerified(true)
+                    .build();
+            CandidateProfile savedProfile = candidateProfileRepository.save(profile);
+            resp.put("candidateId", savedProfile.getId().toString());
+            resp.put("fspElo", savedProfile.getFspElo());
+            resp.put("fspRank", savedProfile.getFspRank().name());
+        } else {
+            EmployerProfile profile = EmployerProfile.builder()
+                    .user(savedUser)
+                    .companyName(fullName.trim())
+                    .industry("Информационные технологии")
+                    .isFspPartner(true)
+                    .build();
+            EmployerProfile savedProfile = employerProfileRepository.save(profile);
+            resp.put("employerId", savedProfile.getId().toString());
+            resp.put("companyName", savedProfile.getCompanyName());
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(resp);
+    }
+
     @GetMapping("/privacy-policy")
     @Operation(summary = "Получение официальной ссылки на Положение об обработке персональных данных ФСП РФ (152-ФЗ)")
     public ResponseEntity<Map<String, String>> getPrivacyPolicyInfo() {
         return ResponseEntity.ok(Map.of(
             "title", "Положение об обработке персональных данных Федерации спортивного программирования России",
-            "url", "https://fsp-russia.ru/files/Положение%20обработку%20пдн%20(1).pdf",
+            "url", "https://fsp-russia.ru/files/%D0%9F%D0%BE%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BE%D0%B1%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B0%20%D0%BF%D0%B4%D0%BD%20(1).pdf",
             "compliance", "152-ФЗ РФ"
         ));
     }

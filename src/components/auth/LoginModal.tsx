@@ -36,7 +36,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
 
   if (!isOpen) return null;
 
-  const POLICY_URL = "https://fsp-russia.ru/files/%D0%9F%D0%BE%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BE%D0%B1%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D1%83%20%D0%BF%D0%B4%D0%BD%20(1).pdf";
+  const POLICY_URL = "https://fsp-russia.ru/files/%D0%9F%D0%BE%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BE%D0%B1%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B0%20%D0%BF%D0%B4%D0%BD%20(1).pdf";
 
   const handleQuickFill = (testEmail: string, testPass: string) => {
     setEmail(testEmail);
@@ -89,16 +89,12 @@ export const LoginModal: React.FC<LoginModalProps> = ({
     setError(null);
 
     try {
-      // Simulate quick registration and log in as the chosen role
-      const mockUser: AuthLoginResponse = {
-        token: 'jwt-registered-' + Date.now(),
+      const registeredUser = await api.register({
         email: regEmail,
+        password: regPassword,
         fullName: regName,
-        role: regRole,
-        candidateId: regRole === 'CANDIDATE' ? 'cand-pesterev' : undefined,
-        employerId: regRole === 'EMPLOYER' ? 'emp-sbertech' : undefined,
-        fspVerified: true
-      };
+        role: regRole
+      });
 
       confetti({
         particleCount: 60,
@@ -106,7 +102,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
         origin: { y: 0.6 }
       });
 
-      onLoginSuccess(mockUser);
+      onLoginSuccess(registeredUser);
       onClose();
     } catch (err: any) {
       setError(err.message || 'Ошибка при регистрации');
@@ -115,51 +111,92 @@ export const LoginModal: React.FC<LoginModalProps> = ({
     }
   };
 
-  const handleSocialAuth = (provider: 'github' | 'yandex' | 'hh') => {
+  const [socialProvider, setSocialProvider] = useState<'github' | 'yandex' | 'hh' | null>(null);
+  const [socialUsername, setSocialUsername] = useState('ipesterev');
+
+  const handleSocialSubmit = async (provider: 'github' | 'yandex' | 'hh') => {
     setIsLoading(true);
     setError(null);
 
-    setTimeout(() => {
-      let mockUser: AuthLoginResponse;
+    try {
       if (provider === 'github') {
-        mockUser = {
+        const username = socialUsername.trim() || 'ipesterev';
+        let ghProfile = null;
+        try {
+          ghProfile = await api.fetchGithubLiveProfile(username);
+        } catch {}
+
+        const isPesterev = username.toLowerCase().includes('pesterev');
+        const user: AuthLoginResponse = {
           token: 'jwt-oauth-github-' + Date.now(),
-          email: 'github.user@fsp.ru',
-          fullName: 'GitHub Разработчик',
+          email: `${username.toLowerCase()}@github.com`,
+          fullName: isPesterev ? 'Иван Пестерев' : (ghProfile?.username ? `@${ghProfile.username}` : `@${username}`),
+          avatarUrl: ghProfile?.avatarUrl || `https://github.com/${username}.png`,
           role: 'CANDIDATE',
-          candidateId: 'cand-pesterev',
-          fspVerified: true
+          candidateId: 'cand-gh-' + username.toLowerCase(),
+          fspVerified: true,
+          fspRank: isPesterev ? '1-й спортивный разряд' : '2-й спортивный разряд',
+          fspElo: isPesterev ? 2540 : (1400 + Math.min(ghProfile?.commitsCountYear || 300, 700))
         };
+
+        confetti({
+          particleCount: 60,
+          spread: 60,
+          origin: { y: 0.6 }
+        });
+
+        onLoginSuccess(user);
+        onClose();
       } else if (provider === 'yandex') {
-        mockUser = {
+        const username = socialUsername.trim() || 'developer';
+        const user: AuthLoginResponse = {
           token: 'jwt-oauth-yandex-' + Date.now(),
-          email: 'yandex.user@yandex.ru',
-          fullName: 'Яндекс ID Пользователь',
-          role: regRole || 'CANDIDATE',
-          candidateId: 'cand-pesterev',
-          fspVerified: true
+          email: `${username.toLowerCase()}@yandex.ru`,
+          fullName: `Яндекс Пользователь (@${username})`,
+          avatarUrl: '/avatars/user_alina.png',
+          role: regRole,
+          candidateId: 'cand-ya-' + username.toLowerCase(),
+          fspVerified: true,
+          fspRank: 'Кандидат в мастера спорта',
+          fspElo: 1850
         };
+
+        confetti({
+          particleCount: 50,
+          spread: 60,
+          origin: { y: 0.6 }
+        });
+
+        onLoginSuccess(user);
+        onClose();
       } else {
-        mockUser = {
+        const username = socialUsername.trim() || 'candidate';
+        const user: AuthLoginResponse = {
           token: 'jwt-oauth-hh-' + Date.now(),
-          email: 'hh.candidate@hh.ru',
+          email: `${username.toLowerCase()}@hh.ru`,
           fullName: 'HeadHunter Соискатель',
+          avatarUrl: '/avatars/user_pesterev.png',
           role: 'CANDIDATE',
-          candidateId: 'cand-pesterev',
-          fspVerified: true
+          candidateId: 'cand-hh-' + username.toLowerCase(),
+          fspVerified: true,
+          fspRank: '1-й спортивный разряд',
+          fspElo: 1600
         };
+
+        confetti({
+          particleCount: 50,
+          spread: 60,
+          origin: { y: 0.6 }
+        });
+
+        onLoginSuccess(user);
+        onClose();
       }
-
-      confetti({
-        particleCount: 50,
-        spread: 60,
-        origin: { y: 0.6 }
-      });
-
-      onLoginSuccess(mockUser);
-      onClose();
+    } catch (err: any) {
+      setError(err?.message || 'Ошибка аутентификации через внешний сервис');
+    } finally {
       setIsLoading(false);
-    }, 400);
+    }
   };
 
   return (
@@ -418,15 +455,22 @@ export const LoginModal: React.FC<LoginModalProps> = ({
               </div>
 
               {/* Quick Social Registration */}
-              <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.08] space-y-2">
+              <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.08] space-y-3">
                 <span className="text-[11px] font-medium text-slate-400 block text-center">
-                  Быстрая регистрация через сервис:
+                  Быстрая регистрация через внешний профиль:
                 </span>
                 <div className="grid grid-cols-3 gap-2">
                   <button
                     type="button"
-                    onClick={() => handleSocialAuth('github')}
-                    className="py-2 px-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-xs text-slate-200 font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    onClick={() => {
+                      setSocialProvider(socialProvider === 'github' ? null : 'github');
+                      setSocialUsername('ipesterev');
+                    }}
+                    className={`py-2 px-2 rounded-xl border text-xs font-medium flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                      socialProvider === 'github'
+                        ? 'bg-blue-600/30 border-blue-500 text-white ring-1 ring-blue-500'
+                        : 'bg-white/[0.05] hover:bg-white/[0.1] border-white/10 text-slate-200'
+                    }`}
                   >
                     <Github className="w-3.5 h-3.5" />
                     <span>GitHub</span>
@@ -434,8 +478,15 @@ export const LoginModal: React.FC<LoginModalProps> = ({
 
                   <button
                     type="button"
-                    onClick={() => handleSocialAuth('yandex')}
-                    className="py-2 px-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-xs text-slate-200 font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    onClick={() => {
+                      setSocialProvider(socialProvider === 'yandex' ? null : 'yandex');
+                      setSocialUsername('alina.dev');
+                    }}
+                    className={`py-2 px-2 rounded-xl border text-xs font-medium flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                      socialProvider === 'yandex'
+                        ? 'bg-red-600/30 border-red-500 text-white ring-1 ring-red-500'
+                        : 'bg-white/[0.05] hover:bg-white/[0.1] border-white/10 text-slate-200'
+                    }`}
                   >
                     <span className="w-3.5 h-3.5 rounded-full bg-red-500 text-white font-black text-[9px] flex items-center justify-center">Я</span>
                     <span>Яндекс</span>
@@ -443,13 +494,64 @@ export const LoginModal: React.FC<LoginModalProps> = ({
 
                   <button
                     type="button"
-                    onClick={() => handleSocialAuth('hh')}
-                    className="py-2 px-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-xs text-slate-200 font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    onClick={() => {
+                      setSocialProvider(socialProvider === 'hh' ? null : 'hh');
+                      setSocialUsername('pesterev-resume');
+                    }}
+                    className={`py-2 px-2 rounded-xl border text-xs font-medium flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                      socialProvider === 'hh'
+                        ? 'bg-rose-600/30 border-rose-500 text-white ring-1 ring-rose-500'
+                        : 'bg-white/[0.05] hover:bg-white/[0.1] border-white/10 text-slate-200'
+                    }`}
                   >
                     <span className="w-3.5 h-3.5 rounded-full bg-[#ff2b42] text-white font-black text-[8px] flex items-center justify-center">hh</span>
                     <span>hh.ru</span>
                   </button>
                 </div>
+
+                {socialProvider && (
+                  <div className="p-3 rounded-xl bg-blue-950/20 border border-blue-500/20 space-y-2.5 animate-in fade-in duration-150">
+                    <div className="flex items-center justify-between text-xs text-slate-300">
+                      <span className="font-semibold text-white flex items-center gap-1.5">
+                        {socialProvider === 'github' && <Github className="w-3.5 h-3.5 text-cyan-400" />}
+                        {socialProvider === 'yandex' && <span className="w-3 h-3 rounded-full bg-red-500 text-white text-[8px] inline-flex items-center justify-center">Я</span>}
+                        {socialProvider === 'hh' && <span className="w-3 h-3 rounded-full bg-rose-500 text-white text-[7px] inline-flex items-center justify-center">hh</span>}
+                        {socialProvider === 'github' ? 'Регистрация через GitHub' : socialProvider === 'yandex' ? 'Регистрация через Яндекс ID' : 'Регистрация через HeadHunter'}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setSocialProvider(null)}
+                        className="text-slate-400 hover:text-white text-xs cursor-pointer"
+                      >
+                        ✕
+                      </button>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={socialUsername}
+                        onChange={(e) => setSocialUsername(e.target.value)}
+                        placeholder={socialProvider === 'github' ? 'GitHub username (напр. ipesterev или свой)' : socialProvider === 'yandex' ? 'Логин Яндекс' : 'ID резюме или имя'}
+                        className="flex-1 px-3 py-1.5 text-xs bg-black/40 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 font-mono"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleSocialSubmit(socialProvider)}
+                        disabled={isLoading || !socialUsername.trim()}
+                        className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition-colors cursor-pointer disabled:opacity-50 shrink-0"
+                      >
+                        {isLoading ? 'Загрузка...' : 'Подтвердить'}
+                      </button>
+                    </div>
+
+                    <p className="text-[10px] text-slate-400 leading-relaxed">
+                      {socialProvider === 'github' 
+                        ? 'Система автоматически синхронизирует публичные репозитории, стек технологий и аватарку профиля.'
+                        : 'Профиль будет верифицирован и готов к участию в Арене и получению офферов.'}
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Registration Form */}
@@ -537,8 +639,44 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                   )}
                 </button>
               </form>
+
+              {/* Social Register Options */}
+              <div className="space-y-2 pt-2 border-t border-white/[0.06]">
+                <div className="text-[11px] text-slate-400 text-center font-medium">
+                  или зарегистрироваться через сервис:
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleSocialAuth('github')}
+                    className="py-2 px-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs text-slate-200 font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <Github className="w-3.5 h-3.5 text-white" />
+                    <span>GitHub</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleSocialAuth('yandex')}
+                    className="py-2 px-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs text-slate-200 font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <span className="w-3.5 h-3.5 rounded-full bg-red-500 text-white font-black text-[9px] flex items-center justify-center">Я</span>
+                    <span>Яндекс</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleSocialAuth('hh')}
+                    className="py-2 px-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs text-slate-200 font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <span className="w-3.5 h-3.5 rounded-full bg-[#ff2b42] text-white font-black text-[8px] flex items-center justify-center">hh</span>
+                    <span>hh.ru</span>
+                  </button>
+                </div>
+              </div>
             </div>
           )}
+
 
           {/* Compliance & Info footer */}
           <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-[11px] text-slate-500">

@@ -121,7 +121,19 @@ export default function App() {
       }
     }
     loadBackendData();
+
+    // Restore authenticated session from localStorage
+    try {
+      const savedUser = localStorage.getItem('fsp_auth_user');
+      if (savedUser) {
+        const parsed = JSON.parse(savedUser) as AuthLoginResponse;
+        if (parsed && parsed.email) {
+          handleLoginSuccess(parsed);
+        }
+      }
+    } catch {}
   }, []);
+
 
   // Handle URL hash routing (e.g. #404, #candidate, #employer, #arena, #roadmap)
   useEffect(() => {
@@ -533,6 +545,10 @@ export default function App() {
 
   // Handle Login from Modal
   const handleLoginSuccess = (authResp: AuthLoginResponse) => {
+    try {
+      localStorage.setItem('fsp_auth_user', JSON.stringify(authResp));
+    } catch {}
+
     setCurrentUser({
       email: authResp.email,
       fullName: authResp.fullName,
@@ -541,22 +557,104 @@ export default function App() {
     });
 
     if (authResp.role === 'CANDIDATE') {
+      const targetId = authResp.candidateId || ('cand-' + Date.now());
+      
+      setCandidates(prev => {
+        const existingIdx = prev.findIndex(c => c.id === targetId || c.email.toLowerCase() === authResp.email.toLowerCase());
+        if (existingIdx !== -1) {
+          const updated = [...prev];
+          updated[existingIdx] = {
+            ...updated[existingIdx],
+            fullName: authResp.fullName,
+            email: authResp.email,
+            avatarUrl: authResp.avatarUrl || updated[existingIdx].avatarUrl
+          };
+          return updated;
+        }
+
+        const newCandidate: CandidateProfile = {
+          id: targetId,
+          email: authResp.email,
+          fullName: authResp.fullName,
+          city: 'Москва / Удаленно',
+          avatarUrl: authResp.avatarUrl || '/avatars/user_pesterev.png',
+          title: 'Middle Java / Backend Developer',
+          specialization: 'backend',
+          targetGrade: 'Middle',
+          currentGradeAssigned: 'Middle',
+          fspId: 'FSP-' + Math.floor(100000 + Math.random() * 900000),
+          fspRank: (authResp.fspRank as FspRank) || '1-й спортивный разряд',
+          fspRating: authResp.fspElo || 1200,
+          fspBadges: ['Участник ФСП 2026', 'Верифицирован'],
+          isVerified: true,
+          verifiedAt: new Date().toISOString(),
+          keycloakSub: authResp.userId,
+          achievements: [],
+          skills: ['Java', 'Spring Boot 3', 'PostgreSQL', 'Docker', 'REST API'],
+          experienceYears: 3,
+          about: 'Зарегистрированный разработчик на платформе FSP Career Arena.',
+          solvedTasksCount: 0,
+          totalTasksAttempted: 0,
+          testScorePercent: 0,
+          avgExecutionTimeMs: 0,
+          memoryEfficiencyScore: 100,
+          lastTestingDate: new Date().toISOString(),
+          canRetakeAfterDate: new Date(Date.now() + 90 * 86400000).toISOString(),
+          phoneMasked: '+7 (9**) ***-**-**',
+          phoneReal: '+7 (999) 000-00-00',
+          telegramMasked: '@****_dev',
+          telegramReal: '@' + authResp.email.split('@')[0],
+          salaryExpectationMin: 150000,
+          salaryExpectationMax: 230000
+        };
+        return [newCandidate, ...prev];
+      });
+
+      setActiveCandidateId(targetId);
       setCurrentRole('candidate');
-      if (authResp.candidateId) {
-        setActiveCandidateId(authResp.candidateId);
+
+      // Auto-populate GitHub integration if registered with GitHub
+      if (authResp.email.endsWith('@github.com')) {
+        const ghUser = authResp.email.split('@')[0];
+        api.fetchGithubLiveProfile(ghUser).then(profile => {
+          if (profile) {
+            setGithubData(profile);
+            setCandidates(prev => prev.map(c => c.id === targetId ? {
+              ...c,
+              fullName: profile.username && profile.username.toLowerCase().includes('pesterev') ? 'Иван Пестерев' : (profile.username ? `@${profile.username}` : c.fullName),
+              avatarUrl: profile.avatarUrl || c.avatarUrl,
+              githubUrl: `https://github.com/${profile.username}`,
+              skills: Array.from(new Set([...c.skills, ...(profile.mainLanguage ? [profile.mainLanguage] : [])])),
+              about: `${c.about} • Подтверждено ${profile.commitsCountYear} коммитов в GitHub (@${profile.username}).`
+            } : c));
+          }
+        }).catch(() => {});
       }
-      showToast(`Успешный вход в систему! Добро пожаловать, ${authResp.fullName} (Кандидат)`, 'fsp');
+
+      showToast(`Успешная регистрация и вход! Добро пожаловать, ${authResp.fullName}`, 'fsp');
     } else if (authResp.role === 'EMPLOYER') {
+      const empId = authResp.employerId || ('emp-' + Date.now());
+      setCurrentEmployer(prev => ({
+        ...prev,
+        id: empId,
+        name: authResp.companyName || authResp.fullName,
+        contactPerson: authResp.fullName,
+        email: authResp.email
+      }));
       setCurrentRole('employer');
-      showToast(`Успешный вход в систему! Добро пожаловать, ${authResp.fullName} (${authResp.companyName || 'ПАО Сбербанк'})`, 'fsp');
+      showToast(`Успешная регистрация и вход! Добро пожаловать, ${authResp.fullName} (${authResp.companyName || 'Работодатель'})`, 'fsp');
     }
   };
 
   const handleLogout = () => {
+    try {
+      localStorage.removeItem('fsp_auth_user');
+    } catch {}
     setCurrentUser(null);
     setCurrentRole('landing');
     showToast('Вы вышли из учетной записи', 'info');
   };
+
 
   if (currentRole === 'not_found') {
     return (
