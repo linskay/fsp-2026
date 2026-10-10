@@ -79,16 +79,18 @@ export const LoginModal: React.FC<LoginModalProps> = ({
     setError(null);
 
     try {
-      const response = await api.login(email, password);
-      confetti({
-        particleCount: 50,
-        spread: 60,
-        origin: { y: 0.6 }
-      });
+      const response = await api.login(email.trim(), password);
+      try {
+        confetti({
+          particleCount: 50,
+          spread: 60,
+          origin: { y: 0.6 }
+        });
+      } catch {}
       onLoginSuccess(response);
       onClose();
     } catch (err: any) {
-      setError(err.message || 'Ошибка аутентификации. Проверьте логин и пароль.');
+      setError(err?.message || 'Ошибка аутентификации. Проверьте логин и пароль.');
     } finally {
       setIsLoading(false);
     }
@@ -114,22 +116,24 @@ export const LoginModal: React.FC<LoginModalProps> = ({
 
     try {
       const registeredUser = await api.register({
-        email: regEmail,
+        email: regEmail.trim(),
         password: regPassword,
-        fullName: regName,
+        fullName: regName.trim(),
         role: regRole
       });
 
-      confetti({
-        particleCount: 60,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
+      try {
+        confetti({
+          particleCount: 60,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      } catch {}
 
       onLoginSuccess(registeredUser);
       onClose();
     } catch (err: any) {
-      setError(err.message || 'Ошибка при регистрации');
+      setError(err?.message || 'Ошибка при регистрации');
     } finally {
       setIsLoading(false);
     }
@@ -156,11 +160,13 @@ export const LoginModal: React.FC<LoginModalProps> = ({
         // 2. Бэкенд OAuth-пайплайн: запрос GitHub API, парсинг стека, расчет ELO, сохранение в PostgreSQL и генерация AI-саммари
         const resp = await api.handleGithubOAuthCallback(undefined, username);
 
-        confetti({
-          particleCount: 60,
-          spread: 60,
-          origin: { y: 0.6 }
-        });
+        try {
+          confetti({
+            particleCount: 60,
+            spread: 60,
+            origin: { y: 0.6 }
+          });
+        } catch {}
 
         onLoginSuccess(resp);
         onClose();
@@ -173,16 +179,17 @@ export const LoginModal: React.FC<LoginModalProps> = ({
           avatarUrl: '/avatars/user_alina.png',
           role: regRole,
           candidateId: 'cand-ya-' + username.toLowerCase(),
-          fspVerified: true,
           fspRank: 'Кандидат в мастера спорта',
           fspElo: 1850
         };
 
-        confetti({
-          particleCount: 50,
-          spread: 60,
-          origin: { y: 0.6 }
-        });
+        try {
+          confetti({
+            particleCount: 50,
+            spread: 60,
+            origin: { y: 0.6 }
+          });
+        } catch {}
 
         onLoginSuccess(user);
         onClose();
@@ -195,16 +202,17 @@ export const LoginModal: React.FC<LoginModalProps> = ({
           avatarUrl: '/avatars/user_pesterev.png',
           role: 'CANDIDATE',
           candidateId: 'cand-hh-' + username.toLowerCase(),
-          fspVerified: true,
           fspRank: '1-й спортивный разряд',
           fspElo: 1600
         };
 
-        confetti({
-          particleCount: 50,
-          spread: 60,
-          origin: { y: 0.6 }
-        });
+        try {
+          confetti({
+            particleCount: 50,
+            spread: 60,
+            origin: { y: 0.6 }
+          });
+        } catch {}
 
         onLoginSuccess(user);
         onClose();

@@ -271,7 +271,7 @@ public class Solution {
                       className="py-3.5 px-5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.12] text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm hover:scale-[1.02]"
                     >
                       <Key className="w-3.5 h-3.5 text-cyan-400" />
-                      <span>Авторизоваться</span>
+                      <span>Войти в систему</span>
                     </button>
                   </div>
                 </div>

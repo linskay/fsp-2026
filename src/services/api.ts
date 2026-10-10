@@ -267,8 +267,15 @@ export function mapBackendVacancyToFrontend(dto: BackendVacancyDto): Vacancy {
 
 class ApiService {
   private isOnline = false;
+  public token: string | null = null;
 
   constructor() {
+    try {
+      const savedToken = localStorage.getItem('fsp_jwt_token');
+      if (savedToken) {
+        this.token = savedToken;
+      }
+    } catch {}
     this.checkHealth();
   }
 
@@ -695,22 +702,29 @@ class ApiService {
 
   // 11. Authenticate with Login & Password (Candidate / Employer)
   async login(email: string, password: string): Promise<AuthLoginResponse> {
+    const trimmedEmail = email.trim();
     try {
       const res = await fetch(`${API_BASE}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email: trimmedEmail, password })
       });
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || 'Ошибка авторизации');
+        throw new Error(data.error || data.message || 'Ошибка авторизации');
+      }
+      if (data && data.token) {
+        this.token = data.token;
+        try {
+          localStorage.setItem('fsp_jwt_token', data.token);
+        } catch {}
       }
       return data;
     } catch (err: any) {
       // Fallback for standalone/mock mode if backend is not reachable
-      const normEmail = email.trim().toLowerCase();
+      const normEmail = trimmedEmail.toLowerCase();
       if (normEmail === 'candidate@fsp.ru' && password === 'candidate2026') {
-        return {
+        const mockCand: AuthLoginResponse = {
           status: 'SUCCESS',
           userId: 'c0000000-0000-0000-0000-000000000001',
           candidateId: 'cand-pesterev',
@@ -722,12 +736,15 @@ class ApiService {
           fspRank: 'UNRANKED',
           token: 'fsp-jwt-candidate-token'
         };
+        this.token = mockCand.token;
+        try { localStorage.setItem('fsp_jwt_token', mockCand.token); } catch {}
+        return mockCand;
       }
       if (normEmail === 'employer@fsp.ru' && password === 'employer2026') {
-        return {
+        const mockEmp: AuthLoginResponse = {
           status: 'SUCCESS',
           userId: 'e0000000-0000-0000-0000-000000000001',
-          employerId: 'emp-sbertech',
+          employerId: 'emp-1',
           email: 'employer@fsp.ru',
           fullName: 'Елена Романова (СберТех HR)',
           role: 'EMPLOYER',
@@ -735,6 +752,9 @@ class ApiService {
           avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
           token: 'fsp-jwt-employer-token'
         };
+        this.token = mockEmp.token;
+        try { localStorage.setItem('fsp_jwt_token', mockEmp.token); } catch {}
+        return mockEmp;
       }
       throw new Error(err.message || 'Неверный логин или пароль');
     }
@@ -757,13 +777,19 @@ class ApiService {
       if (!res.ok) {
         throw new Error(data.error || data.message || 'Ошибка при регистрации');
       }
+      if (data && data.token) {
+        this.token = data.token;
+        try {
+          localStorage.setItem('fsp_jwt_token', data.token);
+        } catch {}
+      }
       return data;
     } catch (err: any) {
       if (err.message && !err.message.includes('Failed to fetch')) {
         throw err;
       }
       // Fallback only if complete network failure
-      return {
+      const fallbackResp: AuthLoginResponse = {
         status: 'SUCCESS',
         userId: 'u-' + Date.now(),
         email: params.email,
@@ -772,8 +798,12 @@ class ApiService {
         candidateId: params.role === 'CANDIDATE' ? 'cand-' + Date.now() : undefined,
         employerId: params.role === 'EMPLOYER' ? 'emp-' + Date.now() : undefined,
         token: 'fsp-jwt-' + Date.now(),
-        fspVerified: true
+        fspRank: '1-й спортивный разряд',
+        fspElo: 1400
       };
+      this.token = fallbackResp.token;
+      try { localStorage.setItem('fsp_jwt_token', fallbackResp.token); } catch {}
+      return fallbackResp;
     }
   }
 
@@ -825,13 +855,18 @@ class ApiService {
         body: JSON.stringify({ code, username })
       });
       if (res.ok) {
-        return await res.json();
+        const data = await res.json();
+        if (data && data.token) {
+          this.token = data.token;
+          try { localStorage.setItem('fsp_jwt_token', data.token); } catch {}
+        }
+        return data;
       }
     } catch {}
 
     // Fallback if backend is offline
     const finalUser = username || 'ipesterev';
-    return {
+    const ghUser: AuthLoginResponse = {
       status: 'SUCCESS',
       userId: 'u-gh-' + finalUser,
       candidateId: 'cand-gh-' + finalUser,
@@ -840,10 +875,12 @@ class ApiService {
       role: 'CANDIDATE',
       avatarUrl: `https://github.com/${finalUser}.png`,
       token: 'fsp-jwt-gh-' + Date.now(),
-      fspVerified: true,
       fspRank: '1-й спортивный разряд',
       fspElo: 2150
     };
+    this.token = ghUser.token;
+    try { localStorage.setItem('fsp_jwt_token', ghUser.token); } catch {}
+    return ghUser;
   }
 
   // 14. Reverse Recruiting Offers (35% критерий ТЗ) с гарантией идемпотентности (RFC 7231 / Idempotency-Key)

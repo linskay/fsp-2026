@@ -84,8 +84,9 @@ export default function App() {
 
   // Active current user contexts
   const [activeCandidateId, setActiveCandidateId] = useState<string>('cand-pesterev');
+  const [activeEmployerId, setActiveEmployerId] = useState<string>('emp-1');
   const currentCandidate = candidates.find(c => c.id === activeCandidateId) || candidates[0];
-  const currentEmployer = employers[0];
+  const currentEmployer = employers.find(e => e.id === activeEmployerId) || employers[0];
 
   // Toast notification
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'fsp' } | null>(null);
@@ -629,17 +630,24 @@ export default function App() {
     });
 
     if (authResp.role === 'CANDIDATE') {
-      const targetId = authResp.candidateId || ('cand-' + Date.now());
+      const normEmail = authResp.email.toLowerCase();
+      const isPesterev = normEmail === 'candidate@fsp.ru' || normEmail === '89259112970@mail.ru' || (authResp.fullName && authResp.fullName.includes('Пестерев'));
+      const targetId = isPesterev ? 'cand-pesterev' : (authResp.candidateId || ('cand-' + Date.now()));
       
       setCandidates(prev => {
-        const existingIdx = prev.findIndex(c => c.id === targetId || c.email.toLowerCase() === authResp.email.toLowerCase());
+        const existingIdx = prev.findIndex(c => 
+          c.id === targetId || 
+          c.email.toLowerCase() === normEmail ||
+          (isPesterev && c.id === 'cand-pesterev')
+        );
         if (existingIdx !== -1) {
           const updated = [...prev];
           updated[existingIdx] = {
             ...updated[existingIdx],
-            fullName: authResp.fullName,
-            email: authResp.email,
-            avatarUrl: authResp.avatarUrl || updated[existingIdx].avatarUrl
+            fullName: authResp.fullName || updated[existingIdx].fullName,
+            avatarUrl: authResp.avatarUrl || updated[existingIdx].avatarUrl,
+            fspRating: authResp.fspElo || updated[existingIdx].fspRating,
+            fspRank: (authResp.fspRank as FspRank) || updated[existingIdx].fspRank
           };
           return updated;
         }
@@ -652,15 +660,15 @@ export default function App() {
           avatarUrl: authResp.avatarUrl || '/avatars/user_pesterev.png',
           title: 'Middle Java / Backend Developer',
           specialization: 'backend',
-          targetGrade: 'Middle',
-          currentGradeAssigned: 'Middle',
+          targetGrade: 'middle',
+          currentGradeAssigned: 'middle',
           fspId: 'FSP-' + Math.floor(100000 + Math.random() * 900000),
           fspRank: (authResp.fspRank as FspRank) || '1-й спортивный разряд',
           fspRating: authResp.fspElo || 1200,
           fspBadges: ['Участник ФСП 2026', 'Верифицирован'],
           isVerified: true,
           verifiedAt: new Date().toISOString(),
-          keycloakSub: authResp.userId,
+          keycloakSub: authResp.userId || 'fsp-sub',
           achievements: [],
           skills: ['Java', 'Spring Boot 3', 'PostgreSQL', 'Docker', 'REST API'],
           experienceYears: 3,
@@ -677,13 +685,22 @@ export default function App() {
           telegramMasked: '@****_dev',
           telegramReal: '@' + authResp.email.split('@')[0],
           salaryExpectationMin: 150000,
-          salaryExpectationMax: 230000
+          salaryExpectationMax: 230000,
+          isLookingForJob: true,
+          preferredFormat: 'remote'
         };
         return [newCandidate, ...prev];
       });
 
       setActiveCandidateId(targetId);
       setCurrentRole('candidate');
+
+      if (isPesterev) {
+        setGithubData(PESTEREV_GITHUB_PROFILE);
+        setHhData(PESTEREV_HH_RESUME);
+        setYandexEmail('ivan.pesterev@yandex.ru');
+        setYandexConnected(true);
+      }
 
       // Auto-populate GitHub integration if registered with GitHub
       if (authResp.email.endsWith('@github.com')) {
@@ -703,34 +720,47 @@ export default function App() {
         }).catch(() => {});
       }
 
-      showToast(`Успешная регистрация и вход! Добро пожаловать, ${authResp.fullName}`, 'fsp');
+      showToast(`Успешная авторизация! Добро пожаловать, ${authResp.fullName}`, 'fsp');
     } else if (authResp.role === 'EMPLOYER') {
-      const empId = authResp.employerId || ('emp-' + Date.now());
+      const normEmail = authResp.email.toLowerCase();
+      const isSber = normEmail === 'employer@fsp.ru' || (authResp.companyName && authResp.companyName.includes('Сбер'));
+      const empId = isSber ? 'emp-1' : (authResp.employerId || ('emp-' + Date.now()));
+
       setEmployers(prev => {
-        const existing = prev.find(e => e.id === empId || e.email?.toLowerCase() === authResp.email.toLowerCase());
-        if (existing) {
-          return prev.map(e => e.id === existing.id ? {
-            ...e,
-            name: authResp.companyName || e.name,
-            contactPerson: authResp.fullName,
-            email: authResp.email
-          } : e);
+        const existingIdx = prev.findIndex(e => 
+          e.id === empId || 
+          (isSber && e.id === 'emp-1') ||
+          (e.hrEmail && e.hrEmail.toLowerCase() === normEmail)
+        );
+        if (existingIdx !== -1) {
+          const updated = [...prev];
+          updated[existingIdx] = {
+            ...updated[existingIdx],
+            companyName: authResp.companyName || updated[existingIdx].companyName,
+            hrName: authResp.fullName || updated[existingIdx].hrName,
+            hrEmail: authResp.email || updated[existingIdx].hrEmail,
+            logo: authResp.avatarUrl || updated[existingIdx].logo
+          };
+          return updated;
         }
-        return [{
+        const newEmployer: EmployerProfile = {
           id: empId,
-          name: authResp.companyName || authResp.fullName,
+          companyName: authResp.companyName || 'ПАО Сбербанк (СберТех)',
           logo: authResp.avatarUrl || 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=128&auto=format&fit=crop&q=80',
+          verifiedCompany: true,
           industry: 'IT & Финтех',
-          about: 'Ведущая аккредитованная технологическая компания РФ.',
-          contactPerson: authResp.fullName,
-          email: authResp.email,
-          telegram: '@' + authResp.email.split('@')[0],
-          isVerifiedPartner: true,
-          vacanciesCount: 3,
-          offersSentCount: 1,
-          interviewsCount: 1
-        }, ...prev];
+          city: 'Москва',
+          description: 'Ведущая аккредитованная технологическая компания РФ.',
+          hrName: authResp.fullName || 'Елена Романова (СберТех HR)',
+          hrEmail: authResp.email,
+          hrPhone: '+7 (495) 500-55-50',
+          website: 'https://sbertech.ru',
+          fspPartnerLevel: 'Стратегический партнер'
+        };
+        return [newEmployer, ...prev];
       });
+
+      setActiveEmployerId(empId);
       setCurrentRole('employer');
       showToast(`Успешная авторизация! Добро пожаловать, ${authResp.fullName} (${authResp.companyName || 'Работодатель'})`, 'fsp');
     }
@@ -739,7 +769,9 @@ export default function App() {
   const handleLogout = () => {
     try {
       localStorage.removeItem('fsp_auth_user');
+      localStorage.removeItem('fsp_jwt_token');
     } catch {}
+    if (api) api.token = null;
     setCurrentUser(null);
     setCurrentRole('landing');
     showToast('Вы вышли из учетной записи', 'info');

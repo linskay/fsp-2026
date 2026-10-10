@@ -142,11 +142,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <button
                     type="button"
                     onClick={onOpenLoginModal}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 text-xs font-semibold transition-all cursor-pointer hover:scale-[1.02]"
-                    title="Сменить аккаунт / Войти"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.06] hover:bg-blue-600/25 text-slate-300 hover:text-blue-300 border border-white/10 hover:border-blue-500/30 text-xs font-semibold transition-all cursor-pointer hover:scale-[1.02]"
+                    title="Сменить аккаунт / Войти под другим пользователем"
                   >
                     <LogIn className="w-3.5 h-3.5 text-blue-400" />
-                    <span>Войти</span>
+                    <span>Сменить профиль</span>
                   </button>
                 )}
 
@@ -166,7 +166,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   type="button"
                   onClick={onOpenLoginModal}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs text-white font-semibold transition-all cursor-pointer shadow-md shadow-blue-500/20 hover:scale-[1.02]"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-xs text-white font-bold transition-all cursor-pointer shadow-lg shadow-blue-500/25 hover:scale-[1.02] active:scale-[0.98]"
                   title="Войти в личный кабинет"
                 >
                   <LogIn className="w-3.5 h-3.5" />

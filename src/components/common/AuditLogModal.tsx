@@ -52,7 +52,7 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({ isOpen, onClose })
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-base font-bold text-white">
-                  Журнал аудита безопасности (152-ФЗ РФ)
+                  {t('auditLogTitle')}
                 </h3>
                 <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-500/30">
                   Compliance 152-FZ
@@ -107,7 +107,7 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({ isOpen, onClose })
         <div className="p-5 space-y-3 overflow-y-auto flex-1">
           {filteredLogs.length === 0 ? (
             <div className="text-center py-12 text-slate-400 text-xs">
-              Записи аудита отсутствуют
+              {t('auditLogEmpty')}
             </div>
           ) : (
             filteredLogs.map((log) => (
