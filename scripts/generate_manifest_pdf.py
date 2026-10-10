@@ -93,7 +93,7 @@ def create_manifest_pdf():
     pdf.set_xy(15, 30)
     pdf.set_font(font_family, '', 8.5)
     pdf.set_text_color(148, 163, 184)
-    pdf.cell(0, 6, 'Соответствие пункту 3.4 ТЗ: Архитектура, Алгоритмы, Тестирование, 152-ФЗ, Интеграции, Деплой', ln=True)
+    pdf.cell(0, 6, 'Регламент платформы: Архитектура, Алгоритмы, Тестирование, 152-ФЗ, Интеграции, Деплой', ln=True)
 
     # Accent Cyan Line
     pdf.set_fill_color(0, 229, 255)

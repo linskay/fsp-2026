@@ -534,8 +534,8 @@ const fullHtml = `<!DOCTYPE html>
         ${navItems.map(item => `<li><a href="#${item.id}">${item.label}</a></li>`).join('\n        ')}
       </ul>
       <div style="margin-top: 36px; padding: 16px; border-radius: 12px; background: rgba(0, 229, 255, 0.05); border: 1px solid rgba(0, 229, 255, 0.2); font-size: 11.5px; color: #94a3b8;">
-        <strong style="color: #00e5ff; display: block; margin-bottom: 4px;">Пункт 3.4 ТЗ ФСП РФ</strong>
-        Полное закрытие требований жюри по архитектуре, валидации, защите от слива тестов и 152-ФЗ.
+        <strong style="color: #00e5ff; display: block; margin-bottom: 4px;">Официальный регламент ФСП РФ</strong>
+        Полная проектная документация: архитектура, валидация, защита тестов, ELO и 152-ФЗ.
       </div>
     </aside>
 
