@@ -86,35 +86,52 @@ export const FspLogo: React.FC<FspLogoProps> = ({
 
 export const FspFooterPartners: React.FC<{ onNavigate?: (role: any) => void }> = ({ onNavigate }) => {
   return (
-    <footer className="border-t border-[#141b2e] bg-[#04060d] py-7 px-4 mt-auto">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5 text-xs text-slate-400 font-['JetBrains_Mono']">
+    <footer className="border-t border-[#141b2e] bg-[#04060d] py-6 px-4 mt-auto">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-slate-400 font-['JetBrains_Mono']">
         
-        {/* Left: Partner and Founder Badges */}
-        <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 sm:gap-6 text-[11px]">
-          <span className="flex items-center gap-1.5 text-slate-300 font-medium">
-            <span className="w-2 h-2 rounded-full bg-[#ff2b42] shadow-[0_0_6px_rgba(255,43,66,0.6)]" />
-            Министерство спорта РФ
-          </span>
-          <span className="flex items-center gap-1.5 text-slate-300 font-medium">
-            <span className="w-2 h-2 rounded-full bg-[#2b35ff] shadow-[0_0_6px_rgba(43,53,255,0.6)]" />
-            Минцифры России
-          </span>
-          <span className="flex items-center gap-1.5 text-slate-300 font-medium">
-            <span className="w-2 h-2 rounded-full bg-white shadow-[0_0_6px_rgba(255,255,255,0.6)]" />
-            Корпорация Синергия
-          </span>
+        {/* Left: Official FSP Footer Logo */}
+        <div className="flex items-center justify-center md:justify-start">
+          <a
+            href="https://fsp-russia.ru"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:opacity-80 transition-opacity"
+            title="Федерация спортивного программирования России"
+          >
+            <img
+              src="/logo_foot.svg"
+              alt="ФСП России"
+              className="h-7 sm:h-8 w-auto object-contain"
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).src = 'https://fsp-russia.ru/completed_pages/images/logo_foot.svg';
+              }}
+            />
+          </a>
         </div>
 
-        {/* Center: Official legal compliance direct link */}
-        <div className="text-center text-[11px]">
+        {/* Center: Legal compliance links */}
+        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-[11px]">
           <a
-            href="https://fsp-russia.ru/files/Положение%20обработку%20пдн%20(1).pdf"
+            href="https://fsp-russia.ru/files/%D0%9F%D0%BE%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BE%D0%B1%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B0%20%D0%BF%D0%B4%D0%BD%20(1).pdf"
             target="_blank"
             rel="noopener noreferrer"
             className="text-slate-400 hover:text-[#00f0ff] hover:underline transition-colors inline-flex items-center gap-1.5 font-medium"
-            title="Официальное Положение об обработке персональных данных"
+            title="Политика конфиденциальности"
           >
-            <span>Положение об обработке персональных данных</span>
+            <span>Политика конфиденциальности</span>
+            <svg className="w-3.5 h-3.5 text-[#00f0ff] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </a>
+
+          <a
+            href="https://fsp-russia.ru/antidoping/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-slate-400 hover:text-[#00f0ff] hover:underline transition-colors inline-flex items-center gap-1.5 font-medium"
+            title="Условия соглашения"
+          >
+            <span>Условия соглашения</span>
             <svg className="w-3.5 h-3.5 text-[#00f0ff] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
             </svg>
