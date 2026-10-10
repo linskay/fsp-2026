@@ -28,8 +28,6 @@ export const SendOfferModal: React.FC<SendOfferModalProps> = ({
   vacancies,
   onSendOffer
 }) => {
-  if (!isOpen || !candidate) return null;
-
   const [selectedVacancyId, setSelectedVacancyId] = useState(vacancies[0]?.id || '');
   const currentVacancy = vacancies.find(v => v.id === selectedVacancyId) || vacancies[0];
 
@@ -37,7 +35,7 @@ export const SendOfferModal: React.FC<SendOfferModalProps> = ({
     currentVacancy ? Math.floor((currentVacancy.salaryMin + currentVacancy.salaryMax) / 2) : 450000
   );
   const [message, setMessage] = useState(
-    `Здравствуйте, ${candidate.fullName}! Наша команда впечатлена вашими достижениями в ФСП (${candidate.fspRank}) и отличным прохождением алгоритмического тестирования. Приглашаем вас присоединиться к нашей команде!`
+    `Здравствуйте${candidate ? `, ${candidate.fullName}` : ''}! Наша команда впечатлена вашими достижениями в ФСП (${candidate?.fspRank || 'спортсмен'}) и отличным прохождением алгоритмического тестирования. Приглашаем вас присоединиться к нашей команде!`
   );
   const [projectDetails, setProjectDetails] = useState(
     currentVacancy?.description || 'Высоконагруженная распределенная система финансового процессинга и микросервисов.'
@@ -71,6 +69,8 @@ export const SendOfferModal: React.FC<SendOfferModalProps> = ({
       setIsSubmitting(false);
     }
   };
+
+  if (!isOpen || !candidate) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md overflow-y-auto">

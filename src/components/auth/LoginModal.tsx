@@ -33,8 +33,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  if (!isOpen) return null;
+  const [socialProvider, setSocialProvider] = useState<'github' | 'yandex' | 'hh' | null>(null);
+  const [socialUsername, setSocialUsername] = useState('ipesterev');
 
   const POLICY_URL = "https://fsp-russia.ru/files/%D0%9F%D0%BE%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BE%D0%B1%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B0%20%D0%BF%D0%B4%D0%BD%20(1).pdf";
 
@@ -139,9 +139,6 @@ export const LoginModal: React.FC<LoginModalProps> = ({
     }
   };
 
-  const [socialProvider, setSocialProvider] = useState<'github' | 'yandex' | 'hh' | null>(null);
-  const [socialUsername, setSocialUsername] = useState('ipesterev');
-
   const handleSocialAuth = async (provider: 'github' | 'yandex' | 'hh') => {
     setIsLoading(true);
     setError(null);
@@ -223,6 +220,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({
       setIsLoading(false);
     }
   };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md transition-all duration-300">

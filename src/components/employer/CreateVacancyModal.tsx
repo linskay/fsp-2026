@@ -16,8 +16,6 @@ export const CreateVacancyModal: React.FC<CreateVacancyModalProps> = ({
   onAddVacancy,
   currentEmployerName
 }) => {
-  if (!isOpen) return null;
-
   const [title, setTitle] = useState('');
   const [specialization, setSpecialization] = useState<Specialization>('backend');
   const [gradeRequired, setGradeRequired] = useState<Grade>('senior');
@@ -74,6 +72,8 @@ export const CreateVacancyModal: React.FC<CreateVacancyModalProps> = ({
 
     onClose();
   };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md overflow-y-auto">
