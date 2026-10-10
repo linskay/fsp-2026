@@ -75,16 +75,17 @@ docker compose up -d
 
 Полная техническая документация с компонентными схемами, детальным описанием алгоритма ELO-ранжирования, защитой от утечки тестов, ролевой моделью и соответствием 152-ФЗ РФ представлена в сопроводительном документе:
 
-- **Онлайн-версия:** [Сопроводительный документ (Манифест проекта)](docs/MANIFEST.md)
-- **Официальный релизный PDF:** [docs/MANIFEST.pdf](docs/MANIFEST.pdf)
+- **Онлайн-версия (Markdown):** [Сопроводительный документ (Манифест проекта)](docs/MANIFEST.md)
+- **Интерактивный веб-портал документации:** [https://linskay-demo-2026.hf.space/docs/](https://linskay-demo-2026.hf.space/docs/) *(локально: [http://localhost:3000/docs/](http://localhost:3000/docs/))*
+- **Официальный релизный PDF (на русском языке):** [docs/MANIFEST.pdf](docs/MANIFEST.pdf)
 
 [![Скачать Манифест в PDF](https://img.shields.io/badge/📥_Скачать_Манифест_в_PDF-docs%2FMANIFEST.pdf-0369a1?style=for-the-badge)](docs/MANIFEST.pdf)
 
 Дополнительные материалы:
 - [Архитектурный обзор и безопасность](docs/architecture/overview.mdx)
-- [Спецификация бэкенда и REST API](docs/architecture/backend.mdx)
-- [Спецификация мобильного клиента](docs/architecture/mobile.mdx)
-- [Интерактивная Mintlify-документация](docs/mint.json)
+- [Полная спецификация REST API (все 9 групп эндпоинтов)](docs/api-reference/endpoints.mdx)
+- [Спецификация мобильного клиента Android](docs/architecture/mobile.mdx)
+- [Спецификация бэкенда и микромодулей](docs/architecture/backend.mdx)
 
 ---
 

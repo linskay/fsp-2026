@@ -2,12 +2,13 @@
 """
 FSP Career Arena 2026 — Official Manifesto PDF Compiler
 Generates official publication-ready PDF document from docs/MANIFEST.md
-Supports full Cyrillic Unicode typography via DejaVu Sans.
+Supports full native Russian Cyrillic Unicode typography via DejaVu Sans.
 """
 
 import os
 import re
 import sys
+import shutil
 from fpdf import FPDF
 
 class ManifestPDF(FPDF):
@@ -24,12 +25,23 @@ class ManifestPDF(FPDF):
         self.set_text_color(148, 163, 184)
         self.cell(0, 10, f'Страница {self.page_no()} | Карьерная Арена ФСП — Проектная Документация (Пункт 3.4 ТЗ)', align='C')
 
+def clean_text(text: str) -> str:
+    # Удаляем эмодзи, которые отсутствуют в стандартных TrueType шрифтах
+    text = re.sub(r'[\U00010000-\U0010ffff]', '', text)
+    # Заменяем специальные спецсимволы
+    text = text.replace('\u2022', '-').replace('\u2013', '-').replace('\u2014', ' - ')
+    return text
+
 def create_manifest_pdf():
     root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     manifest_path = os.path.join(root_dir, 'docs', 'MANIFEST.md')
     pdf_out_path = os.path.join(root_dir, 'docs', 'MANIFEST.pdf')
     dist_pdf_path = os.path.join(root_dir, 'dist-docs', 'MANIFEST.pdf')
+    public_pdf_path = os.path.join(root_dir, 'public', 'MANIFEST.pdf')
+    public_docs_pdf = os.path.join(root_dir, 'public', 'docs', 'MANIFEST.pdf')
+    
     os.makedirs(os.path.join(root_dir, 'dist-docs'), exist_ok=True)
+    os.makedirs(os.path.join(root_dir, 'public', 'docs'), exist_ok=True)
 
     if not os.path.exists(manifest_path):
         print(f"Error: Manifest file not found at {manifest_path}")
@@ -41,7 +53,7 @@ def create_manifest_pdf():
     pdf = ManifestPDF(orientation='P', unit='mm', format='A4')
     pdf.set_auto_page_break(auto=True, margin=15)
 
-    # Register Unicode Fonts
+    # Register DejaVu Unicode Fonts for native Russian
     font_paths = [
         '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
         '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',
@@ -59,7 +71,7 @@ def create_manifest_pdf():
             pdf.add_font('DejaVuMono', '', mono_font)
         font_family = 'DejaVu'
     else:
-        # Fallback to Helvetica
+        print("[WARN] DejaVu font not found, falling back to Helvetica")
         font_family = 'Helvetica'
 
     pdf.add_page()
@@ -107,7 +119,7 @@ def create_manifest_pdf():
                 pdf.set_fill_color(241, 245, 249) # #f1f5f9
                 pdf.set_text_color(15, 23, 42)
                 pdf.set_font(font_family if not mono_font else 'DejaVuMono', '', 7.5)
-                block_content = '\n'.join(code_lines)
+                block_content = clean_text('\n'.join(code_lines))
                 pdf.multi_cell(180, 4.2, block_content, fill=True, border=1)
                 pdf.ln(3)
                 code_lines = []
@@ -128,8 +140,7 @@ def create_manifest_pdf():
         if stripped.startswith('# '):
             continue # Already handled in cover
         elif stripped.startswith('## '):
-            heading_text = stripped[3:].strip()
-            # Clean emojis if any
+            heading_text = clean_text(stripped[3:].strip())
             heading_text = re.sub(r'^[^\w\sА-Яа-яA-Za-z0-9]+', '', heading_text).strip()
             pdf.ln(4)
             pdf.set_font(font_family, 'B', 13)
@@ -139,7 +150,7 @@ def create_manifest_pdf():
             pdf.rect(pdf.get_x(), pdf.get_y(), 180, 0.5, 'F')
             pdf.ln(2)
         elif stripped.startswith('### '):
-            heading_text = stripped[4:].strip()
+            heading_text = clean_text(stripped[4:].strip())
             heading_text = re.sub(r'^[^\w\sА-Яа-яA-Za-z0-9]+', '', heading_text).strip()
             pdf.ln(2)
             pdf.set_font(font_family, 'B', 10.5)
@@ -147,17 +158,16 @@ def create_manifest_pdf():
             pdf.cell(0, 6, heading_text, ln=True)
             pdf.ln(1)
         elif stripped.startswith('- ') or stripped.startswith('* '):
-            item_text = stripped[2:].strip()
+            item_text = clean_text(stripped[2:].strip())
             item_text = re.sub(r'\*\*(.*?)\*\*', r'\1', item_text)
             pdf.set_font(font_family, '', 8.5)
             pdf.set_text_color(51, 65, 85)
-            pdf.cell(5, 5, chr(149)) # bullet
+            pdf.cell(5, 4.5, '-')
             pdf.multi_cell(175, 4.5, item_text)
         elif stripped.startswith('|'):
-            # Simple table row
             if '---' in stripped:
                 continue
-            cols = [c.strip() for c in stripped.split('|')[1:-1]]
+            cols = [clean_text(c.strip()) for c in stripped.split('|')[1:-1]]
             if not cols:
                 continue
             pdf.set_font(font_family, '', 8)
@@ -165,10 +175,10 @@ def create_manifest_pdf():
             col_width = 180 / max(len(cols), 1)
             for c in cols:
                 clean_c = re.sub(r'\*\*(.*?)\*\*', r'\1', c)
-                pdf.cell(col_width, 5.5, clean_c[:32], border=1)
+                pdf.cell(col_width, 5.5, clean_c[:34], border=1)
             pdf.ln()
         else:
-            p_text = stripped
+            p_text = clean_text(stripped)
             p_text = re.sub(r'\*\*(.*?)\*\*', r'\1', p_text)
             p_text = re.sub(r'`(.*?)`', r'\1', p_text)
             pdf.set_font(font_family, '', 8.5)
@@ -178,8 +188,11 @@ def create_manifest_pdf():
 
     pdf.output(pdf_out_path)
     pdf.output(dist_pdf_path)
-    print(f"[OK] Generated PDF Manifest at: {pdf_out_path}")
-    print(f"[OK] Generated Dist PDF Manifest at: {dist_pdf_path}")
+    shutil.copyfile(pdf_out_path, public_pdf_path)
+    shutil.copyfile(pdf_out_path, public_docs_pdf)
+    
+    print(f"[OK] Generated Native Russian Cyrillic PDF Manifest at: {pdf_out_path}")
+    print(f"[OK] Copied to public and dist folders")
 
 if __name__ == '__main__':
     create_manifest_pdf()

@@ -1,78 +1,166 @@
 ---
 title: "Эндпоинты платформы"
-description: "Детальное описание ключевых маршрутов API платформы FSP Career Arena"
+description: "Детальное описание и спецификация всех маршрутов REST API платформы FSP Career Arena (Swagger 3.0)"
 ---
 
-# Маршруты и эндпоинты API
+# Полная спецификация REST API платформы
+
+Интерактивная спецификация доступна в Swagger UI по адресу: **[/swagger-ui.html](https://linskay-demo-2026.hf.space/swagger)**  
+Машиночитаемый формат: **[/v3/api-docs](https://linskay-demo-2026.hf.space/v3/api-docs)**
 
 ---
 
-### 1. Соискатели и кандидаты ФСП
+### 1. Аутентификация, SSO и 152-ФЗ
 
 <AccordionGroup>
-  <Accordion title="GET /api/v1/candidates — Список соискателей">
-    Возвращает постраничный список кандидатов с фильтрацией по разрядам ФСП, грейдам и стеку.
-    
-    **Пример ответа:**
-    ```json
-    [
-      {
-        "id": "cand-pesterev",
-        "fullName": "Иван Пестерев",
-        "fspRating": 2540,
-        "fspRank": "1-й спортивный разряд",
-        "isVerified": true,
-        "skills": ["Java", "Kotlin", "Spring Boot", "PostgreSQL"]
-      }
-    ]
-    ```
+  <Accordion title="POST /api/v1/auth/login — Вход в систему (JWT)">
+    Аутентифицирует пользователя по паре email + пароль и возвращает stateless JWT токен с ролевыми клеймами (`CANDIDATE` / `EMPLOYER`).
   </Accordion>
-  <Accordion title="GET /api/v1/candidates/{id} — Профиль кандидата">
-    Возвращает детальную карточку кандидата с историей соревнований и подтверждёнными контрибьюциями.
+  <Accordion title="POST /api/v1/auth/register — Регистрация нового аккаунта">
+    Регистрирует нового соискателя или компанию с фиксацией согласия на обработку ПДН (152-ФЗ).
+  </Accordion>
+  <Accordion title="GET /api/v1/auth/test-users — Тестовые доступы">
+    Возвращает список предзаполненных аккаунтов (`candidate@fsp.ru`, `employer@fsp.ru`) для мгновенного входа в 1 клик.
+  </Accordion>
+  <Accordion title="GET /api/v1/auth/privacy-policy — Политика конфиденциальности">
+    Возвращает текст и регламент обработки ПДН по стандарту Федерации спортивного программирования России.
+  </Accordion>
+  <Accordion title="GET /oauth2/authorization/{provider} — Spring Security OAuth2">
+    Инициализирует вход через GitHub, Яндекс ID или HeadHunter OAuth2.
   </Accordion>
 </AccordionGroup>
 
 ---
 
-### 2. Вакансии работодателей
+### 2. Профиль пользователя и управление ролями (RBAC)
 
 <AccordionGroup>
-  <Accordion title="GET /api/v1/vacancies — Поиск вакансий">
-    Возвращает список открытых вакансий с требованиями по спортивному разряду ФСП и формату работы (Remote, Hybrid, Office).
+  <Accordion title="GET /api/v1/users/me — Текущая сессия пользователя">
+    Возвращает данные авторизованного пользователя: ID, email, роль, привязанный профиль атлета/рекрутера, текущий ELO и спортивный разряд.
+  </Accordion>
+  <Accordion title="PUT /api/v1/users/profile — Обновление профиля">
+    Обновляет ФИО, аватар и параметры безопасности пользователя.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+### 3. Соискатели и кандидаты ФСП
+
+<AccordionGroup>
+  <Accordion title="GET /api/v1/candidates — Поиск и фильтрация атлетов">
+    Универсальный эндпоинт поиска кандидатов с фильтрацией по query-параметрам:
+    - `specialization`: BACKEND, FRONTEND, FULLSTACK, DEVOPS, HIGHLOAD
+    - `grade`: JUNIOR, MIDDLE, SENIOR
+    - `minElo`: минимальный ELO-рейтинг ФСП
+    - `fspRank`: спортивный разряд ЕВСК (1-й, 2-й, КМС, МС)
+  </Accordion>
+  <Accordion title="GET /api/v1/candidates/{id} — Карточка кандидата">
+    Возвращает верифицированный профиль с историей турниров, стеком и LeetCode-метриками.
+  </Accordion>
+  <Accordion title="GET /api/v1/candidates/{id}/export-pdf — Официальный PDF-паспорт ФСП">
+    Автогенерация стандартизированного PDF-документа с символикой Федерации, подтвержденным ELO и разрядом для HR-отчетов.
+  </Accordion>
+  <Accordion title="GET /api/v1/candidates/{id}/elo-history — История изменения ELO">
+    Возвращает временной ряд точек изменения рейтинга для построения графика соревновательного прогресса.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+### 4. Вакансии работодателей
+
+<AccordionGroup>
+  <Accordion title="GET /api/v1/vacancies/search — Поиск вакансий">
+    Поиск открытых позиций с обязательной рублевой вилкой зарплат (без скрытых условий) и требованиями к ELO.
   </Accordion>
   <Accordion title="POST /api/v1/vacancies — Создание вакансии (HR)">
-    Создаёт новую вакансию для компании с автоматическим подключением ИИ-скоринга откликов.
+    Публикация новой потребности компании с автоматической активацией алгоритма Explainable Matching.
+  </Accordion>
+  <Accordion title="POST /api/v1/employer/sync/hh-vacancies — Импорт вакансий из hh.ru">
+    Импорт вакансий компании из HeadHunter API в 1 клик через токен работодателя.
   </Accordion>
 </AccordionGroup>
 
 ---
 
-### 3. Code Arena (Исполнение кода)
+### 5. Офферы и Обратный найм (Reverse Recruiting)
 
 <AccordionGroup>
-  <Accordion title="POST /api/v1/arena/execute — Проверка решения задачи">
-    Запускает отправленный код в изолированном Docker-контейнере с замером времени и памяти.
-    
-    **Тело запроса:**
-    ```json
-    {
-      "taskId": "task-quick-sort",
-      "language": "kotlin",
-      "sourceCode": "fun solve() { ... }"
-    }
-    ```
+  <Accordion title="POST /api/v1/offers — Отправка прямого оффера с вилкой">
+    Создает оффер от работодателя кандидату с поддержкой RFC 7231 ключа идемпотентности (`Idempotency-Key`) и защитой от дублирования.
+  </Accordion>
+  <Accordion title="GET /api/v1/offers/candidate/{id} — Офферы соискателя">
+    Список полученных предложений кандидата со статусами (PENDING, ACCEPTED, DECLINED).
+  </Accordion>
+  <Accordion title="PUT /api/v1/offers/{id}/accept — Принятие оффера">
+    Кандидат принимает оффер: снимается маскирование контактов по 152-ФЗ и шлется веб-хук во внешнюю ATS работодателя.
+  </Accordion>
+  <Accordion title="PUT /api/v1/offers/{id}/decline — Отклонение оффера">
+    Мягкое отклонение предложения кандидатом с фиксацией обратной связи.
   </Accordion>
 </AccordionGroup>
 
 ---
 
-### 4. Мобильный API (Kotlin Gateway)
+### 6. Веб-хуки и корпоративные интеграции (Webhooks)
 
 <AccordionGroup>
-  <Accordion title="GET /api/v1/mobile/status — Статус мобильного шлюза">
-    Возвращает состояние бэкенда для нативного клиента.
+  <Accordion title="POST /api/v1/webhooks — Регистрация веб-хука для ATS">
+    Регистрирует URL для отправки нотификаций (Сбер, Яндекс, Huntflow, 1C:ЗУП, Telegram-боты). Защита заголовком `X-FSP-Signature` (HMAC-SHA256).
   </Accordion>
-  <Accordion title="POST /api/v1/mobile/chat/send — Отправка сообщения чата">
-    Принимает и валидирует сообщения чата от мобильного приложения.
+  <Accordion title="GET /api/v1/webhooks/employer/{id} — Список веб-хуков">
+    Возвращает зарегистрированные веб-хуки с HTTP-статусами последней доставки.
+  </Accordion>
+  <Accordion title="POST /api/v1/webhooks/{id}/ping — Тестовый пинг">
+    Проверяет доступность эндпоинта компании с отправкой проверочного пакета PING.
+  </Accordion>
+  <Accordion title="DELETE /api/v1/webhooks/{id} — Удаление веб-хука">
+    Отзывает регистрацию веб-хука.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+### 7. ИИ-портреты соискателей (Multi-Model AI Summary)
+
+<AccordionGroup>
+  <Accordion title="POST /api/v1/ai/generate-summary — Мультимодельная генерация">
+    Использует паттерн Strategy для динамического переключения нейросетей (Google Gemini, YandexGPT, OpenRouter, Ollama) с системным фокусом (Highload, Алгоритмы, Тимлид).
+  </Accordion>
+  <Accordion title="POST /api/v1/ai/save-profile — Сохранение ИИ-резюме">
+    Фиксирует сформированное досье в базе данных PostgreSQL соискателя.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+### 8. Изолированная песочница и тестирование (Judge0 / Docker)
+
+<AccordionGroup>
+  <Accordion title="POST /api/v1/sandbox/execute — Запуск кода в песочнице">
+    Изолированное выполнение решения в Docker-песочнице (`--net=none`, cgroups v2, лимиты памяти 256MB и времени 1000мс).
+  </Accordion>
+  <Accordion title="POST /api/v1/assessments/assign — Назначение тестового задания">
+    Работодатель назначает алгоритмическую задачу с дедлайном и ссылкой на Яндекс Телемост.
+  </Accordion>
+  <Accordion title="POST /api/v1/assessments/review — Ревью и оценка решения">
+    HR/Техлид выставляет вердикт (👍 / 👎) и пишет закрытую внутреннюю заметку.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+### 9. Хранилище файлов и мониторинг (S3 & DevOps)
+
+<AccordionGroup>
+  <Accordion title="POST /api/v1/files/upload — Загрузка файлов (MultipartFile)">
+    Загрузка аватарок, логотипов компаний и PDF-резюме с валидацией размера и генерацией публичной ссылки.
+  </Accordion>
+  <Accordion title="GET /api/v1/system/stats — Открытая статистика платформы">
+    Возвращает актуальные счетчики для главной страницы лендинга (число атлетов, вакансий, решенных задач, офферов).
+  </Accordion>
+  <Accordion title="GET /api/v1/audit/logs — Журнал аудита безопасности (152-ФЗ)">
+    Неизменяемый журнал всех обращений к персональным данным и действиям в системе.
   </Accordion>
 </AccordionGroup>
