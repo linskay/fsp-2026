@@ -39,10 +39,22 @@ public class CandidateController {
         return ResponseEntity.ok(candidateService.getCandidateById(id));
     }
 
+    private final ru.fsp.careerarena.service.CandidatePdfService candidatePdfService;
+
     @GetMapping("/{id}/elo-history")
     @Operation(summary = "Получение истории изменения рейтинга ELO кандидата для построения графика прогресса")
     public ResponseEntity<List<ru.fsp.careerarena.dto.EloHistoryPointDto>> getEloHistory(@PathVariable UUID id) {
         return ResponseEntity.ok(candidateService.getEloHistory(id));
+    }
+
+    @GetMapping("/{id}/export-pdf")
+    @Operation(summary = "Автогенерация и скачивание стандартизированного PDF-профиля соискателя с символикой ФСП и подтвержденным ELO")
+    public ResponseEntity<byte[]> exportPdf(@PathVariable UUID id) {
+        byte[] pdfBytes = candidatePdfService.generateCandidatePdf(id);
+        return ResponseEntity.ok()
+                .header(org.springframework.http.HttpHeaders.CONTENT_TYPE, "application/pdf")
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"fsp-candidate-" + id + ".pdf\"")
+                .body(pdfBytes);
     }
 }
 

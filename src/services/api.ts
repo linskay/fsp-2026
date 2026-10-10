@@ -943,6 +943,99 @@ class ApiService {
     }
     return await res.json();
   }
+
+  // 16. HeadHunter Vacancies Integration
+  async getHhVacancies(employerId?: string): Promise<any[]> {
+    try {
+      const url = employerId ? `${API_BASE}/integrations/hh/vacancies?employerId=${employerId}` : `${API_BASE}/integrations/hh/vacancies`;
+      const res = await fetch(url);
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return [];
+  }
+
+  async importHhVacancies(externalIds: string[], employerId?: string): Promise<any> {
+    const res = await fetch(`${API_BASE}/integrations/hh/import`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ externalIds, employerId })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || err.message || 'Ошибка импорта вакансий из hh.ru');
+    }
+    return await res.json();
+  }
+
+  // 17. User Notifications
+  async getNotifications(userId?: string): Promise<any[]> {
+    try {
+      const url = userId ? `${API_BASE}/notifications?userId=${userId}` : `${API_BASE}/notifications`;
+      const res = await fetch(url);
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return [];
+  }
+
+  async markNotificationRead(id: string): Promise<any> {
+    try {
+      const res = await fetch(`${API_BASE}/notifications/${id}/read`, { method: 'POST' });
+      if (res.ok) return await res.json();
+    } catch {}
+    return null;
+  }
+
+  // 18. Employer Verification (FNS / OGRN Anti-fraud)
+  async verifyEmployer(params: { inn: string; employerId?: string; companyFullName?: string }): Promise<any> {
+    const res = await fetch(`${API_BASE}/employers/verify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || err.message || 'Ошибка верификации компании');
+    }
+    return await res.json();
+  }
+
+  // 19. Vacancy Reporting (Anti-fraud)
+  async reportVacancy(params: { vacancyId: string; reason: string; comment?: string; candidateId?: string }): Promise<any> {
+    const res = await fetch(`${API_BASE}/vacancies/${params.vacancyId}/report`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        candidateId: params.candidateId,
+        reason: params.reason,
+        comment: params.comment
+      })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || err.message || 'Ошибка отправки жалобы');
+    }
+    return await res.json();
+  }
+
+  // 20. Employer Recruitment Analytics
+  async getEmployerAnalytics(employerId: string): Promise<any> {
+    try {
+      const res = await fetch(`${API_BASE}/employers/${employerId}/analytics`);
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return null;
+  }
+
+  // 21. Candidate PDF Profile Download URL
+  getCandidatePdfUrl(candidateId: string): string {
+    return `${API_BASE}/candidates/${candidateId}/export-pdf`;
+  }
 }
 
 export const api = new ApiService();

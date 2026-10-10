@@ -21,7 +21,8 @@ import {
   TrendingUp,
   Sparkles,
   Phone,
-  SendHorizontal
+  SendHorizontal,
+  Download
 } from 'lucide-react';
 import { AlgorithmTask, CandidateProfile, Invitation, SubmissionResult, GitHubProfileData, HhResumeData, CandidateAiSummary, AssessmentAssignment, CandidateAssessmentSubmission } from '../../types';
 import { CodeArenaIDE } from '../arena/CodeArenaIDE';
@@ -414,6 +415,18 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
                   <FileText className="w-4 h-4 text-[#00f0ff]" />
                   <span>Паспорт ФСП</span>
                 </button>
+
+                <a
+                  href={`/api/v1/candidates/${candidate.id || 'e7518117-f0d9-4c2e-9af7-829fecbd9107'}/export-pdf`}
+                  download={`fsp-athlete-passport-${candidate.id || 'candidate'}.pdf`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-gradient-to-r from-[#2b35ff]/30 to-[#00f0ff]/30 hover:from-[#2b35ff]/50 hover:to-[#00f0ff]/50 text-white text-xs font-bold border border-[#00f0ff]/40 transition-all shadow-lg hover:border-[#00f0ff]"
+                  title="Скачать официальный стандартизированный PDF-профиль спортсмена ФСП"
+                >
+                  <Download className="w-4 h-4 text-[#00f0ff]" />
+                  <span>Скачать PDF</span>
+                </a>
               </div>
             </div>
 

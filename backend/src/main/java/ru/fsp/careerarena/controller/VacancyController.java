@@ -58,4 +58,35 @@ public class VacancyController {
     public ResponseEntity<VacancyDto> createVacancy(@Valid @RequestBody CreateVacancyRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(vacancyService.createVacancy(request));
     }
+
+    private final ru.fsp.careerarena.repository.VacancyReportRepository vacancyReportRepository;
+    private final ru.fsp.careerarena.repository.VacancyRepository vacancyRepository;
+
+    @PostMapping("/{id}/report")
+    @Operation(summary = "Жалоба соискателя на фиктивную или подозрительную вакансию (Антифрод-система ФСП)")
+    public ResponseEntity<java.util.Map<String, Object>> reportVacancy(
+            @PathVariable UUID id,
+            @Valid @RequestBody ru.fsp.careerarena.dto.VacancyReportRequest request
+    ) {
+        var vacancy = vacancyRepository.findById(id)
+                .orElseThrow(() -> new ru.fsp.careerarena.exception.ResourceNotFoundException("Вакансия с ID " + id + " не найдена"));
+
+        var report = ru.fsp.careerarena.entity.VacancyReport.builder()
+                .vacancy(vacancy)
+                .candidateId(request.getCandidateId())
+                .reason(request.getReason())
+                .comment(request.getComment())
+                .status("PENDING")
+                .build();
+
+        report = vacancyReportRepository.save(report);
+
+        return ResponseEntity.ok(java.util.Map.of(
+                "status", "REPORTED",
+                "reportId", report.getId().toString(),
+                "vacancyId", vacancy.getId().toString(),
+                "reason", report.getReason(),
+                "message", "Жалоба успешно зарегистрирована в антифрод-системе ФСП. Вакансия направлена на проверку модератором."
+        ));
+    }
 }

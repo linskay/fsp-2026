@@ -47,6 +47,8 @@ public class SecurityConfig {
                     "/api/v1/employers/**",
                     "/api/v1/fsp/**",
                     "/api/v1/applications/**",
+                    "/api/v1/integrations/**",
+                    "/api/v1/notifications/**",
                     "/api/v1/leetcode/**",
                     "/api/v1/ai-summary/**",
                     "/oauth2/**",
