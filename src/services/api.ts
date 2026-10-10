@@ -913,6 +913,36 @@ class ApiService {
     }
     return await res.json();
   }
+
+  // 15. Real-time Messaging & Chat Rooms (REST + WebSocket /ws/chat)
+  async getChatRoomMessages(offerId: string): Promise<any[]> {
+    try {
+      const res = await fetch(`${API_BASE}/chat/rooms/${offerId}`);
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return [];
+  }
+
+  async sendChatMessage(params: {
+    offerId: string;
+    senderRole: 'CANDIDATE' | 'EMPLOYER';
+    senderName: string;
+    text: string;
+    senderId?: string;
+  }): Promise<any> {
+    const res = await fetch(`${API_BASE}/chat/messages`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || err.message || 'Ошибка отправки сообщения');
+    }
+    return await res.json();
+  }
 }
 
 export const api = new ApiService();

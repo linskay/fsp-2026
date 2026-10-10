@@ -350,6 +350,17 @@ export default function App() {
 
   const handleSendMessage = (invitationId: string, text: string) => {
     const sender = currentRole === 'candidate' ? 'candidate' : 'employer';
+
+    // Asynchronously synchronize with Spring Boot Real-time Chat REST API
+    api.sendChatMessage({
+      offerId: invitationId,
+      senderRole: sender === 'candidate' ? 'CANDIDATE' : 'EMPLOYER',
+      senderName: sender === 'candidate' ? (currentUser?.fullName || 'Иван Пестерев') : 'Елена Романова (СберТех HR)',
+      text
+    }).catch(err => {
+      console.warn('Real-time chat API warning:', err);
+    });
+
     setInvitations(prev =>
       prev.map(inv => {
         if (inv.id === invitationId) {

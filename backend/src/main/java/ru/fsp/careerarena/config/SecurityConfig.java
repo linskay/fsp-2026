@@ -41,6 +41,8 @@ public class SecurityConfig {
                     "/api/v1/candidates/**",
                     "/api/v1/vacancies/**",
                     "/api/v1/offers/**",
+                    "/api/v1/chat/**",
+                    "/ws/**",
                     "/api/v1/leetcode/**",
                     "/api/v1/ai-summary/**",
                     "/oauth2/**",
