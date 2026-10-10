@@ -109,8 +109,8 @@ export const HhVacancyImportModal: React.FC<HhVacancyImportModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="relative w-full max-w-3xl bg-[#090d1a] border border-[#1e294b] rounded-3xl shadow-2xl overflow-hidden my-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4 overflow-y-auto transition-all duration-300">
+      <div className="modal-animate relative w-full max-w-3xl bg-[#090d1a] border border-white/10 rounded-3xl shadow-2xl overflow-hidden my-8 transition-all duration-200">
         
         {/* Modal Header */}
         <div className="px-6 py-5 border-b border-[#141b2e] bg-[#0c1224] flex items-center justify-between">

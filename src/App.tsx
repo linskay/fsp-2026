@@ -759,88 +759,94 @@ export default function App() {
       {/* Main Container by Active Role */}
       <main className="flex-1 pb-12">
         {currentRole === 'landing' && (
-          <LandingPage
-            onSelectRole={handleRoleChange}
-            onOpenOAuth={(provider) => {
-              setIsOAuthModalOpen(true);
-            }}
-            onOpenLogin={() => setIsLoginModalOpen(true)}
-            candidate={currentCandidate}
-            hhData={hhData}
-            githubData={githubData}
-          />
+          <div className="animate-tab-content">
+            <LandingPage
+              onSelectRole={handleRoleChange}
+              onOpenOAuth={(provider) => {
+                setIsOAuthModalOpen(true);
+              }}
+              onOpenLogin={() => setIsLoginModalOpen(true)}
+              candidate={currentCandidate}
+              hhData={hhData}
+              githubData={githubData}
+            />
+          </div>
         )}
 
         {currentRole === 'candidate' && (
-          <CandidateDashboard
-            candidate={currentCandidate}
-            allCandidates={candidates}
-            onSelectCandidate={(id) => {
-              setActiveCandidateId(id);
-              if (id === 'cand-pesterev') {
-                setGithubData(PESTEREV_GITHUB_PROFILE);
-                setHhData(PESTEREV_HH_RESUME);
-                setYandexEmail('ivan.pesterev@yandex.ru');
-              } else if (id === 'cand-alina') {
-                setGithubData(ALINA_GITHUB_PROFILE);
-                setHhData(ALINA_HH_RESUME);
-                setYandexEmail('alina.dev@yandex.ru');
-              } else if (id === 'cand-1') {
-                setGithubData(MOCK_GITHUB_PROFILE);
-                setHhData(MOCK_HH_RESUME);
-                setYandexEmail('alexander.belov@yandex.ru');
-              } else if (id === 'cand-2') {
-                setHhData(DARIA_HH_RESUME);
-                setYandexEmail('daria.morozova@yandex.ru');
-              } else if (id === 'cand-3') {
-                setHhData(SOKOLOV_HH_RESUME);
-                setYandexEmail('mikhail.sokolov@yandex.ru');
-              } else {
-                const found = candidates.find(c => c.id === id);
-                if (found) {
-                  setYandexEmail(`${found.email.split('@')[0]}@yandex.ru`);
+          <div className="animate-tab-content">
+            <CandidateDashboard
+              candidate={currentCandidate}
+              allCandidates={candidates}
+              onSelectCandidate={(id) => {
+                setActiveCandidateId(id);
+                if (id === 'cand-pesterev') {
+                  setGithubData(PESTEREV_GITHUB_PROFILE);
+                  setHhData(PESTEREV_HH_RESUME);
+                  setYandexEmail('ivan.pesterev@yandex.ru');
+                } else if (id === 'cand-alina') {
+                  setGithubData(ALINA_GITHUB_PROFILE);
+                  setHhData(ALINA_HH_RESUME);
+                  setYandexEmail('alina.dev@yandex.ru');
+                } else if (id === 'cand-1') {
+                  setGithubData(MOCK_GITHUB_PROFILE);
+                  setHhData(MOCK_HH_RESUME);
+                  setYandexEmail('alexander.belov@yandex.ru');
+                } else if (id === 'cand-2') {
+                  setHhData(DARIA_HH_RESUME);
+                  setYandexEmail('daria.morozova@yandex.ru');
+                } else if (id === 'cand-3') {
+                  setHhData(SOKOLOV_HH_RESUME);
+                  setYandexEmail('mikhail.sokolov@yandex.ru');
+                } else {
+                  const found = candidates.find(c => c.id === id);
+                  if (found) {
+                    setYandexEmail(`${found.email.split('@')[0]}@yandex.ru`);
+                  }
                 }
-              }
-            }}
-            invitations={invitations}
-            tasks={tasks}
-            assessments={assessments}
-            onSubmitAssessment={handleSubmitAssessment}
-            githubData={githubData}
-            hhData={hhData}
-            yandexConnected={yandexConnected}
-            yandexEmail={yandexEmail}
-            onOpenOAuthModal={() => setIsOAuthModalOpen(true)}
-            onAcceptInvitation={handleAcceptInvitation}
-            onDeclineInvitation={handleDeclineInvitation}
-            onSendMessage={handleSendMessage}
-            onTaskSolved={handleTaskSolved}
-            onUpdateCandidate={handleUpdateCandidate}
-          />
+              }}
+              invitations={invitations}
+              tasks={tasks}
+              assessments={assessments}
+              onSubmitAssessment={handleSubmitAssessment}
+              githubData={githubData}
+              hhData={hhData}
+              yandexConnected={yandexConnected}
+              yandexEmail={yandexEmail}
+              onOpenOAuthModal={() => setIsOAuthModalOpen(true)}
+              onAcceptInvitation={handleAcceptInvitation}
+              onDeclineInvitation={handleDeclineInvitation}
+              onSendMessage={handleSendMessage}
+              onTaskSolved={handleTaskSolved}
+              onUpdateCandidate={handleUpdateCandidate}
+            />
+          </div>
         )}
 
         {currentRole === 'employer' && (
-          <EmployerDashboard
-            currentEmployer={currentEmployer}
-            candidates={candidates}
-            vacancies={vacancies}
-            invitations={invitations}
-            assessments={assessments}
-            tasks={tasks}
-            onSendOffer={handleSendOffer}
-            onAddVacancy={handleAddVacancy}
-            onSendMessage={handleSendMessage}
-            onAssignTest={handleAssignTest}
-            onReviewTest={handleReviewAssessment}
-            onUpdateCandidate={(id, updated) => {
-              setCandidates(prev => prev.map(c => c.id === id ? { ...c, ...updated } : c));
-              showToast('ИИ-портрет кандидата успешно обновлен!', 'success');
-            }}
-          />
+          <div className="animate-tab-content">
+            <EmployerDashboard
+              currentEmployer={currentEmployer}
+              candidates={candidates}
+              vacancies={vacancies}
+              invitations={invitations}
+              assessments={assessments}
+              tasks={tasks}
+              onSendOffer={handleSendOffer}
+              onAddVacancy={handleAddVacancy}
+              onSendMessage={handleSendMessage}
+              onAssignTest={handleAssignTest}
+              onReviewTest={handleReviewAssessment}
+              onUpdateCandidate={(id, updated) => {
+                setCandidates(prev => prev.map(c => c.id === id ? { ...c, ...updated } : c));
+                showToast('ИИ-портрет кандидата успешно обновлен!', 'success');
+              }}
+            />
+          </div>
         )}
 
         {currentRole === 'arena' && (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-4">
+          <div className="animate-tab-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-black text-white flex items-center gap-2">

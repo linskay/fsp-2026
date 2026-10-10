@@ -63,13 +63,13 @@ export const SendOfferModal: React.FC<SendOfferModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-      <div className="bg-[#0f172a] border border-slate-700 rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden my-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md overflow-y-auto">
+      <div className="bg-[#0d121f] border border-white/10 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden my-8 modal-animate">
         
         {/* Header */}
-        <div className="flex items-center justify-between p-5 bg-[#131d33] border-b border-slate-800">
+        <div className="flex items-center justify-between p-5 bg-[#0d121f] border-b border-white/10">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-indigo-600/20 text-indigo-400 border border-indigo-500/30">
+            <div className="p-2.5 rounded-2xl bg-blue-600/20 text-blue-400 border border-blue-500/30">
               <Send className="w-5 h-5" />
             </div>
             <div>

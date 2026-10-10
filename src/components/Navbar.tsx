@@ -56,21 +56,21 @@ export const Navbar: React.FC<NavbarProps> = ({
             <nav className="flex items-center gap-1 bg-white/[0.03] p-1 sm:p-1.5 rounded-2xl border border-white/[0.08] backdrop-blur-md shadow-inner">
               <button
                 onClick={() => onRoleChange('landing')}
-                className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] whitespace-nowrap cursor-pointer ${
                   currentRole === 'landing'
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/30'
+                    ? 'bg-blue-600 text-white shadow-sm shadow-blue-900/40 border border-blue-400/20'
                     : 'text-slate-400 hover:text-white hover:bg-white/[0.05]'
                 }`}
               >
-                <Sparkles className="w-3.5 h-3.5 text-cyan-300" />
+                <Sparkles className="w-3.5 h-3.5 text-blue-300" />
                 <span>Главная</span>
               </button>
 
               <button
                 onClick={() => onRoleChange('candidate')}
-                className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] whitespace-nowrap cursor-pointer ${
                   currentRole === 'candidate'
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/30'
+                    ? 'bg-blue-600 text-white shadow-sm shadow-blue-900/40 border border-blue-400/20'
                     : 'text-slate-400 hover:text-white hover:bg-white/[0.05]'
                 }`}
               >
@@ -85,9 +85,9 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               <button
                 onClick={() => onRoleChange('employer')}
-                className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] whitespace-nowrap cursor-pointer ${
                   currentRole === 'employer'
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/30'
+                    ? 'bg-blue-600 text-white shadow-sm shadow-blue-900/40 border border-blue-400/20'
                     : 'text-slate-400 hover:text-white hover:bg-white/[0.05]'
                 }`}
               >
@@ -102,9 +102,9 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               <button
                 onClick={() => onRoleChange('arena')}
-                className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] whitespace-nowrap cursor-pointer ${
                   currentRole === 'arena'
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-cyan-300 shadow-md shadow-blue-500/30'
+                    ? 'bg-blue-600 text-white shadow-sm shadow-blue-900/40 border border-blue-400/20'
                     : 'text-slate-400 hover:text-white hover:bg-white/[0.05]'
                 }`}
               >

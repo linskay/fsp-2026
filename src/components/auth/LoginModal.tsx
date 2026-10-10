@@ -193,16 +193,16 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md transition-all duration-300">
       <div 
-        className="relative w-full max-w-lg bg-[#0b0f19] border border-white/10 rounded-2xl shadow-2xl overflow-hidden"
+        className="modal-animate relative w-full max-w-lg bg-[#0b0f19] border border-white/10 rounded-2xl shadow-2xl overflow-hidden transition-all duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Header Banner */}
-        <div className="relative px-6 pt-5 pb-4 border-b border-white/[0.08] bg-gradient-to-r from-blue-950/40 via-indigo-950/20 to-transparent">
+        <div className="relative px-6 pt-5 pb-4 border-b border-white/[0.08] bg-[#0e1424]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
+              <div className="w-10 h-10 rounded-xl bg-blue-600 border border-blue-400/20 flex items-center justify-center shadow-md shadow-blue-900/30">
                 <Lock className="w-5 h-5 text-white" />
               </div>
               <div>

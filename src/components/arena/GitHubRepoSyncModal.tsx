@@ -60,14 +60,14 @@ export const GitHubRepoSyncModal: React.FC<GitHubRepoSyncModalProps> = ({
   const sampleRepoFullName = `${candidateUsername}/${repoName.trim() || 'fsp-leetcode-solutions'}`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
-      <div className="bg-[#0b1022] border border-[#2b35ff]/40 rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md overflow-y-auto">
+      <div className="bg-[#0d121f] border border-white/10 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden my-8 modal-animate">
         
         {/* Header */}
-        <div className="p-5 sm:p-6 bg-[#0e1428] border-b border-[#1b233a] flex items-center justify-between">
+        <div className="p-5 sm:p-6 bg-[#0d121f] border-b border-white/10 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-[#2b35ff]/20 text-[#00f0ff] border border-[#2b35ff]/40 shadow-sm">
-              <FolderGit2 className="w-5 h-5 text-[#00f0ff]" />
+            <div className="p-2.5 rounded-xl bg-blue-600/20 text-blue-400 border border-blue-500/30 shadow-sm">
+              <FolderGit2 className="w-5 h-5 text-blue-400" />
             </div>
             <div>
               <div className="flex items-center gap-2">

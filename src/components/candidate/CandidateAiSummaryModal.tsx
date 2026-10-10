@@ -181,13 +181,13 @@ export const CandidateAiSummaryModal: React.FC<CandidateAiSummaryModalProps> = (
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 overflow-y-auto">
-      <div className="relative w-full max-w-3xl bg-[#090d1a] border border-[#1e294b] rounded-3xl shadow-2xl overflow-hidden my-6 font-['JetBrains_Mono']">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4 overflow-y-auto">
+      <div className="relative w-full max-w-3xl bg-[#0d121f] border border-white/10 rounded-2xl shadow-2xl overflow-hidden my-6 modal-animate font-['JetBrains_Mono']">
         
         {/* Header */}
-        <div className="px-6 py-5 border-b border-[#141b2e] bg-[#0c1224] flex items-center justify-between">
+        <div className="px-6 py-5 border-b border-white/10 bg-[#0d121f] flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-gradient-to-br from-blue-600/30 to-cyan-400/30 rounded-2xl border border-blue-500/50 text-cyan-400">
+            <div className="p-2.5 bg-blue-600/20 rounded-xl border border-blue-500/30 text-blue-400">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>

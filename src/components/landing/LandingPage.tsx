@@ -181,22 +181,8 @@ public class Solution {
       {/* ========================================================================= */}
       {/* 2.2 ИНТЕРАКТИВНАЯ HERO-СЕКЦИЯ (HIGH-END ДИЗАЙН) */}
       {/* ========================================================================= */}
-      <section id="hero-section" className="relative z-10 pt-8 sm:pt-14 lg:pt-20 pb-12 sm:pb-20 lg:pb-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <section id="hero-section" className="relative z-10 pt-8 sm:pt-12 lg:pt-16 pb-12 sm:pb-20 lg:pb-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         
-        {/* Top Official Registry Pill */}
-        <div className="flex justify-center mb-6">
-          <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.08] backdrop-blur-xl shadow-lg hover:border-white/[0.18] transition-all">
-            <span className="flex h-2 w-2 rounded-full bg-cyan-400 animate-pulse" />
-            <span className="text-[11px] sm:text-xs font-semibold tracking-wider text-slate-200 uppercase">
-              Федерация спортивного программирования РФ • Сезон 2026
-            </span>
-            <span className="text-white/20">|</span>
-            <span className="text-[11px] sm:text-xs font-mono font-medium text-cyan-300">
-              ЕДИНЫЙ РЕЕСТР
-            </span>
-          </div>
-        </div>
-
         {/* Hero Title (H1) & Subtitle with Luxury Typography */}
         <div className="text-center max-w-4xl mx-auto space-y-4 px-2">
           <h1 className="text-3xl sm:text-5xl lg:text-7xl font-extrabold tracking-[-0.03em] text-white leading-[1.08]">

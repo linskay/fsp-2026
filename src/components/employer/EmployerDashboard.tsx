@@ -208,9 +208,9 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
           
           <button
             onClick={() => setActiveTab('candidates')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] ${
               activeTab === 'candidates'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
+                ? 'bg-blue-600 text-white shadow-sm shadow-blue-900/40 border border-blue-400/20'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800'
             }`}
           >
@@ -223,9 +223,9 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
 
           <button
             onClick={() => setActiveTab('vacancies')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] ${
               activeTab === 'vacancies'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
+                ? 'bg-blue-600 text-white shadow-sm shadow-blue-900/40 border border-blue-400/20'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800'
             }`}
           >
@@ -238,9 +238,9 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
 
           <button
             onClick={() => setActiveTab('ats')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] ${
               activeTab === 'ats'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
+                ? 'bg-blue-600 text-white shadow-sm shadow-blue-900/40 border border-blue-400/20'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800'
             }`}
           >
@@ -253,15 +253,15 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
 
           <button
             onClick={() => setActiveTab('assessments')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] ${
               activeTab === 'assessments'
-                ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-600/30'
+                ? 'bg-blue-600 text-white shadow-sm shadow-blue-900/40 border border-blue-400/20'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800'
             }`}
           >
-            <Zap className="w-4 h-4 text-amber-400" />
+            <Zap className="w-4 h-4 text-amber-300" />
             <span>Тестирования & Лайв-интервью</span>
-            <span className="px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 text-[10px] font-bold border border-purple-500/30">
+            <span className="px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-300 text-[10px] font-bold border border-blue-500/30">
               {assessments.length}
             </span>
             {assessments.some(a => a.status === 'submitted') && (
@@ -271,9 +271,9 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
 
           <button
             onClick={() => setActiveTab('chat')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] ${
               activeTab === 'chat'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
+                ? 'bg-blue-600 text-white shadow-sm shadow-blue-900/40 border border-blue-400/20'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800'
             }`}
           >
@@ -286,7 +286,7 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
 
       {/* Tab 1: Candidates Smart Search with Explainable AI */}
       {activeTab === 'candidates' && (
-        <div className="space-y-6">
+        <div className="animate-tab-content space-y-6">
           
           {/* Filters Bar */}
           <div className="bg-[#0a0e1c] p-4 sm:p-5 rounded-3xl border border-[#1b233a] space-y-4 shadow-xl">
@@ -720,7 +720,7 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
 
       {/* Tab 2: Vacancies with Mandatory Salary Fork */}
       {activeTab === 'vacancies' && (
-        <div className="space-y-6">
+        <div className="animate-tab-content space-y-6">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-lg font-bold text-white">
@@ -799,7 +799,7 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
 
       {/* Tab 3: ATS Tracking Kanban */}
       {activeTab === 'ats' && (
-        <div className="space-y-6">
+        <div className="animate-tab-content space-y-6">
           <div>
             <h2 className="text-lg font-bold text-white">
               ATS Трекер приглашений и офферов
@@ -936,7 +936,7 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
 
       {/* Tab 4: Chat with Candidate */}
       {activeTab === 'chat' && (
-        <div className="bg-[#0f172a] rounded-3xl border border-slate-800 shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-12 min-h-[550px]">
+        <div className="animate-tab-content bg-[#0f172a] rounded-3xl border border-slate-800 shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-12 min-h-[550px]">
           
           <div className="md:col-span-4 bg-[#0b0f19] border-r border-slate-800 p-4 space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
@@ -1044,7 +1044,7 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
 
       {/* Tab 5: Assessments & Live Coding Interviews */}
       {activeTab === 'assessments' && (
-        <div className="space-y-6">
+        <div className="animate-tab-content space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#0b1026] p-5 rounded-2xl border border-white/10">
             <div>
               <h3 className="text-base font-bold text-white flex items-center gap-2">
@@ -1206,8 +1206,8 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
 
       {/* Explainable Match Detail Modal */}
       {explainModalCandidate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-[#0f172a] border border-slate-700 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
+          <div className="bg-[#0d121f] border border-white/10 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl modal-animate">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-indigo-400">
                 <Sparkles className="w-5 h-5 text-yellow-400" />

@@ -1139,6 +1139,180 @@ class ApiService {
     } catch {}
     return [];
   }
+
+  // 24. Candidate Direct Applications
+  async createApplication(params: {
+    candidateId: string;
+    vacancyId: string;
+    coverLetter?: string;
+  }): Promise<any> {
+    const res = await fetch(`${API_BASE}/applications`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || err.message || 'Ошибка отправки отклика на вакансию');
+    }
+    return await res.json();
+  }
+
+  async getApplicationsByVacancy(vacancyId: string): Promise<any[]> {
+    try {
+      const res = await fetch(`${API_BASE}/applications/vacancy/${vacancyId}`);
+      if (res.ok) return await res.json();
+    } catch {}
+    return [];
+  }
+
+  async getApplicationsByCandidate(candidateId: string): Promise<any[]> {
+    try {
+      const res = await fetch(`${API_BASE}/applications/candidate/${candidateId}`);
+      if (res.ok) return await res.json();
+    } catch {}
+    return [];
+  }
+
+  // 25. Grade Qualification Tests & 3-Month Cooldown Control
+  async getGradeCategories(): Promise<any> {
+    try {
+      const res = await fetch(`${API_BASE}/tests/categories`);
+      if (res.ok) return await res.json();
+    } catch {}
+    return { specializations: [], grades: [] };
+  }
+
+  async startGradeTest(params: {
+    candidateId: string;
+    targetGrade: string;
+    specialization?: string;
+  }): Promise<any> {
+    const res = await fetch(`${API_BASE}/tests/start`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || err.message || 'Ошибка запуска квалификационного теста');
+    }
+    return await res.json();
+  }
+
+  async submitGradeTest(params: {
+    attemptId: string;
+    candidateId: string;
+    answers: Record<string, string>;
+    timeSpentSeconds?: number;
+  }): Promise<any> {
+    const res = await fetch(`${API_BASE}/tests/submit`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || err.message || 'Ошибка отправки результатов тестирования');
+    }
+    return await res.json();
+  }
+
+  async getGradeCooldown(candidateId: string): Promise<any> {
+    try {
+      const res = await fetch(`${API_BASE}/tests/cooldown/${candidateId}`);
+      if (res.ok) return await res.json();
+    } catch {}
+    return { canTakeTest: true, daysRemaining: 0, message: 'Сдача теста доступна' };
+  }
+
+  // 26. Candidate ELO Progression & FSP Registry Sync
+  async getCandidateEloHistory(candidateId: string): Promise<any[]> {
+    try {
+      const res = await fetch(`${API_BASE}/candidates/${candidateId}/elo-history`);
+      if (res.ok) return await res.json();
+    } catch {}
+    return [];
+  }
+
+  async syncFspRegistry(candidateId?: string): Promise<any> {
+    const query = candidateId ? `?candidateId=${candidateId}` : '';
+    const res = await fetch(`${API_BASE}/fsp/sync${query}`, { method: 'POST' });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || err.message || 'Ошибка синхронизации с Единым реестром ФСП');
+    }
+    return await res.json();
+  }
+
+  // 27. Employer Profile & Updates
+  async getEmployerProfile(id: string): Promise<any> {
+    const res = await fetch(`${API_BASE}/employers/${id}`);
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || err.message || 'Профиль работодателя не найден');
+    }
+    return await res.json();
+  }
+
+  async updateEmployerProfile(id: string, params: any): Promise<any> {
+    const res = await fetch(`${API_BASE}/employers/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || err.message || 'Ошибка обновления профиля работодателя');
+    }
+    return await res.json();
+  }
+
+  // 28. OAuth Connections & External Providers
+  async getConnectedServices(userId?: string): Promise<any[]> {
+    try {
+      const query = userId ? `?userId=${userId}` : '';
+      const res = await fetch(`${API_BASE}/auth/connections${query}`);
+      if (res.ok) return await res.json();
+    } catch {}
+    return [];
+  }
+
+  async unlinkConnection(provider: string, userId?: string): Promise<any> {
+    const query = userId ? `?userId=${userId}` : '';
+    const res = await fetch(`${API_BASE}/auth/connections/${provider}${query}`, {
+      method: 'DELETE'
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || err.message || 'Ошибка отключения сервиса');
+    }
+    return await res.json();
+  }
+
+  async getHhAuthUrl(redirectUri?: string): Promise<string> {
+    try {
+      const query = redirectUri ? `?redirectUri=${encodeURIComponent(redirectUri)}` : '';
+      const res = await fetch(`${API_BASE}/auth/hh/login${query}`);
+      if (res.ok) {
+        const data = await res.json();
+        return data.url;
+      }
+    } catch {}
+    return 'https://hh.ru/oauth/authorize?client_id=FSP_HH_CAREER_ARENA_APP';
+  }
+
+  async getYandexAuthUrl(redirectUri?: string): Promise<string> {
+    try {
+      const query = redirectUri ? `?redirectUri=${encodeURIComponent(redirectUri)}` : '';
+      const res = await fetch(`${API_BASE}/auth/yandex/login${query}`);
+      if (res.ok) {
+        const data = await res.json();
+        return data.url;
+      }
+    } catch {}
+    return 'https://oauth.yandex.ru/authorize?client_id=FSP_CAREER_YANDEX_ID';
+  }
 }
 
 export const api = new ApiService();
