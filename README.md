@@ -1,28 +1,34 @@
-# FSP Career Arena («ФСП Карьерная Арена»)
+<p align="center">
+  <img src="docs/logo/fsp-logo.png" alt="FSP Career Arena" width="120" />
+</p>
 
-**Цифровая платформа-агрегатор ИТ-вакансий с обратной механикой найма и верифицированным профилем достижений Федерации спортивного программирования России (ФСП РФ)**
+<h1 align="center">🏟 ФСП Карьерная Арена</h1>
 
----
+<p align="center">
+  <b>Цифровая платформа обратного найма ИТ-специалистов с верификацией достижений Федерации спортивного программирования России (ФСП РФ)</b>
+</p>
 
-## 👥 Команда разработчиков
-### **«NO PHP — NO PROBLEMS — 2026»**
-
-*Разработка полнофункциональной цифровой платформы найма и алгоритмической верификации ИТ-кадров для Федерации спортивного программирования России (ФСП).*
-
----
-
-## 🚀 Онлайн Демо (Live Demo 24/7)
-
-Платформа развернута в облаке и доступна онлайн без необходимости локальной установки:
-* 🌐 **Hugging Face Space:** **[https://huggingface.co/spaces/Linskay/demo-2026](https://huggingface.co/spaces/Linskay/demo-2026)**
-* 🔗 **Прямой адрес стенда:** [https://linskay-demo-2026.hf.space](https://linskay-demo-2026.hf.space)
+<p align="center">
+  <a href="https://huggingface.co/spaces/Linskay/demo-2026"><img src="https://img.shields.io/badge/🌐_Live_Demo-Hugging_Face-blue?style=for-the-badge" alt="Live Demo" /></a>
+  <a href="https://linskay-demo-2026.hf.space/swagger"><img src="https://img.shields.io/badge/📚_Swagger-API_Docs-green?style=for-the-badge" alt="Swagger" /></a>
+  <a href="docs/MANIFEST.md"><img src="https://img.shields.io/badge/📋_Манифест-Документация-orange?style=for-the-badge" alt="Manifest" /></a>
+</p>
 
 ---
 
-## ⚡ Быстрый старт на любом устройстве в 1 команду (Docker)
+## 🚀 Live Demo (Облачный стенд 24/7)
 
-Все компоненты платформы упакованы в легковесные контейнеры.  
-Вам **не нужно устанавливать** Java, Maven или Node.js — достаточно установленного Docker.
+| Ресурс | Ссылка |
+|:---|:---|
+| 🌐 **Hugging Face Space** | **[https://huggingface.co/spaces/Linskay/demo-2026](https://huggingface.co/spaces/Linskay/demo-2026)** |
+| 🔗 **Прямой адрес стенда** | [https://linskay-demo-2026.hf.space](https://linskay-demo-2026.hf.space) |
+| 📚 **Swagger API** | [https://linskay-demo-2026.hf.space/swagger-ui.html](https://linskay-demo-2026.hf.space/swagger-ui.html) |
+
+---
+
+## ⚡ Quick Start — запуск в 1 команду
+
+> **Требуется:** Docker 24+ и Docker Compose v2+. Java, Maven и Node.js **не нужны**.
 
 ### 🐧 Linux / 🍏 macOS:
 ```bash
@@ -38,119 +44,78 @@ cd fsp-2026
 start.bat
 ```
 
-### 🐳 Или напрямую через Docker Compose:
+### 🐳 Или напрямую:
 ```bash
 docker compose up -d
 ```
 
----
-
-## 🌐 Доступные локальные адреса:
-* 💻 **Главный экран & UI платформы (Frontend):** **[http://localhost:3000](http://localhost:3000)** *(строго по http://)*
-* ⚙️ **Backend REST API (Spring Boot 3):** [http://localhost:8080](http://localhost:8080)
-* 📚 **Интерактивный Swagger UI:** [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
-* 📋 **OpenAPI v3 JSON спецификация:** [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
-* 🗄 **База данных PostgreSQL 16:** `localhost:5432` (`fsp_career_db`)
+**Готово!** Откройте [http://localhost:3000](http://localhost:3000)
 
 ---
 
-## 🔐 Предопределенные тестовые учетные записи (Pre-seeded Accounts)
+## 🔐 Тестовые доступы (Pre-seeded)
 
-При первом старте база данных PostgreSQL **автоматически инициализируется миграцией Flyway** (`backend/src/main/resources/db/migration/V3__seed_test_users.sql`). В систему предзагружены демонстрационные аккаунты:
-
-| Параметр | 👨‍💻 Кандидат (Соискатель / Спортсмен ФСП) | 🏢 Работодатель (IT-Компания / HR) |
+| | 👨‍💻 Кандидат | 🏢 Работодатель |
 |:---|:---|:---|
-| **Логин (Email)** | `candidate@fsp.ru` | `employer@fsp.ru` |
+| **Email** | `candidate@fsp.ru` | `employer@fsp.ru` |
 | **Пароль** | `candidate2026` | `employer2026` |
-| **ФИО / Контакт** | Иван Пестерев | Елена Романова (СберТех HR) |
-| **Организация** | ФСП РФ / Независимый спортсмен | ПАО Сбербанк (СберТех) |
-| **Роль в системе** | `CANDIDATE` | `EMPLOYER` |
-| **Рейтинг / ELO** | 2540 ELO (1-й спортивный разряд) | Порог найма: от 2000 ELO |
-| **Опыт / Вакансия** | 5 лет 1 месяц Java (с верификацией hh.ru) | Вакансия: *Senior Java / Highload Core Engineer* (350k–520k ₽) |
-| **GitHub** | `@ipesterev` | `https://sbertech.ru` |
+| **ФИО** | Иван Пестерев | Елена Романова (СберТех HR) |
+| **Роль** | `CANDIDATE` | `EMPLOYER` |
 
-> 💡 **Быстрый вход и Регистрация:**
-> * В окне входа доступны плашки **быстрого заполнения в 1 клик**.
-> * Доступна полноценная **регистрация новых пользователей**: по Email/Паролю с выбором роли, а также быстрая регистрация через **GitHub** (с подтягиванием реальных открытых репозиториев, коммитов и аватара через GitHub API), **Яндекс ID** и **hh.ru**.
+> 💡 В окне входа доступны **плашки быстрого заполнения в 1 клик**. Также работает регистрация через **GitHub**, **Яндекс ID** и **hh.ru**.
 
 ---
 
-## ✨ Ключевые возможности платформы
+## 🏗 Экосистема проекта
 
-1. **Обратная механика найма (Reverse Recruiting):**
-   * Работодатели первыми откликаются на подтвержденные достижения спортсменов ФСП и направляют офферы с конкретной вилкой заработной платы.
-   * Контакты соискателя скрыты до момента обоюдного согласия на оффер.
-
-2. **Интерактивный двухсторонний Чат:**
-   * Прямой диалог между соискателем и работодателем в реальном времени.
-   * Возможность согласования условий, обсуждения оффера и назначения технических интервью.
-
-3. **Интеграция с GitHub, HeadHunter и Яндекс:**
-   * Автоматический парсинг открытой активности разработчика (коммиты за год, стек языков, репозитории).
-   * Синхронизация резюме с hh.ru и верификация навыков.
-
-4. **Алгоритмическая Арена ФСП:**
-   * Встроенный веб-редактор кода с поддержкой автотестов.
-   * Динамический пересчет спортивного рейтинга (ELO), разрядов и грейда соискателя по результатам решения задач.
-
-5. **ИИ-портрет кандидата (AI Summary):**
-   * Автоматическая генерация аналитического саммари разработчика на базе отечественных и мировых LLM (YandexGPT / GigaChat / Gemini / локальная Ollama).
-
-6. **Соответствие 152-ФЗ РФ и Журнал безопасности:**
-   * Правовая интеграция с официальным [Положением об обработке ПДН ФСП РФ](https://fsp-russia.ru/files/%D0%9F%D0%BE%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BE%D0%B1%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B0%20%D0%BF%D0%B4%D0%BD%20(1).pdf).
-   * Согласие пользователя при регистрации и маскирование персональных данных до принятия оффера.
-   * Журнал аудита безопасности (`security_audit_logs`) с фиксацией каждого просмотра контактов (рекрутер, дата, IP, кандидат).
-
-7. **🛡️ Антифрод-система и «песочница» для тестов с изоляцией (Docker Sandbox Isolation):**
-   * **Изолированное выполнение в контейнерах:** Код соискателей из Арены и назначенных работодателем заданий компилируется и запускается в изолированных Docker-песочницах (Judge0 Sandbox Engine / Linux cgroups v2 / seccomp).
-   * **Строгие лимиты по времени и памяти:**
-     * Таймер решения задания (например, **45 минут** на выполнение кастомного теста от работодателя).
-     * Лимит CPU: **1000 – 2000 мс** на тест-кейс (защита от зависаний и O(N²) переборов).
-     * Лимит памяти: **128 – 256 МБ RAM** (изоляция памяти через `cgroups`, предотвращение DoS хоста).
-   * **Zero-Trust сетевая изоляция:** Полное отключение внешней сети (`--net=none`), исключающее списывание через сетевые сокеты, curl или обращение к внешним LLM.
-   * **Защита от подмены результатов:** Скрытые тест-кейсы хранятся строго на бэкенде; вердикты вычисляются на сервере и подписываются, исключая фальсификацию на клиенте.
-   * Подробный манифест безопасности: [ARCHITECTURE.md](ARCHITECTURE.md).
-
-8. **⚡ Идемпотентность API отправки офферов (RFC 7231 / Idempotency-Key):**
-   * Защита от дублирования офферов при сетевых сбоях, ретраях и double-click рекрутера через заголовок `Idempotency-Key`.
-   * Уникальный частичный индекс в PostgreSQL и хранилище `api_idempotency_records` с ответом `Idempotent-Replayed: true`.
+| Компонент | Технологии | Порт |
+|:---|:---|:---|
+| ⚛️ **Web Frontend** | React 19, TypeScript 7, Tailwind CSS 4, Vite 8, Monaco Editor | `3000` |
+| ☕ **Backend API** | Java 21, Kotlin 2.0, Spring Boot 3.3.4, Spring Security 6, Flyway | `8080` |
+| 📱 **Mobile App** | Kotlin 2.0, Jetpack Compose, Material 3, MVVM + StateFlow | Android |
+| 🗄 **База данных** | PostgreSQL 16 Alpine | `5432` |
+| 🤖 **AI/LLM** | Gemini Flash, OpenRouter, YandexGPT, Ollama | — |
+| 🔒 **Sandbox** | Judge0 CE, Docker cgroups v2, seccomp, `--net=none` | — |
 
 ---
 
-## 🏗 Архитектура и Стек технологий
+## ✨ Ключевые возможности
 
-### ☕ Backend (Java 21 / Spring Boot 3)
-* **Язык & Фреймворк:** Java 21 (LTS), Spring Boot 3.3.4
-* **Модули:**
-  * `Spring Web (MVC)`: REST API эндпоинты для кандидатов, работодателей, задач, вакансий и аутентификации.
-  * `Spring Security 6` & `JWT`: сквозная авторизация, защита эндпоинтов и управление ролями (`CANDIDATE`, `EMPLOYER`).
-  * `Spring Data JPA` & `Hibernate 6`: объектно-реляционное отображение и транзакционная работа с данными.
-  * `Flyway DB`: версионированные миграции схемы PostgreSQL (`V1__init_schema.sql`, `V2__seed_data.sql`, `V3__seed_test_users.sql`).
-  * `Springdoc OpenAPI (Swagger UI 3)`: интерактивная спецификация эндпоинтов.
-  * `WebClient (Spring WebFlux)`: интеграции с внешними API.
-* **Глобальная обработка ошибок (`GlobalExceptionHandler`):** Единый формат `ErrorResponse` для валидации (`@Valid`, `@NotNull`, `@Min`, `@Max`) и бизнес-исключений.
+- 🔄 **Обратный найм** — работодатели первыми откликаются на спортсменов ФСП и отправляют офферы с вилкой ₽
+- 🏟 **Алгоритмическая Арена** — веб-IDE с автотестами, динамический пересчёт ELO (7 уровней от Квалификации до Гроссмейстера)
+- 🤖 **ИИ-портрет кандидата** — автоматическая генерация аналитики по LLM (YandexGPT / Gemini / Ollama)
+- 🔗 **Интеграции** — GitHub, HeadHunter, Яндекс ID, LeetCode (живой импорт через GraphQL)
+- 🛡 **Антифрод-песочница** — изолированное выполнение кода (Docker `--net=none`, cgroups, seccomp)
+- 📝 **Идемпотентность API** — защита от дублирования офферов (RFC 7231 / Idempotency-Key)
+- 🔒 **152-ФЗ** — маскирование контактов до принятия оффера, журнал аудита безопасности
+- 💬 **Двусторонний чат** — диалог между соискателем и работодателем в реальном времени
 
-### ⚛️ Frontend (React 19 / TypeScript)
-* **React 19**, **TypeScript**, **Tailwind CSS**, **Vite**
-* **Lucide Icons**, **Canvas Confetti**, **Monaco Editor** для алгоритмических задач
-* **Адаптивный интерфейс** в фирменном киберспортивном стиле Федерации спортивного программирования РФ.
+---
 
-### 📱 Мобильное приложение (Android / Kotlin 2.0 / Jetpack Compose)
-* **Архитектура:** Clean Architecture + MVVM (Model-View-ViewModel) + StateFlow
-* **Стек:** Kotlin 2.0, Jetpack Compose, Material 3, Navigation Compose, Retrofit 2, Moshi, OkHttp
-* **Экраны:**
-  * **Профиль соискателя:** верифицированный спортсмен ФСП, ELO-рейтинг, спортивный разряд, стек технологий.
-  * **Чат:** прямой диалог с HR/работодателем по полученным офферам и приглашениям.
-  * **Арена:** задачи спортивного программирования с начислением ELO-очков.
-* **Автоматизация и конвертер:**
-  * `python scripts/bootstrap_mobile.py` — проверка и генерация структуры мобильного приложения и Kotlin-модулей.
-  * `python scripts/convert_to_kotlin.py` — конвертер Java DTO и моделей в идиоматичный Kotlin 2.0.
+## 📚 Документация
 
-### 🗄 База данных & Инфраструктура
-* **PostgreSQL 16**
-* **Docker** & **Docker Compose**
-* **Nginx** (SPA routing & reverse proxy)
-* **GitHub Container Registry (GHCR)** & **GitHub Actions CI/CD**
+> 📋 Подробную архитектурную документацию, алгоритмы ранжирования, спецификацию API, схемы безопасности и инструкции по развёртыванию см. в **[сопроводительном документе (Манифест)](docs/MANIFEST.md)**.
+
+| Документ | Описание |
+|:---|:---|
+| [📋 `docs/MANIFEST.md`](docs/MANIFEST.md) | Полная проектная документация (архитектура, ELO, API, 152-ФЗ, деплой) |
+| [🏗 `ARCHITECTURE.md`](ARCHITECTURE.md) | Манифест безопасности и антифрод-система |
+| [📚 Swagger UI](http://localhost:8080/swagger-ui.html) | Интерактивная API документация |
+| [📄 OpenAPI v3 JSON](http://localhost:8080/v3/api-docs) | Машинная спецификация API |
+
+### 📥 Скачать документацию в PDF
+
+Для экспорта Манифеста в PDF выполните:
+
+```bash
+# Вариант 1: через npx (Node.js)
+npx md-to-pdf docs/MANIFEST.md --dest docs/MANIFEST.pdf
+
+# Вариант 2: через pandoc
+pandoc docs/MANIFEST.md -o docs/MANIFEST.pdf --pdf-engine=xelatex -V mainfont="DejaVu Sans"
+
+# Вариант 3: VS Code → Ctrl+Shift+P → "Markdown: Export to PDF"
+```
 
 ---
 
@@ -158,36 +123,63 @@ docker compose up -d
 
 ```
 .
-├── .github/
-│   └── workflows/               # CI/CD пайплайны GitHub Actions
-├── backend/                     # Java 21 & Kotlin 2.0 / Spring Boot 3 Backend
-│   ├── pom.xml                  # Maven с поддержкой смешанной компиляции Java + Kotlin
-│   ├── Dockerfile               # Multi-stage Dockerfile под Java 21 Alpine
-│   └── src/
-│       └── main/
-│           ├── java/ru/fsp/careerarena/      # Java сервисы, сущности и контроллеры
-│           ├── kotlin/ru/fsp/careerarena/    # Kotlin Data Classes, Mobile API контроллер
-│           └── resources/                    # application.yml и миграции Flyway
-├── mobile/                      # Нативное Android-приложение (Kotlin + Jetpack Compose)
-│   ├── settings.gradle.kts      # Конфигурация модулей Gradle
-│   ├── build.gradle.kts         # Root Gradle билд
-│   └── app/                     # Android модуль с экранами Профиля, Чата и Арены
-├── scripts/                     # Скрипты автоматизации и конвертации
-│   ├── bootstrap_mobile.py      # Инициализация и валидация мобильного приложения
-│   └── convert_to_kotlin.py     # Конвертер Java DTO в идиоматичный Kotlin
-├── src/                         # Frontend (React 19 + TypeScript + Tailwind)
+├── .github/workflows/          # CI/CD пайплайны GitHub Actions
+├── backend/                    # Java 21 & Kotlin 2.0 / Spring Boot 3 Backend
+│   ├── pom.xml                 # Maven (Java + Kotlin смешанная компиляция)
+│   ├── Dockerfile              # Multi-stage Dockerfile (Java 21 Alpine)
+│   └── src/main/
+│       ├── java/ru/fsp/        # Java сервисы, сущности, контроллеры
+│       ├── kotlin/ru/fsp/      # Kotlin Data Classes, Mobile API
+│       └── resources/          # application.yml, миграции Flyway (V1..V9)
+├── mobile/                     # Android-приложение (Kotlin + Jetpack Compose)
+│   └── app/                    # Экраны: Профиль, Чат, Арена
+├── scripts/                    # Автоматизация (bootstrap_mobile.py, convert_to_kotlin.py)
+├── src/                        # Frontend (React 19 + TypeScript + Tailwind)
 │   ├── components/
-│   │   ├── landing/             # Главный экран (Sport-Tech Landing Page)
-│   │   ├── candidate/           # Дашборд кандидата & интеграции
-│   │   ├── employer/            # Дашборд работодателя & вакансии
-│   │   ├── arena/               # Алгоритмическая Арена
-│   │   ├── auth/                # Модальные окна авторизации и OAuth2 интеграций
-│   │   └── common/              # Общие компоненты и футер
-│   ├── types/                   # TypeScript интерфейсы
-│   └── services/                # API клиент (REST эндпоинты бэкенда)
-├── docker-compose.yml           # Локальный запуск стека (Frontend + Backend + Postgres)
-├── Dockerfile.frontend          # Multi-stage Dockerfile для Frontend Nginx
-├── start.sh                     # Скрипт быстрого запуска для Linux/macOS
-├── start.bat                    # Скрипт быстрого запуска для Windows
-└── README.md                    # Документация проекта
+│   │   ├── arena/              # Алгоритмическая Арена (CodeArenaIDE)
+│   │   ├── candidate/          # Дашборд кандидата
+│   │   ├── employer/           # Дашборд работодателя
+│   │   ├── auth/               # Авторизация и OAuth2
+│   │   └── landing/            # Главная страница
+│   ├── services/api.ts         # REST API клиент
+│   ├── types/index.ts          # TypeScript интерфейсы
+│   └── utils/ratingEngine.ts   # Движок ELO-рейтинга ФСП
+├── docs/                       # 📋 Проектная документация
+│   └── MANIFEST.md             # Полный Манифест проекта
+├── docker-compose.yml          # Локальный запуск (Frontend + Backend + Postgres + Ollama)
+├── docker-compose.prod.yml     # Production (GHCR образы)
+├── Dockerfile.frontend         # Multi-stage Dockerfile (Vite → Nginx)
+├── start.sh / start.bat        # Скрипты быстрого запуска
+└── README.md                   # ← Вы здесь
 ```
+
+---
+
+## 🌐 Локальные адреса после запуска
+
+| Сервис | URL |
+|:---|:---|
+| 💻 **Frontend (UI)** | [http://localhost:3000](http://localhost:3000) |
+| ⚙️ **Backend API** | [http://localhost:8080](http://localhost:8080) |
+| 📚 **Swagger UI** | [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) |
+| 📋 **OpenAPI JSON** | [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs) |
+| 🗄 **PostgreSQL** | `localhost:5432` (БД: `fsp_career_db`) |
+
+---
+
+## 👥 Команда разработчиков
+
+### «NO PHP — NO PROBLEMS — 2026»
+
+| Зона | Описание |
+|:---|:---|
+| 🏗 **Архитектура & Backend** | Spring Boot 3, PostgreSQL 16, Flyway, Kotlin 2.0 + Java 21, JWT, 152-ФЗ |
+| ⚛️ **Frontend & UX/UI** | React 19 + Vite, Code Arena IDE, GitHub API, OAuth2 |
+| 📱 **Mobile (Android)** | Kotlin 2.0, Jetpack Compose, Material 3, MVVM + StateFlow |
+| ☁️ **DevOps & AI** | GitHub Actions CI/CD, мульти-LLM скоринг, Hugging Face |
+
+---
+
+<p align="center">
+  <b>«NO PHP — NO PROBLEMS — 2026»</b> — создаём цифровое будущее спортивного программирования России! 🇷🇺
+</p>
