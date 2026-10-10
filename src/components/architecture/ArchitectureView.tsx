@@ -13,7 +13,9 @@ import {
   Boxes, 
   Zap, 
   FileCode,
-  HardDrive
+  HardDrive,
+  Clock,
+  Lock
 } from 'lucide-react';
 
 export const ArchitectureView: React.FC = () => {
@@ -301,6 +303,77 @@ volumes:
               <div className="p-3 bg-slate-900 rounded-2xl border border-emerald-900/50">
                 <div className="text-emerald-400 font-bold">4. Раскрытие 152-ФЗ</div>
                 <p className="text-[10px] text-slate-400 font-sans mt-1">Кандидат жмет «Принять», контакты демаскируются в ATS</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Anti-Fraud & Docker Sandbox Isolation Section */}
+          <div className="bg-gradient-to-br from-[#0a1024] via-[#0f172a] to-[#141b36] rounded-3xl border border-cyan-500/30 p-6 space-y-4 shadow-2xl relative overflow-hidden">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                    <span>Антифрод-система и «песочница» для тестов с изоляцией</span>
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono border border-emerald-500/30">
+                      Docker Isolation Active
+                    </span>
+                  </h4>
+                  <p className="text-xs text-slate-400">
+                    Код соискателей из Арены компилируется и прогоняется в одноразовых Docker-песочницах с жесткими квотами ресурсов, исключая списывание и подмену результатов.
+                  </p>
+                </div>
+              </div>
+              <span className="text-[11px] font-mono text-cyan-300 bg-cyan-950/60 px-3 py-1 rounded-xl border border-cyan-800/50 self-start sm:self-auto shrink-0">
+                Judge0 Engine + cgroups v2
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+              <div className="p-4 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-1.5 hover:border-cyan-500/40 transition-all">
+                <div className="flex items-center gap-2 text-cyan-400 font-bold">
+                  <Clock className="w-4 h-4" />
+                  <span>Таймер сессии</span>
+                </div>
+                <div className="text-xl font-black font-mono text-white">45 минут</div>
+                <p className="text-[10px] text-slate-400 leading-relaxed">
+                  Фиксированный серверный таймер на выполнение комплексного тестирования от работодателя.
+                </p>
+              </div>
+
+              <div className="p-4 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-1.5 hover:border-purple-500/40 transition-all">
+                <div className="flex items-center gap-2 text-purple-400 font-bold">
+                  <Cpu className="w-4 h-4" />
+                  <span>Лимит памяти & CPU</span>
+                </div>
+                <div className="text-xl font-black font-mono text-white">256 МБ / 2.0 с</div>
+                <p className="text-[10px] text-slate-400 leading-relaxed">
+                  Изоляция cgroups v2 memory.max и RLIMIT_CPU на тест-кейс. Защита от DoS и утечек.
+                </p>
+              </div>
+
+              <div className="p-4 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-1.5 hover:border-emerald-500/40 transition-all">
+                <div className="flex items-center gap-2 text-emerald-400 font-bold">
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>Сетевая изоляция</span>
+                </div>
+                <div className="text-xl font-black font-mono text-white">--net=none</div>
+                <p className="text-[10px] text-slate-400 leading-relaxed">
+                  Полный запрет исходящего сетевого трафика. Исключены запросы к внешним LLM, curl и API.
+                </p>
+              </div>
+
+              <div className="p-4 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-1.5 hover:border-amber-500/40 transition-all">
+                <div className="flex items-center gap-2 text-amber-400 font-bold">
+                  <Lock className="w-4 h-4" />
+                  <span>Защита от подмены</span>
+                </div>
+                <div className="text-xl font-black font-mono text-white">Zero Tampering</div>
+                <p className="text-[10px] text-slate-400 leading-relaxed">
+                  Скрытые стресс-тесты хранятся на сервере; вердикт проверяется и подписывается в контейнере.
+                </p>
               </div>
             </div>
           </div>

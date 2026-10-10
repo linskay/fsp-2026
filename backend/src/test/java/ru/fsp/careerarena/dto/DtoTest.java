@@ -326,4 +326,30 @@ class DtoTest {
         emptyReq.setMessage("Сообщение");
         assertThat(emptyReq.getMessage()).isEqualTo("Сообщение");
     }
+
+    @Test
+    @DisplayName("Проверка OfferDto и CreateOfferRequest с ключом идемпотентности")
+    void testOfferDtoAndIdempotency() {
+        CreateOfferRequest req = CreateOfferRequest.builder()
+                .candidateId(UUID.randomUUID())
+                .employerId(UUID.randomUUID())
+                .idempotencyKey("idem-test-123")
+                .salaryFrom(300000)
+                .salaryTo(450000)
+                .message("Оффер")
+                .build();
+
+        assertThat(req.getIdempotencyKey()).isEqualTo("idem-test-123");
+        assertThat(req.getSalaryFrom()).isEqualTo(300000);
+
+        OfferDto offer = OfferDto.builder()
+                .id(UUID.randomUUID())
+                .idempotencyKey("idem-test-123")
+                .idempotentReplayed(true)
+                .salaryOffered(350000)
+                .build();
+
+        assertThat(offer.getIdempotencyKey()).isEqualTo("idem-test-123");
+        assertThat(offer.isIdempotentReplayed()).isTrue();
+    }
 }

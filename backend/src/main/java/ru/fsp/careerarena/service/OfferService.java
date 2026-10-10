@@ -33,11 +33,48 @@ public class OfferService {
     private final EmployerProfileRepository employerRepository;
     private final VacancyRepository vacancyRepository;
     private final OfferMapper offerMapper;
+    private final IdempotencyService idempotencyService;
 
     @Transactional
     public OfferDto createOffer(CreateOfferRequest request) {
-        log.info("Creating reverse recruiting offer from employer={} to candidate={}",
-                request.getEmployerId(), request.getCandidateId());
+        log.info("Creating reverse recruiting offer from employer={} to candidate={}, idempotencyKey={}",
+                request.getEmployerId(), request.getCandidateId(), request.getIdempotencyKey());
+
+        // 1. Проверка по Idempotency Key (RFC 7231 / IETF Idempotency standard)
+        String idempotencyKey = request.getIdempotencyKey();
+        if (idempotencyKey != null && !idempotencyKey.isBlank()) {
+            idempotencyKey = idempotencyKey.trim();
+            var existingByKey = invitationRepository.findByIdempotencyKey(idempotencyKey);
+            if (existingByKey.isPresent()) {
+                Invitation existing = existingByKey.get();
+                log.info("Idempotent offer request intercepted for key={}, returning existing offer ID={}",
+                        idempotencyKey, existing.getId());
+                return offerMapper.toDto(existing, true);
+            }
+        }
+
+        // 2. Бизнес-идемпотентность: предотвращение повторной отправки дублирующего активного PENDING оффера
+        if (request.getVacancyId() != null) {
+            var activeOffer = invitationRepository
+                    .findFirstByEmployerIdAndCandidateIdAndVacancyIdAndStatus(
+                            request.getEmployerId(), request.getCandidateId(), request.getVacancyId(), InvitationStatus.PENDING);
+            if (activeOffer.isPresent()) {
+                Invitation existing = activeOffer.get();
+                log.info("Active pending offer already exists for employer={} candidate={} vacancy={}. Replaying offer ID={}",
+                        request.getEmployerId(), request.getCandidateId(), request.getVacancyId(), existing.getId());
+                return offerMapper.toDto(existing, true);
+            }
+        } else {
+            var activeOffer = invitationRepository
+                    .findFirstByEmployerIdAndCandidateIdAndStatus(
+                            request.getEmployerId(), request.getCandidateId(), InvitationStatus.PENDING);
+            if (activeOffer.isPresent()) {
+                Invitation existing = activeOffer.get();
+                log.info("Active pending offer already exists for employer={} candidate={}. Replaying offer ID={}",
+                        request.getEmployerId(), request.getCandidateId(), existing.getId());
+                return offerMapper.toDto(existing, true);
+            }
+        }
 
         CandidateProfile candidate = findCandidate(request.getCandidateId());
         EmployerProfile employer = findEmployer(request.getEmployerId());
@@ -69,11 +106,25 @@ public class OfferService {
                 .salaryOffered(salaryOffered)
                 .message(formattedMessage)
                 .status(InvitationStatus.PENDING)
+                .idempotencyKey(idempotencyKey)
                 .build();
 
         Invitation saved = invitationRepository.save(invitation);
-        log.info("Created offer ID={} with status PENDING", saved.getId());
-        return offerMapper.toDto(saved, salaryFrom, salaryTo);
+        log.info("Created offer ID={} with status PENDING, idempotencyKey={}", saved.getId(), idempotencyKey);
+        OfferDto resultDto = offerMapper.toDto(saved, salaryFrom, salaryTo, false);
+
+        if (idempotencyKey != null && !idempotencyKey.isBlank()) {
+            idempotencyService.recordResponse(
+                    idempotencyKey,
+                    "/api/v1/offers",
+                    request,
+                    employer.getUser() != null ? employer.getUser().getId() : null,
+                    201,
+                    resultDto,
+                    saved.getId());
+        }
+
+        return resultDto;
     }
 
     @Transactional(readOnly = true)

@@ -17,6 +17,7 @@ interface SendOfferModalProps {
     message: string;
     projectDetails: string;
     perksOffered: string[];
+    idempotencyKey?: string;
   }) => void;
 }
 
@@ -43,23 +44,32 @@ export const SendOfferModal: React.FC<SendOfferModalProps> = ({
   );
   const [consent152Fz, setConsent152Fz] = useState(true);
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [idempotencyKey] = useState<string>(() =>
+    `idem-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!currentVacancy || !consent152Fz) return;
+    if (!currentVacancy || !consent152Fz || isSubmitting) return;
 
-    onSendOffer({
-      candidateId: candidate.id,
-      candidateName: candidate.fullName,
-      vacancyId: currentVacancy.id,
-      vacancyTitle: currentVacancy.title,
-      proposedSalary: Number(proposedSalary),
-      message,
-      projectDetails,
-      perksOffered: currentVacancy.perks || ['ДМС', 'Гибкий график', 'Премии']
-    });
-
-    onClose();
+    setIsSubmitting(true);
+    try {
+      onSendOffer({
+        candidateId: candidate.id,
+        candidateName: candidate.fullName,
+        vacancyId: currentVacancy.id,
+        vacancyTitle: currentVacancy.title,
+        proposedSalary: Number(proposedSalary),
+        message,
+        projectDetails,
+        perksOffered: currentVacancy.perks || ['ДМС', 'Гибкий график', 'Премии'],
+        idempotencyKey
+      });
+      onClose();
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -210,6 +220,15 @@ export const SendOfferModal: React.FC<SendOfferModalProps> = ({
             🔒 <strong>Регламент платформы:</strong> Прямой номер телефона и Telegram кандидата откроются в вашей ATS панели после того, как он нажмет «Принять оффер».
           </div>
 
+          {/* Idempotency Protection Indicator */}
+          <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-[11px] text-slate-400">
+            <div className="flex items-center gap-1.5">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Идемпотентность API: <strong className="text-slate-300 font-mono text-[10px]">{idempotencyKey.substring(0, 18)}...</strong></span>
+            </div>
+            <span className="text-[10px] text-emerald-400/90 font-medium">Защита от дублирования</span>
+          </div>
+
           {/* 152-FZ Consent Checkbox */}
           <div className="pt-2 border-t border-slate-800">
             <FspConsentCheckbox
@@ -230,11 +249,11 @@ export const SendOfferModal: React.FC<SendOfferModalProps> = ({
             </button>
             <button
               type="submit"
-              disabled={!consent152Fz}
+              disabled={!consent152Fz || isSubmitting}
               className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-lg shadow-indigo-600/30 transition-all disabled:opacity-50 cursor-pointer"
             >
-              <Send className="w-4 h-4" />
-              <span>Отправить оффер соискателю</span>
+              <Send className={`w-4 h-4 ${isSubmitting ? 'animate-spin' : ''}`} />
+              <span>{isSubmitting ? 'Отправка...' : 'Отправить оффер соискателю'}</span>
             </button>
           </div>
 

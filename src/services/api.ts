@@ -846,7 +846,7 @@ class ApiService {
     };
   }
 
-  // 14. Reverse Recruiting Offers (35% критерий ТЗ)
+  // 14. Reverse Recruiting Offers (35% критерий ТЗ) с гарантией идемпотентности (RFC 7231 / Idempotency-Key)
   async createOffer(params: {
     candidateId: string;
     employerId: string;
@@ -857,17 +857,35 @@ class ApiService {
     salaryOffered?: number;
     description?: string;
     message?: string;
+    idempotencyKey?: string;
   }): Promise<ReverseRecruitingOffer> {
+    const idempotencyKey = params.idempotencyKey || `idem-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    const payload = {
+      ...params,
+      idempotencyKey
+    };
+
     const res = await fetch(`${API_BASE}/offers`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(params)
+      headers: {
+        'Content-Type': 'application/json',
+        'Idempotency-Key': idempotencyKey,
+        ...(this.token ? { Authorization: `Bearer ${this.token}` } : {})
+      },
+      body: JSON.stringify(payload)
     });
+
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       throw new Error(err.error || err.message || 'Ошибка при отправке оффера');
     }
-    return await res.json();
+
+    const data: ReverseRecruitingOffer = await res.json();
+    const isReplayHeader = res.headers.get('Idempotent-Replayed') === 'true';
+    if (isReplayHeader && !data.idempotentReplayed) {
+      data.idempotentReplayed = true;
+    }
+    return data;
   }
 
   async getOffersByCandidate(candidateId: string): Promise<ReverseRecruitingOffer[]> {

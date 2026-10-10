@@ -24,9 +24,24 @@ public class OfferController {
     private final OfferService offerService;
 
     @PostMapping
-    @Operation(summary = "Отправка работодателем прямого приглашения / оффера кандидату с обязательной зарплатной вилкой 'от-до'")
-    public ResponseEntity<OfferDto> createOffer(@Valid @RequestBody CreateOfferRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(offerService.createOffer(request));
+    @Operation(summary = "Отправка работодателем прямого приглашения / оффера кандидату с обязательной зарплатной вилкой и защитой от дублирования (Idempotency-Key)")
+    public ResponseEntity<OfferDto> createOffer(
+            @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKeyHeader,
+            @Valid @RequestBody CreateOfferRequest request) {
+
+        if (idempotencyKeyHeader != null && !idempotencyKeyHeader.isBlank()
+                && (request.getIdempotencyKey() == null || request.getIdempotencyKey().isBlank())) {
+            request.setIdempotencyKey(idempotencyKeyHeader.trim());
+        }
+
+        OfferDto offerDto = offerService.createOffer(request);
+        boolean isReplay = offerDto.isIdempotentReplayed();
+        HttpStatus status = isReplay ? HttpStatus.OK : HttpStatus.CREATED;
+
+        return ResponseEntity.status(status)
+                .header("Idempotent-Replayed", String.valueOf(isReplay))
+                .header("Idempotency-Key", offerDto.getIdempotencyKey() != null ? offerDto.getIdempotencyKey() : "")
+                .body(offerDto);
     }
 
     @GetMapping("/candidate/{candidateId}")

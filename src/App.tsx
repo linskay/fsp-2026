@@ -382,7 +382,7 @@ export default function App() {
     );
   };
 
-  const handleSendOffer = (offerData: {
+  const handleSendOffer = async (offerData: {
     candidateId: string;
     candidateName: string;
     vacancyId: string;
@@ -391,43 +391,85 @@ export default function App() {
     message: string;
     projectDetails: string;
     perksOffered: string[];
+    idempotencyKey?: string;
   }) => {
-    const newInv: Invitation = {
-      id: 'inv-' + Date.now(),
-      vacancyId: offerData.vacancyId,
-      vacancyTitle: offerData.vacancyTitle,
-      employerId: currentEmployer.id,
-      companyName: currentEmployer.companyName,
-      companyLogo: currentEmployer.logo,
-      candidateId: offerData.candidateId,
-      candidateName: offerData.candidateName,
-      proposedSalary: offerData.proposedSalary,
-      salaryMin: offerData.proposedSalary * 0.9,
-      salaryMax: offerData.proposedSalary * 1.2,
-      message: offerData.message,
-      projectDetails: offerData.projectDetails,
-      perksOffered: offerData.perksOffered,
-      status: 'sent',
-      sentAt: new Date().toISOString(),
-      contactsRevealed: false,
-      chatMessages: [
-        {
-          id: 'msg-' + Date.now(),
-          sender: 'employer',
-          text: offerData.message,
-          timestamp: new Date().toISOString()
-        }
-      ]
-    };
+    let savedBackendOffer = null;
+    let isReplay = false;
 
-    setInvitations(prev => [newInv, ...prev]);
+    try {
+      savedBackendOffer = await api.createOffer({
+        candidateId: offerData.candidateId,
+        employerId: currentEmployer.id,
+        vacancyId: offerData.vacancyId,
+        positionTitle: offerData.vacancyTitle,
+        salaryFrom: Math.floor(offerData.proposedSalary * 0.9),
+        salaryTo: Math.ceil(offerData.proposedSalary * 1.2),
+        salaryOffered: offerData.proposedSalary,
+        description: offerData.projectDetails,
+        message: offerData.message,
+        idempotencyKey: offerData.idempotencyKey
+      });
 
-    // Update vacancy count
-    setVacancies(prev =>
-      prev.map(v => v.id === offerData.vacancyId ? { ...v, invitationsCount: (v.invitationsCount || 0) + 1 } : v)
-    );
+      if (savedBackendOffer?.idempotentReplayed) {
+        isReplay = true;
+      }
+    } catch (err: any) {
+      console.warn('Backend offer create fallback to local state:', err.message);
+    }
 
-    showToast(`Оффер с окладом ${offerData.proposedSalary.toLocaleString('ru-RU')} ₽ успешно отправлен соискателю ${offerData.candidateName}!`, 'success');
+    const offerId = savedBackendOffer?.id || ('inv-' + Date.now());
+
+    // Prevent duplicate invitations in local state via idempotency key
+    setInvitations(prev => {
+      const alreadyExists = prev.some(inv =>
+        inv.id === offerId || (offerData.idempotencyKey && inv.idempotencyKey === offerData.idempotencyKey)
+      );
+      if (alreadyExists) {
+        return prev;
+      }
+
+      const newInv: Invitation = {
+        id: offerId,
+        vacancyId: offerData.vacancyId,
+        vacancyTitle: offerData.vacancyTitle,
+        employerId: currentEmployer.id,
+        companyName: currentEmployer.companyName,
+        companyLogo: currentEmployer.logo,
+        candidateId: offerData.candidateId,
+        candidateName: offerData.candidateName,
+        proposedSalary: offerData.proposedSalary,
+        salaryMin: Math.floor(offerData.proposedSalary * 0.9),
+        salaryMax: Math.ceil(offerData.proposedSalary * 1.2),
+        message: offerData.message,
+        projectDetails: offerData.projectDetails,
+        perksOffered: offerData.perksOffered,
+        status: 'sent',
+        sentAt: savedBackendOffer?.createdAt || new Date().toISOString(),
+        contactsRevealed: false,
+        idempotencyKey: offerData.idempotencyKey,
+        idempotentReplayed: isReplay,
+        chatMessages: [
+          {
+            id: 'msg-' + Date.now(),
+            sender: 'employer',
+            text: offerData.message,
+            timestamp: new Date().toISOString()
+          }
+        ]
+      };
+
+      return [newInv, ...prev];
+    });
+
+    if (!isReplay) {
+      // Update vacancy count
+      setVacancies(prev =>
+        prev.map(v => v.id === offerData.vacancyId ? { ...v, invitationsCount: (v.invitationsCount || 0) + 1 } : v)
+      );
+      showToast(`Оффер с окладом ${offerData.proposedSalary.toLocaleString('ru-RU')} ₽ успешно отправлен соискателю ${offerData.candidateName}! (Защищен Idempotency-Key)`, 'success');
+    } else {
+      showToast(`Оффер уже был отправлен ранее соискателю ${offerData.candidateName} (восстановлен существующий оффер благодаря идемпотентности API)`, 'info');
+    }
   };
 
   const handleAddVacancy = async (newVacData: Omit<Vacancy, 'id' | 'createdAt' | 'invitationsCount'>) => {

@@ -45,4 +45,8 @@ public class CreateOfferRequest {
 
     @Schema(description = "Алиас для message / описания вакансии", example = "Описание задачи")
     private String description;
+
+    @Schema(description = "Ключ идемпотентности (UUIDv4) для предотвращения дублирования оффера при ретраях и сетевых сбоях",
+            example = "idem-4f9e2b10-8b24-4f07-8291-7650df47cb61")
+    private String idempotencyKey;
 }

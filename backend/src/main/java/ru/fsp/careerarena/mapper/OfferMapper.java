@@ -16,10 +16,18 @@ public class OfferMapper {
     private static final Pattern RANGE_PATTERN = Pattern.compile("от\\s*(\\d+)[\\s\\S]*?до\\s*(\\d+)", Pattern.CASE_INSENSITIVE);
 
     public OfferDto toDto(Invitation inv) {
-        return toDto(inv, null, null);
+        return toDto(inv, null, null, false);
+    }
+
+    public OfferDto toDto(Invitation inv, boolean idempotentReplayed) {
+        return toDto(inv, null, null, idempotentReplayed);
     }
 
     public OfferDto toDto(Invitation inv, Integer customSalaryFrom, Integer customSalaryTo) {
+        return toDto(inv, customSalaryFrom, customSalaryTo, false);
+    }
+
+    public OfferDto toDto(Invitation inv, Integer customSalaryFrom, Integer customSalaryTo, boolean idempotentReplayed) {
         if (inv == null) return null;
 
         boolean isAccepted = inv.getStatus() == InvitationStatus.ACCEPTED;
@@ -95,6 +103,8 @@ public class OfferMapper {
                 .candidateContacts(contacts)
                 .createdAt(inv.getCreatedAt())
                 .updatedAt(inv.getUpdatedAt())
+                .idempotencyKey(inv.getIdempotencyKey())
+                .idempotentReplayed(idempotentReplayed)
                 .build();
     }
 }

@@ -43,6 +43,9 @@ public class Invitation {
     @Builder.Default
     private InvitationStatus status = InvitationStatus.PENDING;
 
+    @Column(name = "idempotency_key", length = 128)
+    private String idempotencyKey;
+
     @Column(name = "created_at")
     private OffsetDateTime createdAt;
 
