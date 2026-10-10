@@ -16,6 +16,22 @@
 
 ---
 
+## 📸 Интерфейс платформы (Реальные скриншоты)
+
+### 🌐 Главная страница (Sport-Tech Landing)
+![Главная страница ФСП Карьерная Арена](docs/images/landing_preview.png)
+
+### 👨‍💻 Дашборд соискателя (Верификация ФСП, ELO 2540, Офферы)
+![Дашборд соискателя](docs/images/candidate_dashboard.png)
+
+### 🏢 Панель работодателя (ATS-поиск, ELO-фильтрация и офферы)
+![Панель работодателя](docs/images/employer_dashboard.png)
+
+### 🏟 Интерактивная Алгоритмическая Арена (Monaco IDE, LeetCode, ELO)
+![Интерактивная Алгоритмическая Арена](docs/images/code_arena.png)
+
+---
+
 ## 🚀 Live Demo (Облачный стенд 24/7)
 
 | Ресурс | Ссылка |
@@ -145,7 +161,8 @@ pandoc docs/MANIFEST.md -o docs/MANIFEST.pdf --pdf-engine=xelatex -V mainfont="D
 │   ├── types/index.ts          # TypeScript интерфейсы
 │   └── utils/ratingEngine.ts   # Движок ELO-рейтинга ФСП
 ├── docs/                       # 📋 Проектная документация
-│   └── MANIFEST.md             # Полный Манифест проекта
+│   ├── MANIFEST.md             # Полный Манифест проекта
+│   └── images/                 # 📸 Реальные скриншоты интерфейса
 ├── docker-compose.yml          # Локальный запуск (Frontend + Backend + Postgres + Ollama)
 ├── docker-compose.prod.yml     # Production (GHCR образы)
 ├── Dockerfile.frontend         # Multi-stage Dockerfile (Vite → Nginx)
