@@ -516,8 +516,8 @@ const fullHtml = `<!DOCTYPE html>
 <body>
 
   <header class="fsp-header">
-    <a href="./" class="brand-group">
-      <div class="brand-logo-badge">ФСП</div>
+    <a href="https://github.com/linskay/fsp-2026" target="_blank" class="brand-group" title="Перейти в репозиторий проекта на GitHub">
+      <img src="logo/favicon.svg" alt="ФСП" style="height: 32px; width: 32px; display: block; object-fit: contain;" />
       <div>
         <span class="brand-title">Карьерная Арена 2026</span>
         <span class="brand-sub">Документация</span>
@@ -527,7 +527,7 @@ const fullHtml = `<!DOCTYPE html>
       <a href="https://github.com/linskay/fsp-2026" target="_blank" class="btn-header btn-header-ghost">⭐ GitHub</a>
       <a href="https://linskay-demo-2026.hf.space" target="_blank" class="btn-header btn-header-ghost">🚀 Демо стенд</a>
       <a href="https://linskay-demo-2026.hf.space/swagger" target="_blank" class="btn-header btn-header-ghost">📚 Swagger UI</a>
-      <a href="MANIFEST.pdf" target="_blank" class="btn-header btn-header-primary">📥 Скачать PDF Манифест</a>
+      <a href="MANIFEST.pdf" download="MANIFEST.pdf" target="_blank" class="btn-header btn-header-primary">📥 Скачать PDF Манифест</a>
     </div>
   </header>
 

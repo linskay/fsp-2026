@@ -10,14 +10,16 @@ import re
 import sys
 import shutil
 from fpdf import FPDF
+from fpdf.enums import XPos, YPos
 
 class ManifestPDF(FPDF):
     def header(self):
         if self.page_no() > 1:
             self.set_font('DejaVu', 'B', 8)
             self.set_text_color(100, 116, 139)
-            self.cell(0, 8, 'ФЕДЕРАЦИЯ СПОРТИВНОГО ПРОГРАММИРОВАНИЯ РОССИИ — МАНИФЕСТ 2026', border='B', align='L')
-            self.ln(10)
+            self.set_x(15)
+            self.cell(0, 8, 'ФЕДЕРАЦИЯ СПОРТИВНОГО ПРОГРАММИРОВАНИЯ РОССИИ — МАНИФЕСТ 2026', border='B', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+            self.ln(6)
 
     def footer(self):
         self.set_y(-15)
@@ -62,6 +64,7 @@ def render_table_block(pdf, table_lines, font_family):
 
     pdf.set_font(font_family, '', 7.5)
     pdf.set_text_color(30, 41, 59)
+    pdf.set_x(15)
     try:
         with pdf.table(
             col_widths=col_widths,
@@ -76,14 +79,17 @@ def render_table_block(pdf, table_lines, font_family):
                 table_row = table.row()
                 for c in padded_row:
                     table_row.cell(c)
+        pdf.set_x(15)
         pdf.ln(2)
     except Exception as e:
         print(f"[WARN] pdf.table fallback: {e}")
         for row in rows:
+            pdf.set_x(15)
             for idx, c in enumerate(row[:num_cols]):
                 w = col_widths[idx] if idx < len(col_widths) else (180 / num_cols)
                 pdf.cell(w, 5, c[:40], border=1)
             pdf.ln()
+        pdf.set_x(15)
         pdf.ln(2)
 
 def create_manifest_pdf():
@@ -105,6 +111,9 @@ def create_manifest_pdf():
         md_text = f.read()
 
     pdf = ManifestPDF(orientation='P', unit='mm', format='A4')
+    pdf.set_left_margin(15)
+    pdf.set_right_margin(15)
+    pdf.set_top_margin(15)
     pdf.set_auto_page_break(auto=True, margin=15)
 
     # Register DejaVu Unicode Fonts for native Russian
@@ -137,17 +146,17 @@ def create_manifest_pdf():
     pdf.set_xy(15, 12)
     pdf.set_font(font_family, 'B', 18)
     pdf.set_text_color(255, 255, 255)
-    pdf.cell(0, 8, 'ФСП КАРЬЕРНАЯ АРЕНА', ln=True)
+    pdf.cell(0, 8, 'ФСП КАРЬЕРНАЯ АРЕНА', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
 
     pdf.set_xy(15, 22)
     pdf.set_font(font_family, 'B', 10)
     pdf.set_text_color(0, 229, 255) # Cyan
-    pdf.cell(0, 6, 'ОФИЦИАЛЬНЫЙ АРХИТЕКТУРНЫЙ МАНИФЕСТ И ПРОЕКТНАЯ ДОКУМЕНТАЦИЯ', ln=True)
+    pdf.cell(0, 6, 'ОФИЦИАЛЬНЫЙ АРХИТЕКТУРНЫЙ МАНИФЕСТ И ПРОЕКТНАЯ ДОКУМЕНТАЦИЯ', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
 
     pdf.set_xy(15, 30)
     pdf.set_font(font_family, '', 8.5)
     pdf.set_text_color(148, 163, 184)
-    pdf.cell(0, 6, 'Регламент платформы: Архитектура, Алгоритмы, Тестирование, 152-ФЗ, Интеграции, Деплой', ln=True)
+    pdf.cell(0, 6, 'Регламент платформы: Архитектура, Алгоритмы, Тестирование, 152-ФЗ, Интеграции, Деплой', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
 
     # Accent Cyan Line
     pdf.set_fill_color(0, 229, 255)
@@ -156,7 +165,7 @@ def create_manifest_pdf():
     pdf.set_xy(15, 56)
     pdf.set_font(font_family, '', 9)
     pdf.set_text_color(71, 85, 105)
-    pdf.cell(0, 6, 'Команда разработки: «NO PHP — NO PROBLEMS — 2026» | Хакатон ФСП РФ 2026', ln=True)
+    pdf.cell(0, 6, 'Команда разработки: «NO PHP — NO PROBLEMS — 2026» | Хакатон ФСП РФ 2026', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
     pdf.ln(4)
 
     lines = md_text.split('\n')
@@ -176,7 +185,8 @@ def create_manifest_pdf():
                 pdf.set_text_color(15, 23, 42)
                 pdf.set_font(font_family if not mono_font else 'DejaVuMono', '', 7.5)
                 block_content = clean_text('\n'.join(code_lines))
-                pdf.multi_cell(180, 4.2, block_content, fill=True, border=1)
+                pdf.set_x(15)
+                pdf.multi_cell(180, 4.2, block_content, fill=True, border=1, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
                 pdf.ln(3)
                 code_lines = []
             else:
@@ -205,9 +215,10 @@ def create_manifest_pdf():
             pdf.ln(4)
             pdf.set_font(font_family, 'B', 13)
             pdf.set_text_color(3, 105, 161) # #0369a1
-            pdf.cell(0, 8, heading_text, ln=True)
+            pdf.set_x(15)
+            pdf.cell(0, 8, heading_text, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
             pdf.set_fill_color(0, 229, 255)
-            pdf.rect(pdf.get_x(), pdf.get_y(), 180, 0.5, 'F')
+            pdf.rect(15, pdf.get_y(), 180, 0.5, 'F')
             pdf.ln(2)
             i += 1
         elif stripped.startswith('### '):
@@ -216,17 +227,34 @@ def create_manifest_pdf():
             pdf.ln(2)
             pdf.set_font(font_family, 'B', 10.5)
             pdf.set_text_color(30, 41, 59)
-            pdf.cell(0, 6, heading_text, ln=True)
+            pdf.set_x(15)
+            pdf.cell(0, 6, heading_text, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
             pdf.ln(1)
             i += 1
-        elif stripped.startswith('- ') or stripped.startswith('* '):
-            item_text = clean_text(stripped[2:].strip())
+        elif stripped.startswith('- ') or stripped.startswith('* ') or re.match(r'^\d+\.\s', stripped):
+            if stripped.startswith('- ') or stripped.startswith('* '):
+                prefix = '•'
+                item_text = clean_text(stripped[2:].strip())
+            else:
+                m = re.match(r'^(\d+\.)\s*(.*)$', stripped)
+                prefix = m.group(1)
+                item_text = clean_text(m.group(2).strip())
+
             item_text = re.sub(r'\*\*(.*?)\*\*', r'\1', item_text)
             item_text = re.sub(r'`(.*?)`', r'\1', item_text)
             pdf.set_font(font_family, '', 8.5)
             pdf.set_text_color(51, 65, 85)
-            pdf.cell(5, 4.5, '-')
-            pdf.multi_cell(175, 4.5, item_text)
+            pdf.set_x(15)
+            try:
+                with pdf.table(col_widths=(6, 174), borders_layout="NONE", line_height=4.4, padding=0.4) as item_tbl:
+                    r = item_tbl.row()
+                    r.cell(prefix)
+                    r.cell(item_text)
+            except Exception:
+                pdf.set_x(15)
+                pdf.multi_cell(180, 4.5, f"  - {item_text}", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+            pdf.set_x(15)
+            pdf.ln(0.5)
             i += 1
         elif stripped.startswith('|'):
             # Collect entire markdown table block
@@ -241,7 +269,9 @@ def create_manifest_pdf():
             p_text = re.sub(r'`(.*?)`', r'\1', p_text)
             pdf.set_font(font_family, '', 8.5)
             pdf.set_text_color(51, 65, 85)
-            pdf.multi_cell(180, 4.5, p_text)
+            pdf.set_x(15)
+            pdf.multi_cell(180, 4.5, p_text, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+            pdf.set_x(15)
             pdf.ln(1.5)
             i += 1
 
