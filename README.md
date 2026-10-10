@@ -4,6 +4,14 @@
 
 ---
 
+## 🚀 Онлайн Демо (Live Demo 24/7)
+
+Платформа развернута в облаке и доступна онлайн без необходимости локальной установки:
+* 🔗 **Публичный адрес платформы:** **[https://linskay-demo-2026.hf.space](https://linskay-demo-2026.hf.space)**
+* 🌐 **Hugging Face Space:** [https://huggingface.co/spaces/Linskay/demo-2026](https://huggingface.co/spaces/Linskay/demo-2026)
+
+---
+
 ## ⚡ Быстрый старт на любом устройстве в 1 команду (GitHub Packages / Docker)
 
 Все контейнеры упакованы и автоматически публикуются в **GitHub Container Registry (GHCR / GitHub Packages)**:
@@ -33,8 +41,9 @@ docker compose -f docker-compose.prod.yml up -d
 
 ---
 
-## 🌐 Доступные адреса после запуска:
-- 💻 **Главный экран & UI платформы (Frontend):** [http://localhost:3000](http://localhost:3000)
+## 🌐 Доступные адреса:
+- 🚀 **Публичный стенд платформы (Live Demo 24/7):** [https://linskay-demo-2026.hf.space](https://linskay-demo-2026.hf.space)
+- 💻 **Главный экран & UI платформы (Local Frontend):** [http://localhost:3000](http://localhost:3000)
 - ⚙️ **Backend REST API (Spring Boot 3):** [http://localhost:8080](http://localhost:8080)
 - 📚 **Интерактивный Swagger UI:** [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
 - 📋 **OpenAPI v3 JSON спецификация:** [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
