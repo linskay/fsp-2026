@@ -1,6 +1,6 @@
 import React from 'react';
 import { 
-  Award, ShieldCheck, Building2, Code2, BookOpen, Presentation, 
+  Trophy, Award, ShieldCheck, Building2, Code2, BookOpen, Presentation, 
   UserCheck, Lock, Github, Sparkles, LogIn, LogOut, KeyRound 
 } from 'lucide-react';
 import { CandidateProfile, UserRole } from '../types';
@@ -110,6 +110,21 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 <Code2 className="w-3.5 h-3.5" />
                 <span>Арена</span>
+              </button>
+
+              <button
+                onClick={() => onRoleChange('leaderboard')}
+                className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] whitespace-nowrap cursor-pointer ${
+                  currentRole === 'leaderboard'
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm shadow-blue-900/40 border border-blue-400/30'
+                    : 'text-slate-300 hover:text-white hover:bg-white/[0.05]'
+                }`}
+              >
+                <Trophy className="w-3.5 h-3.5 text-yellow-400" />
+                <span>Реестр ТОП-100</span>
+                <span className="hidden sm:inline px-1.5 py-0.2 bg-yellow-400/20 text-yellow-300 text-[10px] font-bold rounded-full border border-yellow-400/30">
+                  Live
+                </span>
               </button>
             </nav>
 

@@ -43,6 +43,7 @@ import { CandidateDashboard } from './components/candidate/CandidateDashboard';
 import { EmployerDashboard } from './components/employer/EmployerDashboard';
 import { CodeArenaIDE } from './components/arena/CodeArenaIDE';
 import { LandingPage } from './components/landing/LandingPage';
+import { LeaderboardView } from './components/leaderboard/LeaderboardView';
 import { NotFoundPage } from './components/common/NotFoundPage';
 import { OAuthModal } from './components/auth/OAuthModal';
 import { LoginModal } from './components/auth/LoginModal';
@@ -154,8 +155,10 @@ export default function App() {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '').toLowerCase();
       if (!hash) return;
-      if (['landing', 'candidate', 'employer', 'arena'].includes(hash)) {
+      if (['landing', 'candidate', 'employer', 'arena', 'leaderboard'].includes(hash)) {
         setCurrentRole(hash as UserRole);
+      } else if (hash === 'registry') {
+        setCurrentRole('leaderboard');
       } else if (hash === '404' || hash === 'not_found') {
         setCurrentRole('not_found');
       } else {
@@ -955,6 +958,26 @@ export default function App() {
               onImportCustomTask={(newTask) => {
                 setTasks(prev => [newTask, ...prev]);
                 showToast(`Задача «${newTask.title}» успешно импортирована через GraphQL API LeetCode!`, 'success');
+              }}
+            />
+          </div>
+        )}
+
+        {currentRole === 'leaderboard' && (
+          <div className="animate-tab-content">
+            <LeaderboardView
+              onSelectAthlete={(athlete) => {
+                const found = candidates.find(c => c.id === athlete.id);
+                if (found) {
+                  setActiveCandidateId(found.id);
+                  handleRoleChange('candidate');
+                } else {
+                  showToast(`Выбран атлет: ${athlete.fullName} (${athlete.fspRank})`, 'fsp');
+                }
+              }}
+              onInviteAthlete={(athlete) => {
+                handleRoleChange('employer');
+                showToast(`Переход в панель работодателя для направления оффера атлету ${athlete.fullName}`, 'info');
               }}
             />
           </div>

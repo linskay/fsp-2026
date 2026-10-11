@@ -35,6 +35,9 @@ public class AiSummaryDto {
     @Schema(description = "Рекомендуемые роли и позиции", example = "[\"Senior / Lead Backend Developer (Highload)\", \"Distributed Systems Architect\"]")
     private List<String> recommendedRoles;
 
+    @Schema(description = "Оценка чистоты кода кандидата (0-100 баллов)", example = "96")
+    private Integer codeCleanlinessScore;
+
     @Schema(description = "Модель ИИ, выполнившая анализ (YandexGPT 3 Pro / GigaChat Ultra / OpenAI)", example = "YandexGPT 3 Pro / GigaChat Ultra")
     private String modelName;
 

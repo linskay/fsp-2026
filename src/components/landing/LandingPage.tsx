@@ -185,6 +185,19 @@ public class Solution {
         
         {/* Hero Title (H1) & Subtitle with Luxury Typography */}
         <div className="text-center max-w-4xl mx-auto space-y-4 px-2">
+          <div 
+            onClick={() => onSelectRole('leaderboard')}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/15 border border-cyan-400/40 text-cyan-300 text-xs font-bold mb-2 cursor-pointer hover:bg-blue-500/25 transition-all hover:scale-105 shadow-lg shadow-blue-500/10"
+            title="Открыть Публичный Единый Реестр атлетов ФСП"
+          >
+            <Trophy className="w-3.5 h-3.5 text-yellow-400" />
+            <span>Публичный Единый Реестр атлетов ФСП (ТОП-100)</span>
+            <span className="px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-bold border border-emerald-500/30">
+              Live Рейтинг
+            </span>
+            <ChevronRight className="w-3 h-3 text-cyan-400" />
+          </div>
+
           <h1 className="text-3xl sm:text-5xl lg:text-7xl font-extrabold tracking-[-0.03em] text-white leading-[1.08]">
             FSP Career Arena — <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-300 to-indigo-300 drop-shadow-[0_0_40px_rgba(59,130,246,0.35)]">
@@ -316,7 +329,7 @@ public class Solution {
                           <Lock className="w-3.5 h-3.5 text-purple-400" />
                         </div>
                         <p className="text-[11px] text-slate-400 leading-relaxed">
-                          Компании ищут по стеку и ELO. Ваши персональные данные скрыты до взаимного согласия (152-ФЗ РФ).
+                          Компании ищут по стеку и ELO. Ваши персональные данные защищены 152-ФЗ РФ и журналом аудита безопасности (Security Audit Log) до взаимного согласия.
                         </p>
                       </div>
                     </div>
@@ -488,7 +501,7 @@ public class Solution {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-6">
             
             {/* ПЛИТКА №1 (Обратная механика найма) - Large 7 cols */}
-            <div className="md:col-span-7 rounded-3xl p-6 sm:p-7 bg-[#090f24] border border-[#1a284e] hover:border-[#2b35ff] transition-all duration-300 shadow-xl hover:shadow-[0_0_35px_rgba(43,53,255,0.2)] flex flex-col justify-between group relative overflow-hidden">
+            <div className="md:col-span-7 rounded-3xl p-6 sm:p-7 bg-[#090f24] border border-white/10 hover:border-white/20 transition-all duration-300 shadow-xl hover:shadow-[0_0_35px_rgba(43,53,255,0.2)] flex flex-col justify-between group relative overflow-hidden card-hover-micro scroll-reveal hover:scale-[1.012]">
               <div className="space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-[#2b35ff]/20 border border-[#2b35ff]/40 flex items-center justify-center text-[#00f0ff]">
                   <Zap className="w-6 h-6" />
@@ -531,7 +544,7 @@ public class Solution {
             </div>
 
             {/* ПЛИТКА №2 (Киберспорт и рейтинг ELO) - 5 cols */}
-            <div className="md:col-span-5 rounded-3xl p-6 sm:p-7 bg-[#090f24] border border-[#1a284e] hover:border-[#00f0ff] transition-all duration-300 shadow-xl hover:shadow-[0_0_35px_rgba(0,240,255,0.2)] flex flex-col justify-between group relative overflow-hidden">
+            <div className="md:col-span-5 rounded-3xl p-6 sm:p-7 bg-[#090f24] border border-white/10 hover:border-white/20 transition-all duration-300 shadow-xl hover:shadow-[0_0_35px_rgba(0,240,255,0.2)] flex flex-col justify-between group relative overflow-hidden card-hover-micro scroll-reveal scroll-reveal-delay-1 hover:scale-[1.012]">
               <div className="space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-[#00f0ff]/20 border border-[#00f0ff]/40 flex items-center justify-center text-yellow-400">
                   <Trophy className="w-6 h-6" />
@@ -569,7 +582,7 @@ public class Solution {
             </div>
 
             {/* ПЛИТКА №3 (LeetCode-песочница с интерактивным запуском теста) - 6 cols */}
-            <div className="md:col-span-6 rounded-3xl p-6 sm:p-7 bg-[#090f24] border border-[#1a284e] hover:border-[#2b35ff] transition-all duration-300 shadow-xl hover:shadow-[0_0_35px_rgba(43,53,255,0.2)] flex flex-col justify-between group relative">
+            <div className="md:col-span-6 rounded-3xl p-6 sm:p-7 bg-[#090f24] border border-white/10 hover:border-white/20 transition-all duration-300 shadow-xl hover:shadow-[0_0_35px_rgba(43,53,255,0.2)] flex flex-col justify-between group relative card-hover-micro scroll-reveal hover:scale-[1.012]">
               <div className="space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-400">
                   <Code2 className="w-6 h-6" />
@@ -639,7 +652,7 @@ public class Solution {
             </div>
 
             {/* ПЛИТКА №4 (Честные зарплатные вилки) - 6 cols */}
-            <div className="md:col-span-6 rounded-3xl p-6 sm:p-7 bg-[#090f24] border border-[#1a284e] hover:border-[#ff2b42] transition-all duration-300 shadow-xl hover:shadow-[0_0_35px_rgba(255,43,66,0.2)] flex flex-col justify-between group relative">
+            <div className="md:col-span-6 rounded-3xl p-6 sm:p-7 bg-[#090f24] border border-white/10 hover:border-white/20 transition-all duration-300 shadow-xl hover:shadow-[0_0_35px_rgba(255,43,66,0.2)] flex flex-col justify-between group relative card-hover-micro scroll-reveal scroll-reveal-delay-1 hover:scale-[1.012]">
               <div className="space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-[#ff2b42]/20 border border-[#ff2b42]/40 flex items-center justify-center text-[#ff2b42]">
                   <Scale className="w-6 h-6" />

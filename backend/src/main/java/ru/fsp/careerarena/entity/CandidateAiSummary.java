@@ -36,6 +36,9 @@ public class CandidateAiSummary {
     @Column(name = "recommended_roles")
     private List<String> recommendedRoles;
 
+    @Column(name = "code_cleanliness_score")
+    private Integer codeCleanlinessScore;
+
     @Column(name = "model_name", nullable = false)
     private String modelName;
 

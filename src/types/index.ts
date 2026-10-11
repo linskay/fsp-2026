@@ -1,4 +1,4 @@
-export type UserRole = 'landing' | 'candidate' | 'employer' | 'arena' | 'not_found';
+export type UserRole = 'landing' | 'candidate' | 'employer' | 'arena' | 'leaderboard' | 'not_found';
 
 export type FspRank =
   | 'Мастер спорта РФ'

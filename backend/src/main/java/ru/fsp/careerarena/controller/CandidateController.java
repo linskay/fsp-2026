@@ -33,6 +33,18 @@ public class CandidateController {
         return ResponseEntity.ok(candidateService.searchCandidates(specialization, grade, minElo, fspRank));
     }
 
+    @GetMapping({"/leaderboard", "/registry"})
+    @Operation(summary = "Публичный Единый Реестр атлетов ФСП (Global Leaderboard ТОП-100) с фильтрами по регионам, разрядам и стеку")
+    public ResponseEntity<List<CandidateDto>> getLeaderboard(
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) FspRank fspRank,
+            @RequestParam(required = false) String skill,
+            @RequestParam(required = false) Integer minElo,
+            @RequestParam(defaultValue = "100") int limit
+    ) {
+        return ResponseEntity.ok(candidateService.getLeaderboard(location, fspRank, skill, minElo, limit));
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "Получение верифицированного профиля кандидата по ID")
     public ResponseEntity<CandidateDto> getCandidateById(@PathVariable UUID id) {

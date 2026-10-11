@@ -76,11 +76,12 @@ public class AiSummaryService {
 
     @Data
     @Builder
-    private static class AiGenerationResult {
+    public static class AiGenerationResult {
         private String summaryText;
         private List<String> keyStrengths;
         private String recommendationLevel;
         private List<String> recommendedRoles;
+        private Integer codeCleanlinessScore;
         private String modelName;
     }
 
@@ -89,7 +90,7 @@ public class AiSummaryService {
         GenerateAiSummaryRequest request = GenerateAiSummaryRequest.builder()
                 .candidateId(candidateId)
                 .provider(aiProvider)
-                .focus("balanced")
+                .focus("BALANCED")
                 .forceRefresh(false)
                 .build();
         return generateAiSummary(request);
@@ -99,8 +100,8 @@ public class AiSummaryService {
     public AiSummaryDto generateAiSummary(GenerateAiSummaryRequest request) {
         UUID candidateId = request.getCandidateId();
         String activeProvider = (request.getProvider() != null && !request.getProvider().isBlank())
-                ? request.getProvider().toLowerCase().trim()
-                : (aiProvider != null ? aiProvider.toLowerCase().trim() : "gemini");
+                ? request.getProvider().trim()
+                : (aiProvider != null ? aiProvider.trim() : "GEMINI");
 
         log.info("Processing AI-Summary for candidate ID: {} using provider: {}", candidateId, activeProvider);
 
@@ -116,29 +117,51 @@ public class AiSummaryService {
 
         CandidateAiSummary aiEntity = existingOpt.orElseGet(() -> CandidateAiSummary.builder().candidate(candidate).build());
         aiEntity.setSummaryText(result.getSummaryText());
+        aiEntity.setCodeCleanlinessScore(result.getCodeCleanlinessScore());
         aiEntity.setKeyStrengths(result.getKeyStrengths());
         aiEntity.setRecommendationLevel(result.getRecommendationLevel());
         aiEntity.setRecommendedRoles(result.getRecommendedRoles());
         aiEntity.setModelName(result.getModelName());
 
         CandidateAiSummary saved = aiSummaryRepository.save(aiEntity);
-        log.info("AI-Summary saved for candidate ID: {} with model: {}", candidateId, result.getModelName());
+        log.info("AI-Summary saved for candidate ID: {} with model: {}, cleanlinessScore: {}", candidateId, result.getModelName(), result.getCodeCleanlinessScore());
         return mapToDto(saved);
     }
 
     private AiGenerationResult executeAiGeneration(CandidateProfile candidate, GenerateAiSummaryRequest request, String provider) {
+        String normalized = provider != null ? provider.trim().toUpperCase() : "GEMINI";
         try {
-            return switch (provider) {
-                case "gemini" -> callGeminiApi(candidate, request);
-                case "openrouter" -> callOpenRouterApi(candidate, request);
-                case "ollama", "local", "docker" -> callOllamaApi(candidate, request);
-                case "yandexgpt", "yandex" -> callYandexGptApi(candidate, request);
+            return switch (normalized) {
+                case "GEMINI" -> callGeminiApi(candidate, request);
+                case "OPENROUTER" -> callOpenRouterApi(candidate, request);
+                case "OLLAMA", "LOCAL", "DOCKER" -> callOllamaApi(candidate, request);
+                case "YANDEX_GPT", "YANDEXGPT", "YANDEX" -> callYandexGptApi(candidate, request);
                 default -> callGenericOpenAiApi(candidate, request, provider);
             };
         } catch (Exception e) {
             log.warn("Live AI generation with provider '{}' failed ({}). Falling back to dynamic algorithmic profiler.", provider, e.getMessage());
             return generateDynamicProfile(candidate, request.getFocus());
         }
+    }
+
+    private int calculateCleanlinessScore(CandidateProfile c) {
+        int base = 85;
+        if (c.getFspElo() >= 2400) {
+            base += 12;
+        } else if (c.getFspElo() >= 2000) {
+            base += 9;
+        } else if (c.getFspElo() >= 1600) {
+            base += 6;
+        } else if (c.getFspElo() >= 1300) {
+            base += 3;
+        }
+        if (c.getGithubCommitsCount() >= 500) {
+            base += 2;
+        }
+        if (c.isFspVerified()) {
+            base += 1;
+        }
+        return Math.min(99, Math.max(70, base));
     }
 
     /**
@@ -149,8 +172,9 @@ public class AiSummaryService {
                 "Твоя задача — объективно оценить квалификацию инженера-спортсмена на основе спортивного ELO-рейтинга, " +
                 "официального разряда ФСП, навыков, метрик олимпиадного программирования и открытых репозиториев GitHub. " +
                 "Ответь СТРОГО валидным JSON-объектом без каких-либо вводных слов, пояснений и без markdown-разметки. " +
-                "JSON обязан содержать 4 ключа: " +
+                "JSON обязан содержать 5 ключей: " +
                 "\"summaryText\" (развернутый связный аналитический отчет на русском из 3-5 предложений), " +
+                "\"codeCleanlinessScore\" (целое число от 0 до 100, отражающее чистоту кода, отсутствие smell/duplication и архитектурную строгость), " +
                 "\"keyStrengths\" (массив строго из 4 строк с ключевыми техническими преимуществами), " +
                 "\"recommendationLevel\" (строка: HIGHLY_RECOMMENDED, RECOMMENDED или QUALIFIED), " +
                 "\"recommendedRoles\" (массив из 3-4 строк с рекомендуемыми инженерными ролями).";
@@ -166,11 +190,12 @@ public class AiSummaryService {
                 ? String.join(", ", c.getSkills())
                 : "Java, Spring Boot, PostgreSQL, Docker";
 
-        String focusInstruction = switch (focus != null ? focus.toLowerCase() : "balanced") {
-            case "highload" -> "Сделай особый акцент на масштабируемости, отказоустойчивости, микросервисах и высоконагруженных системах (HighLoad).";
-            case "algo" -> "Сделай особый акцент на олимпиадной алгоритмической базе, скорости решения задач и математической культуре.";
-            case "lead" -> "Сделай особый акцент на лидерском потенциале, менторстве, архитектурных решениях и роли техлида.";
-            default -> "Дай сбалансированную оценку спортивных достижений и прикладных инженерных навыков.";
+        String normalizedFocus = focus != null ? focus.trim().toUpperCase() : "BALANCED";
+        String focusInstruction = switch (normalizedFocus) {
+            case "HIGH_LOAD_CORE", "HIGHLOAD" -> "Сделай особый акцент на масштабируемости, отказоустойчивости, микросервисах, Kafka, профилировании памяти и высоконагруженных распределенных системах (HighLoad Core).";
+            case "ALGORITHMS", "ALGO" -> "Сделай особый акцент на олимпиадной алгоритмической базе, скорости решения задач, асимптотике O(log N) и олимпиадной культуре ФСП РФ.";
+            case "TECH_LEAD", "LEAD" -> "Сделай особый акцент на лидерском потенциале, менторстве, архитектурных решениях, ревью кода и роли техлида.";
+            default -> "Дай сбалансированную оценку спортивных достижений ФСП и прикладных инженерных навыков разработки.";
         };
 
         return String.format(
@@ -206,13 +231,13 @@ public class AiSummaryService {
      * 1. Google Gemini via OpenAI-compatible endpoint
      */
     private AiGenerationResult callGeminiApi(CandidateProfile candidate, GenerateAiSummaryRequest request) {
-        String key = resolveApiKey(request.getApiKey(), geminiApiKey);
+        String key = resolveApiKey(request.getEffectiveApiKey(), geminiApiKey);
         if (isMockKey(key)) {
             log.info("Gemini key is mock/demo. Running dynamic assessment engine.");
             return generateDynamicProfile(candidate, request.getFocus());
         }
 
-        String targetModel = (request.getModel() != null && !request.getModel().isBlank()) ? request.getModel() : geminiModel;
+        String targetModel = (request.getEffectiveModel() != null && !request.getEffectiveModel().isBlank()) ? request.getEffectiveModel() : geminiModel;
         String prompt = buildUnifiedUserPrompt(candidate, request.getFocus());
 
         Map<String, Object> payload = Map.of(
@@ -241,13 +266,13 @@ public class AiSummaryService {
      * 2. OpenRouter API
      */
     private AiGenerationResult callOpenRouterApi(CandidateProfile candidate, GenerateAiSummaryRequest request) {
-        String key = resolveApiKey(request.getApiKey(), openrouterApiKey);
+        String key = resolveApiKey(request.getEffectiveApiKey(), openrouterApiKey);
         if (isMockKey(key)) {
             log.info("OpenRouter key is mock/demo. Running dynamic assessment engine.");
             return generateDynamicProfile(candidate, request.getFocus());
         }
 
-        String targetModel = (request.getModel() != null && !request.getModel().isBlank()) ? request.getModel() : openrouterModel;
+        String targetModel = (request.getEffectiveModel() != null && !request.getEffectiveModel().isBlank()) ? request.getEffectiveModel() : openrouterModel;
         String prompt = buildUnifiedUserPrompt(candidate, request.getFocus());
 
         Map<String, Object> payload = Map.of(
@@ -281,8 +306,8 @@ public class AiSummaryService {
         String url = (request.getEndpointUrl() != null && !request.getEndpointUrl().isBlank())
                 ? request.getEndpointUrl()
                 : ollamaApiUrl;
-        String targetModel = (request.getModel() != null && !request.getModel().isBlank())
-                ? request.getModel()
+        String targetModel = (request.getEffectiveModel() != null && !request.getEffectiveModel().isBlank())
+                ? request.getEffectiveModel()
                 : ollamaModel;
 
         String prompt = buildUnifiedUserPrompt(candidate, request.getFocus());
@@ -312,7 +337,7 @@ public class AiSummaryService {
      * 4. Yandex Foundation Models (YandexGPT)
      */
     private AiGenerationResult callYandexGptApi(CandidateProfile candidate, GenerateAiSummaryRequest request) {
-        String key = resolveApiKey(request.getApiKey(), aiApiKey);
+        String key = resolveApiKey(request.getEffectiveApiKey(), aiApiKey);
         if (isMockKey(key)) {
             log.info("YandexGPT key is mock/demo. Running dynamic assessment engine.");
             return generateDynamicProfile(candidate, request.getFocus());
@@ -321,8 +346,8 @@ public class AiSummaryService {
         String activeFolder = (request.getFolderId() != null && !request.getFolderId().isBlank())
                 ? request.getFolderId()
                 : ((folderId != null && !folderId.isBlank()) ? folderId : "b1gmockfolderid");
-        String activeModel = (request.getModel() != null && !request.getModel().isBlank())
-                ? request.getModel()
+        String activeModel = (request.getEffectiveModel() != null && !request.getEffectiveModel().isBlank())
+                ? request.getEffectiveModel()
                 : ((aiModel != null && !aiModel.isBlank()) ? aiModel : "yandexgpt");
 
         String modelUri = "gpt://" + activeFolder + "/" + activeModel + "/latest";
@@ -355,12 +380,12 @@ public class AiSummaryService {
     }
 
     private AiGenerationResult callGenericOpenAiApi(CandidateProfile candidate, GenerateAiSummaryRequest request, String provider) {
-        String key = resolveApiKey(request.getApiKey(), aiApiKey);
+        String key = resolveApiKey(request.getEffectiveApiKey(), aiApiKey);
         if (isMockKey(key)) {
             return generateDynamicProfile(candidate, request.getFocus());
         }
 
-        String targetModel = (request.getModel() != null && !request.getModel().isBlank()) ? request.getModel() : "gpt-4o-mini";
+        String targetModel = (request.getEffectiveModel() != null && !request.getEffectiveModel().isBlank()) ? request.getEffectiveModel() : "gpt-4o-mini";
         String prompt = buildUnifiedUserPrompt(candidate, request.getFocus());
 
         Map<String, Object> openAiPayload = Map.of(
@@ -446,9 +471,14 @@ public class AiSummaryService {
                 }
             }
 
+            int codeCleanlinessScore = parsed.has("codeCleanlinessScore") && parsed.get("codeCleanlinessScore").isNumber()
+                    ? parsed.get("codeCleanlinessScore").asInt()
+                    : calculateCleanlinessScore(candidate);
+
             if (!summaryText.isBlank() && !keyStrengths.isEmpty()) {
                 return AiGenerationResult.builder()
                         .summaryText(summaryText)
+                        .codeCleanlinessScore(codeCleanlinessScore)
                         .keyStrengths(keyStrengths)
                         .recommendationLevel(recLevel)
                         .recommendedRoles(!recommendedRoles.isEmpty() ? recommendedRoles : deriveRecommendedRoles(candidate))
@@ -460,6 +490,7 @@ public class AiSummaryService {
             if (!rawText.isBlank()) {
                 return AiGenerationResult.builder()
                         .summaryText(rawText.trim())
+                        .codeCleanlinessScore(calculateCleanlinessScore(candidate))
                         .keyStrengths(deriveKeyStrengths(candidate))
                         .recommendationLevel(candidate.getFspElo() >= 1800 ? "HIGHLY_RECOMMENDED" : "RECOMMENDED")
                         .recommendedRoles(deriveRecommendedRoles(candidate))
@@ -510,8 +541,11 @@ public class AiSummaryService {
             recLevel = "QUALIFIED";
         }
 
+        int cleanliness = calculateCleanlinessScore(c);
+
         return AiGenerationResult.builder()
                 .summaryText(summary)
+                .codeCleanlinessScore(cleanliness)
                 .keyStrengths(deriveKeyStrengths(c))
                 .recommendationLevel(recLevel)
                 .recommendedRoles(deriveRecommendedRoles(c))
@@ -617,14 +651,24 @@ public class AiSummaryService {
         CandidateAiSummary summary = aiSummaryRepository.findByCandidateId(candidate.getId())
                 .orElse(CandidateAiSummary.builder().candidate(candidate).build());
 
+        int cleanliness = request.getCodeCleanlinessScore() != null ? request.getCodeCleanlinessScore() : calculateCleanlinessScore(candidate);
+
         summary.setCandidate(candidate);
         summary.setSummaryText(request.getSummaryText());
-        summary.setKeyStrengths(request.getKeyStrengths() != null ? request.getKeyStrengths() : List.of("HighLoad архитектура", "Стресс-тестирование"));
-        summary.setRecommendedRoles(request.getRecommendedRoles() != null ? request.getRecommendedRoles() : List.of("Senior Backend Engineer"));
+        summary.setCodeCleanlinessScore(cleanliness);
+        summary.setKeyStrengths(request.getKeyStrengths() != null ? request.getKeyStrengths() : deriveKeyStrengths(candidate));
+        summary.setRecommendedRoles(request.getRecommendedRoles() != null ? request.getRecommendedRoles() : deriveRecommendedRoles(candidate));
         summary.setModelName("MULTI-MODEL-AI (SAVED)");
-        summary.setRecommendationLevel(request.getCodeCleanlinessScore() != null && request.getCodeCleanlinessScore() >= 90 ? "TOP_RECOMMENDED" : "RECOMMENDED");
+        summary.setRecommendationLevel(cleanliness >= 90 ? "TOP_RECOMMENDED" : "RECOMMENDED");
 
         CandidateAiSummary saved = aiSummaryRepository.save(summary);
+
+        // Update candidate bio in PostgreSQL profile
+        if (request.getSummaryText() != null && !request.getSummaryText().isBlank()) {
+            candidate.setBio(request.getSummaryText());
+            candidateRepository.save(candidate);
+        }
+
         return mapToDto(saved);
     }
 
@@ -633,6 +677,7 @@ public class AiSummaryService {
                 .id(entity.getId())
                 .candidateId(entity.getCandidate().getId())
                 .summaryText(entity.getSummaryText())
+                .codeCleanlinessScore(entity.getCodeCleanlinessScore() != null ? entity.getCodeCleanlinessScore() : 95)
                 .keyStrengths(entity.getKeyStrengths())
                 .recommendationLevel(entity.getRecommendationLevel())
                 .recommendedRoles(entity.getRecommendedRoles())

@@ -39,6 +39,9 @@ class CandidateServiceTest {
     @Mock
     private CandidateMapper candidateMapper;
 
+    @Mock
+    private ru.fsp.careerarena.repository.CandidateAiSummaryRepository aiSummaryRepository;
+
     @InjectMocks
     private CandidateService candidateService;
 

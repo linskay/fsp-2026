@@ -35,6 +35,7 @@ public class OfferService {
     private final OfferMapper offerMapper;
     private final IdempotencyService idempotencyService;
     private final WebhookService webhookService;
+    private final TelegramBotService telegramBotService;
 
     @Transactional
     public OfferDto createOffer(CreateOfferRequest request) {
@@ -130,6 +131,13 @@ public class OfferService {
             webhookService.dispatchOfferEventAsync(employer.getId(), "OFFER_SENT", resultDto);
         } catch (Exception ex) {
             log.warn("Failed to dispatch OFFER_SENT webhook: {}", ex.getMessage());
+        }
+
+        // Telegram Bot integration: мгновенный пуш кандидату с кнопками [Принять] и [В чат]
+        try {
+            telegramBotService.sendOfferNotification(saved, candidate, employer, salaryOffered);
+        } catch (Exception ex) {
+            log.warn("Failed to dispatch Telegram offer push: {}", ex.getMessage());
         }
 
         return resultDto;

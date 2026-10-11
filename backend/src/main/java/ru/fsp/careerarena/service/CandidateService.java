@@ -26,27 +26,63 @@ public class CandidateService {
 
     private final CandidateProfileRepository candidateRepository;
     private final CandidateMapper candidateMapper;
+    private final ru.fsp.careerarena.repository.CandidateAiSummaryRepository aiSummaryRepository;
 
     @Transactional(readOnly = true)
     public List<CandidateDto> searchCandidates(Specialization specialization, Grade grade, Integer minElo, FspRank fspRank) {
         log.info("Searching candidates with spec={}, grade={}, minElo={}, rank={}", specialization, grade, minElo, fspRank);
         return candidateRepository.searchCandidates(specialization, grade, minElo, fspRank).stream()
-                .map(candidateMapper::toDto)
+                .map(this::enrichWithAiSummary)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public CandidateDto getCandidateById(UUID id) {
         return candidateRepository.findById(id)
-                .map(candidateMapper::toDto)
+                .map(this::enrichWithAiSummary)
                 .orElseThrow(() -> new ResourceNotFoundException("Кандидат с ID " + id + " не найден"));
     }
 
     @Transactional(readOnly = true)
     public CandidateDto getCandidateByUserId(UUID userId) {
         return candidateRepository.findByUserId(userId)
-                .map(candidateMapper::toDto)
+                .map(this::enrichWithAiSummary)
                 .orElseThrow(() -> new ResourceNotFoundException("Профиль кандидата для пользователя " + userId + " не найден"));
+    }
+
+    private CandidateDto enrichWithAiSummary(CandidateProfile profile) {
+        CandidateDto dto = candidateMapper.toDto(profile);
+        if (dto != null) {
+            aiSummaryRepository.findByCandidateId(profile.getId()).ifPresent(summary -> {
+                dto.setAiSummary(ru.fsp.careerarena.dto.AiSummaryDto.builder()
+                        .id(summary.getId())
+                        .candidateId(profile.getId())
+                        .summaryText(summary.getSummaryText())
+                        .codeCleanlinessScore(summary.getCodeCleanlinessScore() != null ? summary.getCodeCleanlinessScore() : 95)
+                        .keyStrengths(summary.getKeyStrengths())
+                        .recommendationLevel(summary.getRecommendationLevel())
+                        .recommendedRoles(summary.getRecommendedRoles())
+                        .modelName(summary.getModelName())
+                        .generatedAt(summary.getCreatedAt() != null ? summary.getCreatedAt() : OffsetDateTime.now())
+                        .build());
+            });
+        }
+        return dto;
+    }
+
+    @Transactional(readOnly = true)
+    public List<CandidateDto> getLeaderboard(String location, FspRank fspRank, String skill, Integer minElo, int limit) {
+        log.info("Fetching FSP Global Leaderboard: location={}, rank={}, skill={}, minElo={}, limit={}",
+                location, fspRank, skill, minElo, limit);
+        return candidateRepository.findAll().stream()
+                .filter(c -> location == null || location.isBlank() || (c.getLocation() != null && c.getLocation().toLowerCase().contains(location.toLowerCase())))
+                .filter(c -> fspRank == null || c.getFspRank() == fspRank)
+                .filter(c -> skill == null || skill.isBlank() || (c.getSkills() != null && c.getSkills().stream().anyMatch(s -> s.toLowerCase().contains(skill.toLowerCase()))))
+                .filter(c -> minElo == null || c.getFspElo() >= minElo)
+                .sorted((a, b) -> Integer.compare(b.getFspElo(), a.getFspElo()))
+                .limit(limit > 0 ? limit : 100)
+                .map(this::enrichWithAiSummary)
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
