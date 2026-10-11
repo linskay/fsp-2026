@@ -565,15 +565,15 @@ docker compose -f docker-compose.prod.yml up -d
 </thead>
 <tbody><tr>
 <td align="left"><strong>Кандидат</strong></td>
-<td align="left"><code>ivan@fsp.ru</code></td>
-<td align="left"><code>candidate123</code></td>
-<td align="left">Иван Пестерев (1-й разряд ФСП, ELO 2540)</td>
+<td align="left"><code>candidate@fsp.ru</code></td>
+<td align="left"><code>candidate2026</code></td>
+<td align="left">Иван Пестерев (КМС, ELO 2480, 1-клик вход)</td>
 </tr>
 <tr>
 <td align="left"><strong>Работодатель</strong></td>
-<td align="left"><code>hr@sber.ru</code></td>
-<td align="left"><code>employer123</code></td>
-<td align="left">HR Сбер / Т-Банк (управление вакансиями)</td>
+<td align="left"><code>employer@fsp.ru</code></td>
+<td align="left"><code>employer2026</code></td>
+<td align="left">Елена Романова (ПАО СберБанк / СберТех, 1-клик вход)</td>
 </tr>
 <tr>
 <td align="left"><strong>Администратор</strong></td>
@@ -669,6 +669,75 @@ cd mobile
 <li>Мультипровайдерная интеграция с поддержкой <strong>Google Gemini</strong>, <strong>OpenRouter</strong>, локальной <strong>Ollama</strong> и <strong>YandexGPT</strong>.</li>
 <li>Автоматический расчет соответствия кандидата техническим требованиям вакансии на основе структурированного JSON-промпта.</li>
 </ul>
+<hr>
+<h2>🔄 Ключевые диаграммы последовательности (Mermaid Sequence Diagrams)</h2>
+<h3>1. Обратный найм, идемпотентные офферы и безопасное раскрытие контактов по 152-ФЗ</h3>
+<p>Диаграмма иллюстрирует сквозной жизненный цикл обратного найма: отправку оффера работодателем с контролем идемпотентности (RFC 7231), мгновенный push кандидату через официального Telegram-бота <code>@fsp_career_bot</code> и фиксацию согласия на демаскирование персональных данных в журнале аудита безопасности (<code>Security Audit Log</code>):</p>
+<pre><code class="language-mermaid">sequenceDiagram
+    autonumber
+    actor HR as Работодатель (HR / ATS)
+    participant UI as React 19 Frontend
+    participant API as Spring Boot 3 Gateway
+    participant IDEM as Idempotency Engine (RFC 7231)
+    participant TG as Telegram Bot (@fsp_career_bot)
+    actor Dev as Кандидат (Соискатель)
+    participant DB as PostgreSQL (Audit Log &amp; Data)
+
+    Note over HR,UI: Режим «Слепого» найма: контакты соискателя замаскированы по 152-ФЗ
+    HR-&gt;&gt;UI: Заполнение оффера (вилка от 450 000 до 550 000 ₽)
+    UI-&gt;&gt;API: POST /api/v1/offers [Header: Idempotency-Key]
+    API-&gt;&gt;IDEM: Проверка уникальности ключа в api_idempotency_records
+    alt Запрос повторный (Network Retry / Double-click)
+        IDEM--&gt;&gt;API: Восстановление существующего оффера
+        API--&gt;&gt;UI: 200 OK (Idempotent-Replayed: true)
+    else Новый запрос
+        IDEM-&gt;&gt;DB: INSERT INTO invitations (status: PENDING)
+        API-&gt;&gt;TG: Отправка мгновенного push-оповещения
+        TG--&gt;&gt;Dev: «⚡️ СберТех отправил вам оффер на 520 000 ₽. Посмотреть детали и принять?»
+        API--&gt;&gt;UI: 201 Created (Оффер успешно зафиксирован)
+    end
+
+    alt Кандидат принимает оффер (в Telegram-боте или Веб-кабинете)
+        Dev-&gt;&gt;API: POST /api/v1/offers/{id}/accept
+        API-&gt;&gt;DB: UPDATE invitations SET status = &#39;ACCEPTED&#39;, contacts_revealed = true
+        API-&gt;&gt;DB: INSERT INTO security_audit_logs (action: USER_CONTACTS_REVEALED, 152-ФЗ consent)
+        API--&gt;&gt;Dev: 200 OK (Контакты безопасно открыты)
+        API--&gt;&gt;HR: Push / Webhook OFFER_ACCEPTED (Телефон, Telegram и Email демаскированы)
+    end
+</code></pre>
+<h3>2. Соревновательная Code Arena, изолированная песочница и мультимодельный AI-портрет</h3>
+<p>Диаграмма иллюстрирует процесс проверки алгоритмического кода в изолированном контейнере Docker (Judge0), пересчет спортивного ELO-рейтинга по правилам ФСП РФ и генерацию мультимодельного AI-портрета через паттерн Strategy:</p>
+<pre><code class="language-mermaid">sequenceDiagram
+    autonumber
+    actor Dev as Соискатель (Спортсмен)
+    participant IDE as Monaco Code Arena IDE
+    participant Arena as Spring Boot Arena Controller
+    participant Sandbox as Docker Sandbox (Judge0)
+    participant ELO as ELO Engine (ФСП ЕВСК)
+    participant AI as Multi-Model AI Strategy
+    participant DB as PostgreSQL (TOP-100 Leaderboard)
+
+    Dev-&gt;&gt;IDE: Написание решения алгоритмической задачи
+    Dev-&gt;&gt;IDE: Клик «Отправить решение на проверку»
+    IDE-&gt;&gt;Arena: POST /api/v1/sandbox/execute [code, language, taskId]
+    Arena-&gt;&gt;Arena: Проверка сессии (лимит 45 мин) и Anti-Cheat телеметрии
+    Arena-&gt;&gt;Sandbox: Запуск в изолированном контейнере (--net=none, CPU 1500ms, RAM 256MB)
+    Sandbox-&gt;&gt;Sandbox: Выполнение на закрытом наборе стресс-тестов
+    Sandbox--&gt;&gt;Arena: Вердикт: ACCEPTED (100% тестов, 24 мс, 18 МБ)
+    Arena-&gt;&gt;ELO: Расчет дельты ELO по соревновательной формуле
+    ELO-&gt;&gt;DB: Обновление рейтинга соискателя (+35 ELO, новый ранг: МС)
+    Arena--&gt;&gt;IDE: 200 OK: Решение принято, присвоен статус Мастер спорта!
+
+    opt Мультимодельная генерация AI-портрета
+        Dev-&gt;&gt;Arena: POST /api/v1/ai/generate-summary [provider: YANDEX_GPT, focus: HIGH_LOAD_CORE]
+        Arena-&gt;&gt;AI: Динамический выбор провайдера (Gemini / YandexGPT / OpenRouter / Ollama)
+        AI--&gt;&gt;Arena: JSON: {summaryText, codeCleanlinessScore: 98, recommendedRoles}
+        Arena--&gt;&gt;IDE: Отображение AI-портрета соискателя
+        Dev-&gt;&gt;Arena: POST /api/v1/ai/save-profile
+        Arena-&gt;&gt;DB: UPDATE candidate_ai_summaries &amp; bio
+        DB--&gt;&gt;DB: Мгновенное обновление в Едином Реестре атлетов ТОП-100 (#leaderboard)
+    end
+</code></pre>
 
       </article>
       <hr class="doc-divider" />
@@ -864,6 +933,13 @@ fun FspRankBadge(rank: String, eLo: Int) {
   ]
 }
 </code></pre>
+<hr>
+<h2>🛡️ Отказоустойчивость и Circuit Breaker (Graceful Degradation)</h2>
+<ul>
+<li><strong>Zero-Failure Fallback Engine</strong>: Если во внешнем окружении не переданы действующие токены коммерческих API (Gemini/OpenRouter/Telegram) или провайдер возвращает HTTP 429/500/Таймаут, Circuit Breaker автоматически переключается на встроенный детерминированный симулятор технического скоринга.</li>
+<li><strong>100% стабильность демонстрации</strong>: Платформа гарантированно возвращает реалистичный детальный JSON-анализ даже в закрытом автономном контуре.</li>
+<li><strong>Кэширование и проксирование</strong>: Запросы к внешним API (LeetCode, GitHub) защищены прокси-маршрутами с многоуровневым fallback-кэшем для предотвращения исчерпания Rate Limits.</li>
+</ul>
 
       </article>
       <hr class="doc-divider" />
@@ -1052,6 +1128,26 @@ fun FspRankBadge(rank: String, eLo: Int) {
   <details class="doc-accordion"><summary class="doc-accordion-summary">PUT /api/v1/users/profile</summary><div class="doc-accordion-content">**Редактирование профиля пользователя**</div></details>
   <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/files/upload</summary><div class="doc-accordion-content">**Безопасная загрузка файлов (сертификаты, аватары, ТЗ)**</div></details>
   <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/system/stats</summary><div class="doc-accordion-content">**Метрики системы (активные атлеты, проверенные офферы, решенные задачи)**</div></details>
+</div><hr>
+<h3>21. Telegram Bot (Мгновенные push-уведомления и интерактивные офферы)</h3>
+<p>Интеграция с официальным Telegram-ботом <code>@fsp_career_bot</code> для доставки офферов соискателям в мессенджер с поддержкой интерактивных inline-кнопок «Принять» и «В чат».</p>
+<div class="accordion-group">
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/telegram/webhook</summary><div class="doc-accordion-content">**Webhook для обработки действий из Telegram (Callback Queries)**
+    - Обрабатывает нажатия интерактивных inline-кнопок `[ ⚡️ Принять ]` (`ACCEPT_OFFER:<id>`) и `[ 💬 В чат ]` (`OPEN_CHAT:<id>`).
+    - Автоматически принимает оффер в БД, демаскирует контакты соискателя по 152-ФЗ и фиксирует событие в Security Audit Log.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">POST /api/v1/telegram/test-push</summary><div class="doc-accordion-content">**Тестовая отправка мгновенного push-оффера кандидату**
+    - **Формат:** `⚡️ {Компания} отправил вам оффер на {Зарплата} ₽. Посмотреть детали и принять?`
+    - Тело запроса (JSON):
+      ```json
+      {
+        "candidateId": "uuid",
+        "companyName": "СберТех",
+        "salary": 520000
+      }
+      ```
+    - Возвращает статус доставки, имя бота `@fsp_career_bot` и список действий `["Принять", "В чат"]`.</div></details>
+  <details class="doc-accordion"><summary class="doc-accordion-summary">GET /api/v1/telegram/status</summary><div class="doc-accordion-content">**Проверка статуса подключения Telegram-бота**
+    - Возвращает флаги активности бота, статус веб-хука и включения мгновенных офферов.</div></details>
 </div>
 
       </article>
