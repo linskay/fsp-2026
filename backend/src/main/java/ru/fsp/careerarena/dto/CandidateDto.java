@@ -84,4 +84,7 @@ public class CandidateDto {
 
     @Schema(description = "Ключевой технологический стек", example = "[\"Java 21\", \"Spring Boot 3\", \"PostgreSQL\", \"Kafka\", \"Dinic Algo\"]")
     private Set<String> skills;
+
+    @Schema(description = "Сгенерированный или сохраненный технический портрет кандидата (AI Summary)")
+    private AiSummaryDto aiSummary;
 }

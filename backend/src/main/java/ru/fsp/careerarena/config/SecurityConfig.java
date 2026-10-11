@@ -103,6 +103,7 @@ public class SecurityConfig {
                     "/api/v1/webhooks/**",
                     "/api/v1/ai-summary/**",
                     "/api/v1/ai/**",
+                    "/api/v1/telegram/**",
                     "/api/v1/users/**",
                     "/api/v1/files/**",
                     "/ws/**"

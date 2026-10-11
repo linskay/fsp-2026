@@ -55,6 +55,9 @@ class OfferServiceTest {
     @Mock
     private WebhookService webhookService;
 
+    @Mock
+    private TelegramBotService telegramBotService;
+
     private OfferService offerService;
 
     private UUID candidateId;
@@ -70,7 +73,8 @@ class OfferServiceTest {
                 vacancyRepository,
                 offerMapper,
                 idempotencyService,
-                webhookService
+                webhookService,
+                telegramBotService
         );
 
         candidateId = UUID.randomUUID();

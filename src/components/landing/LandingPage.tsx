@@ -185,6 +185,19 @@ public class Solution {
         
         {/* Hero Title (H1) & Subtitle with Luxury Typography */}
         <div className="text-center max-w-4xl mx-auto space-y-4 px-2">
+          <div 
+            onClick={() => onSelectRole('leaderboard')}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/15 border border-cyan-400/40 text-cyan-300 text-xs font-bold mb-2 cursor-pointer hover:bg-blue-500/25 transition-all hover:scale-105 shadow-lg shadow-blue-500/10"
+            title="Открыть Публичный Единый Реестр атлетов ФСП"
+          >
+            <Trophy className="w-3.5 h-3.5 text-yellow-400" />
+            <span>Публичный Единый Реестр атлетов ФСП (ТОП-100)</span>
+            <span className="px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-bold border border-emerald-500/30">
+              Live Рейтинг
+            </span>
+            <ChevronRight className="w-3 h-3 text-cyan-400" />
+          </div>
+
           <h1 className="text-3xl sm:text-5xl lg:text-7xl font-extrabold tracking-[-0.03em] text-white leading-[1.08]">
             FSP Career Arena — <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-300 to-indigo-300 drop-shadow-[0_0_40px_rgba(59,130,246,0.35)]">

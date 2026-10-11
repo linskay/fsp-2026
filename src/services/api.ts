@@ -40,6 +40,7 @@ export interface BackendCandidateDto {
   githubReposCount?: number;
   githubCommitsCount?: number;
   skills: string[];
+  aiSummary?: BackendAiSummaryDto;
 }
 
 export interface BackendVacancyDto {
@@ -85,6 +86,7 @@ export interface BackendAiSummaryDto {
   id: string;
   candidateId: string;
   summaryText: string;
+  codeCleanlinessScore?: number;
   keyStrengths: string[];
   recommendationLevel: string;
   recommendedRoles: string[];
@@ -96,10 +98,12 @@ export interface BackendGenerateAiSummaryRequest {
   candidateId: string;
   provider?: string;
   model?: string;
+  modelName?: string;
   apiKey?: string;
+  customApiKey?: string;
   folderId?: string;
   endpointUrl?: string;
-  focus?: 'highload' | 'algo' | 'lead' | 'balanced';
+  focus?: 'highload' | 'algo' | 'lead' | 'balanced' | 'HIGH_LOAD_CORE' | 'ALGORITHMS' | 'TECH_LEAD' | 'BALANCED';
   forceRefresh?: boolean;
 }
 
@@ -185,7 +189,17 @@ export function mapBackendCandidateToFrontend(dto: BackendCandidateDto): Candida
     salaryExpectationMax: Math.round((dto.salaryExpectation || 300000) * 1.2),
     isLookingForJob: true,
     preferredFormat: 'remote',
-    aiSummary: {
+    aiSummary: dto.aiSummary ? {
+      summaryText: dto.aiSummary.summaryText,
+      keyStrengths: dto.aiSummary.keyStrengths || [],
+      recommendedProjects: dto.aiSummary.recommendedRoles || [],
+      recommendedRoles: dto.aiSummary.recommendedRoles || [],
+      recommendationLevel: dto.aiSummary.recommendationLevel,
+      codeCleanlinessScore: dto.aiSummary.codeCleanlinessScore ?? 96,
+      averageSolveTimeMinutes: 12,
+      modelUsed: dto.aiSummary.modelName || 'Multi-Model AI (PostgreSQL)',
+      generatedAt: dto.aiSummary.generatedAt || new Date().toISOString()
+    } : {
       summaryText: dto.bio || `Квалифицированный ${dto.grade || 'Senior'} ${dto.specialization || 'Backend'} разработчик с спортивным разрядом ${rankLabel}. Активно решает алгоритмические задачи олимпиадного уровня.`,
       keyStrengths: [
         `Спортивный разряд: ${rankLabel}`,
@@ -309,6 +323,40 @@ class ApiService {
       const res = await fetch(`${API_BASE}/candidates/search?${query.toString()}`, {
         headers: { 'Accept': 'application/json' },
         signal: AbortSignal.timeout(3000)
+      });
+
+      if (res.ok) {
+        const data: BackendCandidateDto[] = await res.json();
+        this.isOnline = true;
+        if (data && data.length > 0) {
+          return data.map(mapBackendCandidateToFrontend);
+        }
+      }
+    } catch {
+      this.isOnline = false;
+    }
+    return INITIAL_CANDIDATES;
+  }
+
+  // 1b. Fetch FSP Global Leaderboard (Public Athletes Registry)
+  async getLeaderboard(params?: {
+    location?: string;
+    fspRank?: string;
+    skill?: string;
+    minElo?: number;
+    limit?: number;
+  }): Promise<CandidateProfile[]> {
+    try {
+      const query = new URLSearchParams();
+      if (params?.location) query.append('location', params.location);
+      if (params?.fspRank) query.append('fspRank', params.fspRank);
+      if (params?.skill) query.append('skill', params.skill);
+      if (params?.minElo) query.append('minElo', String(params.minElo));
+      if (params?.limit) query.append('limit', String(params.limit));
+
+      const res = await fetch(`${API_BASE}/candidates/leaderboard?${query.toString()}`, {
+        headers: { 'Accept': 'application/json' },
+        signal: AbortSignal.timeout(4000)
       });
 
       if (res.ok) {
@@ -479,7 +527,7 @@ class ApiService {
   // 6. Generate or Get AI Summary
   async getAiSummary(candidateId: string): Promise<CandidateAiSummary | null> {
     try {
-      const res = await fetch(`${API_BASE}/ai-summary/candidate/${candidateId}`, {
+      const res = await fetch(`${API_BASE}/ai/candidate/${candidateId}`, {
         headers: { 'Accept': 'application/json' },
         signal: AbortSignal.timeout(10000)
       });
@@ -493,7 +541,7 @@ class ApiService {
           recommendedProjects: dto.recommendedRoles || [],
           recommendedRoles: dto.recommendedRoles || [],
           recommendationLevel: dto.recommendationLevel,
-          codeCleanlinessScore: 98,
+          codeCleanlinessScore: dto.codeCleanlinessScore ?? 96,
           averageSolveTimeMinutes: 12,
           modelUsed: dto.modelName || 'Google Gemini 1.5 Flash',
           generatedAt: dto.generatedAt || new Date().toISOString()
@@ -508,14 +556,28 @@ class ApiService {
   // 6b. Live AI Generation with Provider & Model Selection
   async generateAiSummary(request: BackendGenerateAiSummaryRequest): Promise<CandidateAiSummary | null> {
     try {
-      const res = await fetch(`${API_BASE}/ai-summary/generate`, {
+      const payload = {
+        candidateId: request.candidateId,
+        provider: request.provider,
+        modelName: request.modelName || request.model,
+        model: request.model || request.modelName,
+        customApiKey: request.customApiKey || request.apiKey,
+        apiKey: request.apiKey || request.customApiKey,
+        folderId: request.folderId,
+        endpointUrl: request.endpointUrl,
+        focus: request.focus,
+        forceRefresh: request.forceRefresh
+      };
+
+      const res = await fetch(`${API_BASE}/ai/generate-summary`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          ...(this.token ? { Authorization: `Bearer ${this.token}` } : {})
         },
-        body: JSON.stringify(request),
-        signal: AbortSignal.timeout(20000)
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(25000)
       });
 
       if (res.ok) {
@@ -527,7 +589,7 @@ class ApiService {
           recommendedProjects: dto.recommendedRoles || [],
           recommendedRoles: dto.recommendedRoles || [],
           recommendationLevel: dto.recommendationLevel,
-          codeCleanlinessScore: 98,
+          codeCleanlinessScore: dto.codeCleanlinessScore ?? 96,
           averageSolveTimeMinutes: 12,
           modelUsed: dto.modelName || 'Google Gemini 1.5 Flash',
           generatedAt: dto.generatedAt || new Date().toISOString()
@@ -571,6 +633,37 @@ class ApiService {
       // offline fallback
     }
     return { status: 'mock_synced', message: `Резюме hh.ru #${resumeId} синхронизировано по 152-ФЗ` };
+  }
+
+  // 8.1 Telegram Bot instant offer push
+  async sendTelegramOfferPush(params: {
+    candidateId?: string;
+    employerId?: string;
+    offerId?: string;
+    companyName?: string;
+    salary?: number;
+  }): Promise<{ success: boolean; message: string; botUsername: string; actions: string[] }> {
+    try {
+      const res = await fetch(`${API_BASE}/telegram/test-push`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(params),
+        signal: AbortSignal.timeout(4000)
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // offline fallback
+    }
+    const company = params.companyName || 'СберТех';
+    const salary = params.salary || 520000;
+    return {
+      success: true,
+      message: `⚡️ ${company} отправил вам оффер на ${salary.toLocaleString('ru-RU')} ₽. Посмотреть детали и принять?`,
+      botUsername: '@fsp_career_bot',
+      actions: ['Принять', 'В чат']
+    };
   }
 
   // 9. Fetch Live LeetCode Profile from GraphQL proxy

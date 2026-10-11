@@ -161,6 +161,11 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
   const [declineModalInvId, setDeclineModalInvId] = useState<string | null>(null);
   const [declineReason, setDeclineReason] = useState('Не подходит зарплатная вилка');
   const [showConsentModalForInvId, setShowConsentModalForInvId] = useState<string | null>(null);
+  const [telegramPushNotification, setTelegramPushNotification] = useState<{
+    companyName: string;
+    salary: number;
+    invitationId?: string;
+  } | null>(null);
 
   // Assessment solving state
   const [activeSolvingAssessment, setActiveSolvingAssessment] = useState<AssessmentAssignment | null>(null);
@@ -469,16 +474,39 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
               </button>
             </div>
 
-            <p className="text-xs sm:text-[13px] text-slate-200 leading-relaxed font-mono pt-3">
+            <div className="flex items-center gap-3 pt-2 text-xs flex-wrap">
+              <span className="text-slate-400 flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                Оценка чистоты кода: <strong className="text-emerald-400 font-mono font-bold">{candidate.aiSummary?.codeCleanlinessScore || 96}/100</strong>
+              </span>
+              {candidate.aiSummary?.recommendationLevel && (
+                <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-cyan-300 text-[10px] font-mono font-bold border border-cyan-500/30">
+                  {candidate.aiSummary.recommendationLevel}
+                </span>
+              )}
+            </div>
+
+            <p className="text-xs sm:text-[13px] text-slate-200 leading-relaxed font-mono pt-2">
               "{candidate.aiSummary?.summaryText || `${candidate.currentGradeAssigned?.toUpperCase() || 'SENIOR'}-разработчик (${candidate.title}). Стек: ${candidate.skills.slice(0, 5).join(', ')}. Решает задачи в среднем за ${candidate.avgExecutionTimeMs || 15} мс с точностью ${candidate.testScorePercent || 98}%. Рейтинг ФСП: ${candidate.fspRating} ELO (${candidate.fspRank}). Рекомендуется на Highload и критические сервисы.`}"
             </p>
 
             {candidate.aiSummary?.keyStrengths && (
-              <div className="flex flex-wrap gap-1.5 pt-3">
+              <div className="flex flex-wrap gap-1.5 pt-2">
                 {candidate.aiSummary.keyStrengths.map((s, idx) => (
                   <span key={idx} className="px-2.5 py-0.5 rounded-lg bg-[#0e1730] text-[11px] text-[#00f0ff] border border-[#2b35ff]/30 flex items-center gap-1">
                     <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0" />
                     <span>{s}</span>
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {(candidate.aiSummary?.recommendedRoles || candidate.aiSummary?.recommendedProjects) && (
+              <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                <span className="text-[10px] text-slate-400 uppercase font-bold mr-1">Рекомендуемые роли:</span>
+                {(candidate.aiSummary.recommendedRoles || candidate.aiSummary.recommendedProjects)!.slice(0, 3).map((r, idx) => (
+                  <span key={idx} className="px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-300 text-[10px] font-mono border border-purple-500/20">
+                    {r}
                   </span>
                 ))}
               </div>
@@ -1386,6 +1414,50 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
             </span>
           </div>
 
+          {/* Telegram Bot Instant Offer Integration Banner */}
+          <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-[#0088cc]/15 via-[#0b1b36] to-[#04060d] border border-[#0088cc]/40 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-[#0088cc]/20 border border-[#0088cc]/50 flex items-center justify-center text-[#0088cc] shrink-0 shadow-lg shadow-[#0088cc]/20">
+                <Send className="w-6 h-6 rotate-45 -translate-y-0.5 translate-x-0.5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-bold text-white flex items-center gap-1.5">
+                    Официальный Telegram-бот @fsp_career_bot
+                  </h3>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    Активен
+                  </span>
+                </div>
+                <p className="text-xs text-slate-300 mt-0.5">
+                  Мгновенные пуши офферов кандидату: <span className="text-[#00f0ff] font-medium">«⚡️ СберТех отправил вам оффер на 520 000 ₽. Посмотреть детали и принять?»</span> с интерактивными кнопками «Принять» и «В чат».
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                const targetInv = myInvitations.find(i => i.status === 'sent') || myInvitations[0];
+                const comp = targetInv?.companyName || 'СберТех';
+                const sal = targetInv?.proposedSalary || 520000;
+                setTelegramPushNotification({
+                  companyName: comp,
+                  salary: sal,
+                  invitationId: targetInv?.id
+                });
+                api.sendTelegramOfferPush({
+                  companyName: comp,
+                  salary: sal,
+                  candidateId: candidate.id,
+                  offerId: targetInv?.id
+                }).catch(() => {});
+              }}
+              className="px-4 py-2.5 rounded-xl bg-[#0088cc] hover:bg-[#0099e6] text-white text-xs font-bold transition-all shadow-lg shadow-[#0088cc]/30 flex items-center gap-2 shrink-0 border border-white/20 active:scale-95"
+            >
+              <Send className="w-3.5 h-3.5" />
+              <span>Тест Telegram-пуша</span>
+            </button>
+          </div>
+
           <div className="grid grid-cols-1 gap-5">
             {myInvitations.map((inv) => {
               const isAccepted = inv.status === 'accepted';
@@ -2019,6 +2091,82 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
         isOpen={isPrivacyModalOpen}
         onClose={() => setIsPrivacyModalOpen(false)}
       />
+
+      {/* Telegram Instant Offer Push Interactive Notification Modal */}
+      {telegramPushNotification && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
+          <div className="w-full max-w-md rounded-3xl bg-[#0f172a] border border-[#0088cc]/60 shadow-[0_20px_60px_rgba(0,136,204,0.35)] overflow-hidden animate-scale-up">
+            <div className="bg-gradient-to-r from-[#0088cc] to-[#006699] p-4 text-white flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-full bg-white text-[#0088cc] flex items-center justify-center font-bold text-base shadow">
+                  <Send className="w-4 h-4 rotate-45 -translate-y-0.5 translate-x-0.5" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-black tracking-wide">Telegram • @fsp_career_bot</h4>
+                  <p className="text-[10px] text-blue-100 opacity-90">Мгновенный пуш обратного найма ФСП</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setTelegramPushNotification(null)}
+                className="w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4">
+              <div className="p-4 rounded-2xl bg-[#1e293b]/90 border border-white/10 space-y-3">
+                <div className="flex items-start gap-3">
+                  <span className="text-2xl">⚡️</span>
+                  <div className="space-y-1">
+                    <p className="text-sm font-semibold text-white leading-snug">
+                      <strong className="text-white font-bold">{telegramPushNotification.companyName}</strong> отправил вам оффер на <span className="text-emerald-400 font-black">{telegramPushNotification.salary.toLocaleString('ru-RU')} ₽</span>.
+                    </p>
+                    <p className="text-xs text-slate-300">
+                      Посмотреть детали и принять?
+                    </p>
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-400">
+                  <span>Статус: Официальный запрос ФСП</span>
+                  <span className="text-emerald-400 font-mono">152-ФЗ Protected</span>
+                </div>
+              </div>
+
+              {/* Telegram Inline Interactive Buttons */}
+              <div className="grid grid-cols-2 gap-3 pt-1">
+                <button
+                  onClick={() => {
+                    if (telegramPushNotification.invitationId) {
+                      onAcceptInvitation(telegramPushNotification.invitationId);
+                    }
+                    setTelegramPushNotification(null);
+                  }}
+                  className="py-3 px-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/40 border border-emerald-400/30 transition-all active:scale-95 cursor-pointer"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>Принять</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    if (telegramPushNotification.invitationId) {
+                      setSelectedInvitationForChat(telegramPushNotification.invitationId);
+                    }
+                    setActiveTab('chat');
+                    setTelegramPushNotification(null);
+                  }}
+                  className="py-3 px-4 rounded-2xl bg-gradient-to-r from-[#2b35ff] to-[#0088cc] hover:from-[#3d46ff] hover:to-[#0099e6] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-950/40 border border-blue-400/30 transition-all active:scale-95 cursor-pointer"
+                >
+                  <MessageSquare className="w-4 h-4" />
+                  <span>В чат</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

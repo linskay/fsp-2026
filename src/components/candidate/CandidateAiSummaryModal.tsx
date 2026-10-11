@@ -135,15 +135,31 @@ export const CandidateAiSummaryModal: React.FC<CandidateAiSummaryModalProps> = (
       endpointUrl = ollamaUrl;
     }
 
+    const providerMap: Record<AiProviderType, string> = {
+      gemini: 'GEMINI',
+      yandexgpt: 'YANDEX_GPT',
+      openrouter: 'OPENROUTER',
+      ollama: 'OLLAMA'
+    };
+
+    const focusMap = {
+      highload: 'HIGH_LOAD_CORE',
+      algo: 'ALGORITHMS',
+      lead: 'TECH_LEAD',
+      balanced: 'BALANCED'
+    };
+
     try {
       const realSummary = await api.generateAiSummary({
         candidateId: candidate.id,
-        provider,
+        provider: providerMap[provider],
+        modelName: model,
         model,
+        customApiKey: apiKey || undefined,
         apiKey: apiKey || undefined,
         folderId: folderId || undefined,
         endpointUrl: endpointUrl || undefined,
-        focus: selectedFocus,
+        focus: focusMap[selectedFocus] as any,
         forceRefresh: true
       });
 
@@ -182,7 +198,7 @@ export const CandidateAiSummaryModal: React.FC<CandidateAiSummaryModalProps> = (
         await api.saveAiProfile({
           candidateId: candidate.id,
           summaryText: generatedSummary.summaryText,
-          codeCleanlinessScore: 98,
+          codeCleanlinessScore: generatedSummary.codeCleanlinessScore || 96,
           keyStrengths: generatedSummary.keyStrengths,
           recommendedRoles: generatedSummary.recommendedRoles
         });
