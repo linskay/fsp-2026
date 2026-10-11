@@ -501,7 +501,7 @@ public class Solution {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-6">
             
             {/* ПЛИТКА №1 (Обратная механика найма) - Large 7 cols */}
-            <div className="md:col-span-7 rounded-3xl p-6 sm:p-7 bg-[#090f24] border border-[#1a284e] hover:border-[#2b35ff] transition-all duration-300 shadow-xl hover:shadow-[0_0_35px_rgba(43,53,255,0.2)] flex flex-col justify-between group relative overflow-hidden">
+            <div className="md:col-span-7 rounded-3xl p-6 sm:p-7 bg-[#090f24] border border-white/10 hover:border-white/20 transition-all duration-300 shadow-xl hover:shadow-[0_0_35px_rgba(43,53,255,0.2)] flex flex-col justify-between group relative overflow-hidden card-hover-micro scroll-reveal hover:scale-[1.012]">
               <div className="space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-[#2b35ff]/20 border border-[#2b35ff]/40 flex items-center justify-center text-[#00f0ff]">
                   <Zap className="w-6 h-6" />
@@ -544,7 +544,7 @@ public class Solution {
             </div>
 
             {/* ПЛИТКА №2 (Киберспорт и рейтинг ELO) - 5 cols */}
-            <div className="md:col-span-5 rounded-3xl p-6 sm:p-7 bg-[#090f24] border border-[#1a284e] hover:border-[#00f0ff] transition-all duration-300 shadow-xl hover:shadow-[0_0_35px_rgba(0,240,255,0.2)] flex flex-col justify-between group relative overflow-hidden">
+            <div className="md:col-span-5 rounded-3xl p-6 sm:p-7 bg-[#090f24] border border-white/10 hover:border-white/20 transition-all duration-300 shadow-xl hover:shadow-[0_0_35px_rgba(0,240,255,0.2)] flex flex-col justify-between group relative overflow-hidden card-hover-micro scroll-reveal scroll-reveal-delay-1 hover:scale-[1.012]">
               <div className="space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-[#00f0ff]/20 border border-[#00f0ff]/40 flex items-center justify-center text-yellow-400">
                   <Trophy className="w-6 h-6" />
@@ -582,7 +582,7 @@ public class Solution {
             </div>
 
             {/* ПЛИТКА №3 (LeetCode-песочница с интерактивным запуском теста) - 6 cols */}
-            <div className="md:col-span-6 rounded-3xl p-6 sm:p-7 bg-[#090f24] border border-[#1a284e] hover:border-[#2b35ff] transition-all duration-300 shadow-xl hover:shadow-[0_0_35px_rgba(43,53,255,0.2)] flex flex-col justify-between group relative">
+            <div className="md:col-span-6 rounded-3xl p-6 sm:p-7 bg-[#090f24] border border-white/10 hover:border-white/20 transition-all duration-300 shadow-xl hover:shadow-[0_0_35px_rgba(43,53,255,0.2)] flex flex-col justify-between group relative card-hover-micro scroll-reveal hover:scale-[1.012]">
               <div className="space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-400">
                   <Code2 className="w-6 h-6" />
@@ -652,7 +652,7 @@ public class Solution {
             </div>
 
             {/* ПЛИТКА №4 (Честные зарплатные вилки) - 6 cols */}
-            <div className="md:col-span-6 rounded-3xl p-6 sm:p-7 bg-[#090f24] border border-[#1a284e] hover:border-[#ff2b42] transition-all duration-300 shadow-xl hover:shadow-[0_0_35px_rgba(255,43,66,0.2)] flex flex-col justify-between group relative">
+            <div className="md:col-span-6 rounded-3xl p-6 sm:p-7 bg-[#090f24] border border-white/10 hover:border-white/20 transition-all duration-300 shadow-xl hover:shadow-[0_0_35px_rgba(255,43,66,0.2)] flex flex-col justify-between group relative card-hover-micro scroll-reveal scroll-reveal-delay-1 hover:scale-[1.012]">
               <div className="space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-[#ff2b42]/20 border border-[#ff2b42]/40 flex items-center justify-center text-[#ff2b42]">
                   <Scale className="w-6 h-6" />

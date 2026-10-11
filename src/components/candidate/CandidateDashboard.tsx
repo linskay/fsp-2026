@@ -1466,12 +1466,12 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
               return (
                 <div
                   key={inv.id}
-                  className={`rounded-3xl border transition-all overflow-hidden ${
+                  className={`rounded-3xl border transition-all duration-300 overflow-hidden card-hover-micro scroll-reveal hover:scale-[1.012] ${
                     isAccepted
                       ? 'bg-[#0a1618] border-emerald-500/40 shadow-xl shadow-emerald-950/20'
                       : isDeclined
-                      ? 'bg-[#080c18] border-[#182035] opacity-50'
-                      : 'bg-[#0b0f1d] border-[#1d2645] hover:border-[#2b35ff]/60 shadow-xl'
+                      ? 'bg-[#080c18] border-white/5 opacity-50'
+                      : 'bg-[#0b0f1d] border-white/10 hover:border-white/20 hover:shadow-[0_12px_36px_rgba(43,53,255,0.15)] shadow-xl'
                   }`}
                 >
                   <div className="p-6 space-y-5">

@@ -1132,7 +1132,7 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
               <div
                 key={a.id}
                 onClick={() => setSelectedAthlete(a)}
-                className="p-5 rounded-2xl bg-[#070b1a] border border-[#162140] hover:border-cyan-400/50 transition-all cursor-pointer group shadow-lg flex flex-col justify-between space-y-4"
+                className="p-5 rounded-2xl bg-[#070b1a] border border-white/10 hover:border-white/20 transition-all duration-300 cursor-pointer group shadow-lg flex flex-col justify-between space-y-4 card-hover-micro scroll-reveal hover:scale-[1.012]"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2 mb-3">

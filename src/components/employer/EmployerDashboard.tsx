@@ -507,7 +507,7 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
               return (
               <div
                 key={c.id}
-                className="bg-[#0b0f1d] rounded-3xl border border-[#1d2645] hover:border-[#2b35ff]/60 p-6 space-y-5 transition-all shadow-xl card-fsp-interactive scroll-reveal"
+                className="bg-[#0b0f1d] rounded-3xl border border-white/10 hover:border-white/20 p-6 space-y-5 transition-all duration-300 shadow-xl card-hover-micro scroll-reveal hover:scale-[1.012]"
               >
                 {/* Header row */}
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
@@ -889,7 +889,7 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({
             {vacancies.map((v) => (
               <div
                 key={v.id}
-                className="bg-[#0f172a] rounded-3xl border border-slate-800 p-6 space-y-4 shadow-xl"
+                className="bg-[#0f172a] rounded-3xl border border-white/10 hover:border-white/20 p-6 space-y-4 shadow-xl card-hover-micro scroll-reveal hover:scale-[1.012] transition-all duration-300"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
