@@ -404,10 +404,10 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex flex-wrap items-center gap-2">
                 <button
                   onClick={onOpenOAuthModal}
-                  className="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-gradient-to-r from-[#2b35ff]/30 to-[#00f0ff]/20 hover:from-[#2b35ff]/50 hover:to-[#00f0ff]/40 text-white text-xs font-bold border border-[#2b35ff]/60 transition-all shadow-lg shadow-[#2b35ff]/10"
+                  className="flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-2xl bg-gradient-to-r from-[#2b35ff]/30 to-[#00f0ff]/20 hover:from-[#2b35ff]/50 hover:to-[#00f0ff]/40 text-white text-xs font-bold border border-[#2b35ff]/60 transition-all shadow-lg shadow-[#2b35ff]/10"
                 >
                   <Github className="w-4 h-4 text-[#00f0ff]" />
                   <span>OAuth & Импорт</span>
@@ -416,7 +416,8 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
 
                 <button
                   onClick={() => setIsResumeModalOpen(true)}
-                  className="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-[#0f152a] hover:bg-[#151e3c] text-white text-xs font-bold border border-[#2b35ff]/40 transition-all shadow-lg hover:border-[#00f0ff]/80"
+                  className="flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-2xl bg-[#0f152a] hover:bg-[#151e3c] text-white text-xs font-bold border border-[#2b35ff]/40 transition-all shadow-lg hover:border-[#00f0ff]/80"
+                  title="Открыть стандартизированный паспорт спортсмена-разработчика ФСП"
                 >
                   <FileText className="w-4 h-4 text-[#00f0ff]" />
                   <span>Паспорт ФСП</span>
@@ -432,11 +433,11 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
                     }
                   }}
                   disabled={isDownloadingPdf}
-                  className="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-gradient-to-r from-[#2b35ff]/30 to-[#00f0ff]/30 hover:from-[#2b35ff]/50 hover:to-[#00f0ff]/50 text-white text-xs font-bold border border-[#00f0ff]/40 transition-all shadow-lg hover:border-[#00f0ff] disabled:opacity-50"
+                  className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-[#2b35ff]/40 to-[#00f0ff]/40 hover:from-[#2b35ff]/60 hover:to-[#00f0ff]/60 text-white text-xs font-bold border border-[#00f0ff]/50 transition-all shadow-lg hover:border-[#00f0ff] disabled:opacity-50"
                   title="Скачать официальный стандартизированный PDF-профиль соискателя с символикой ФСП и подтвержденным ELO"
                 >
                   <Download className={`w-4 h-4 text-[#00f0ff] ${isDownloadingPdf ? 'animate-bounce' : ''}`} />
-                  <span>{isDownloadingPdf ? 'Генерация...' : 'Скачать официальный профиль ФСП (PDF)'}</span>
+                  <span>{isDownloadingPdf ? 'Генерация PDF...' : 'Скачать PDF'}</span>
                 </button>
               </div>
             </div>

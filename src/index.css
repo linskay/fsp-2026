@@ -362,3 +362,78 @@
   background: rgba(4, 6, 13, 0.82);
 }
 
+/* Official Print Stylesheet for FSP Passport */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 10mm;
+  }
+
+  html, body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    font-size: 11pt !important;
+  }
+
+  /* Hide entire dark web application, modals backdrop, navigation */
+  nav, footer, .modal-backdrop, .no-print, header, aside {
+    display: none !important;
+  }
+
+  /* Make sure everything else is hidden except passport */
+  body * {
+    visibility: hidden;
+  }
+
+  #fsp-developer-passport, #fsp-developer-passport * {
+    visibility: visible;
+  }
+
+  #fsp-developer-passport {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 24px !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border: 3px solid #0f172a !important;
+    box-shadow: none !important;
+    border-radius: 8px !important;
+    z-index: 999999;
+  }
+
+  #fsp-developer-passport .bg-slate-900\/60,
+  #fsp-developer-passport .bg-slate-900 {
+    background: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+  }
+
+  #fsp-developer-passport .text-white {
+    color: #0f172a !important;
+  }
+
+  #fsp-developer-passport .text-slate-400,
+  #fsp-developer-passport .text-slate-300 {
+    color: #475569 !important;
+  }
+
+  #fsp-developer-passport .text-blue-400 {
+    color: #1d4ed8 !important;
+  }
+
+  #fsp-developer-passport .text-emerald-400 {
+    color: #047857 !important;
+  }
+
+  #fsp-developer-passport .text-amber-400 {
+    color: #b45309 !important;
+  }
+
+  #fsp-developer-passport button {
+    display: none !important;
+  }
+}
+

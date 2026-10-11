@@ -16,6 +16,7 @@ import {
   INITIAL_VACANCIES, 
   INITIAL_TASKS 
 } from '../data/mockData';
+import { generateFspOfficialPdf } from '../utils/pdfGenerator';
 
 const API_BASE = '/api/v1';
 
@@ -1615,23 +1616,33 @@ class ApiService {
 
   // 25. 1-Click Official FSP PDF Profile Card Download
   async downloadOfficialCandidatePdf(candidate: any): Promise<void> {
+    const safeName = (candidate?.fullName || candidate?.name || 'pesterev').replace(/\s+/g, '_');
+    const filename = `fsp-official-profile-${safeName}.pdf`;
+
+    // 1. Try Backend PDF export first if available
     try {
-      if (candidate?.id && candidate.id.length > 20) {
-        const res = await fetch(`${API_BASE}/candidates/${candidate.id}/export-pdf`);
-        if (res.ok) {
-          const blob = await res.blob();
-          if (blob.size > 200) {
-            triggerBlobDownload(blob, `fsp-official-profile-${candidate.fullName || candidate.name || 'candidate'}.pdf`);
-            return;
-          }
+      const candidateId = candidate?.id || 'ca000000-0000-0000-0000-000000000001';
+      const res = await fetch(`${API_BASE}/candidates/${candidateId}/export-pdf`);
+      if (res.ok) {
+        const blob = await res.blob();
+        if (blob.size > 200) {
+          triggerBlobDownload(blob, filename);
+          return;
         }
       }
     } catch (e) {
-      console.warn("Backend PDF export fallback to client-side PDF engine", e);
+      console.warn("Backend PDF export fallback to high-DPI client-side engine", e);
     }
 
-    const fallbackBlob = generateClientSideFspPdf(candidate);
-    triggerBlobDownload(fallbackBlob, `fsp-official-profile-${candidate.fullName || candidate.name || 'candidate'}.pdf`);
+    // 2. High-DPI Official FSP PDF Generation using jsPDF & Canvas
+    try {
+      const highDpiBlob = await generateFspOfficialPdf(candidate);
+      triggerBlobDownload(highDpiBlob, filename);
+    } catch (err) {
+      console.error("High-DPI PDF error, falling back to basic PDF:", err);
+      const fallbackBlob = generateClientSideFspPdf(candidate);
+      triggerBlobDownload(fallbackBlob, filename);
+    }
   }
 
   // 26. User Session & Profile Management
@@ -1786,8 +1797,12 @@ function triggerBlobDownload(blob: Blob, filename: string) {
   a.download = filename;
   document.body.appendChild(a);
   a.click();
-  window.URL.revokeObjectURL(url);
-  document.body.removeChild(a);
+  setTimeout(() => {
+    try {
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch {}
+  }, 15000);
 }
 
 function generateClientSideFspPdf(candidate: any): Blob {

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { FileText, Upload, Sparkles, CheckCircle2, ShieldCheck, Download, Printer, X, Code, Briefcase, Award } from 'lucide-react';
 import { CandidateProfile } from '../../types';
 import { FspStarIcon } from '../brand/FspLogo';
+import { api } from '../../services/api';
 
 interface ResumeParserModalProps {
   candidate: CandidateProfile;
@@ -20,6 +21,7 @@ export const ResumeParserModal: React.FC<ResumeParserModalProps> = ({
   const [isParsing, setIsParsing] = useState(false);
   const [parseSuccess, setParseSuccess] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
 
   if (!isOpen) return null;
 
@@ -43,8 +45,155 @@ export const ResumeParserModal: React.FC<ResumeParserModalProps> = ({
     }, 1500);
   };
 
+  const handleDownloadPdf = async () => {
+    setIsDownloadingPdf(true);
+    try {
+      await api.downloadOfficialCandidatePdf(candidate);
+    } finally {
+      setIsDownloadingPdf(false);
+    }
+  };
+
   const handlePrint = () => {
-    window.print();
+    const printWindow = window.open('', '_blank', 'width=850,height=1100');
+    if (!printWindow) {
+      window.print();
+      return;
+    }
+    const htmlContent = `
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>Официальный паспорт спортсмена-разработчика ФСП — ${candidate.fullName}</title>
+  <style>
+    @page { size: A4 portrait; margin: 12mm; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'JetBrains Mono', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0; padding: 24px; background: #fff; color: #0f172a;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }
+    .passport-border {
+      border: 3px solid #0f172a; border-radius: 12px; padding: 24px;
+    }
+    .header-bar {
+      background: #0b1433; color: #fff; padding: 18px 24px; border-radius: 8px; margin-bottom: 12px;
+    }
+    .header-title { font-size: 18px; font-weight: 900; letter-spacing: 0.5px; }
+    .header-sub { font-size: 12px; color: #38bdf8; font-weight: bold; margin-top: 4px; }
+    .tricolor { height: 6px; display: flex; margin-bottom: 20px; }
+    .tricolor-white { flex: 1; background: #fff; border-top: 1px solid #cbd5e1; }
+    .tricolor-blue { flex: 1; background: #0039a6; }
+    .tricolor-red { flex: 1; background: #d52b1e; }
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+    .info-card { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px; }
+    .label { font-size: 10px; color: #64748b; font-weight: bold; text-transform: uppercase; }
+    .value { font-size: 15px; font-weight: bold; color: #0f172a; margin-top: 2px; }
+    .elo-badge { font-size: 32px; font-weight: 900; color: #0284c7; }
+    .rank-badge { font-size: 16px; font-weight: bold; color: #b45309; }
+    .metrics-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .metric-card { background: #f1f5f9; border-radius: 8px; padding: 10px; text-align: center; }
+    .metric-val { font-size: 20px; font-weight: 900; color: #0f172a; }
+    .stack-box { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px; margin-bottom: 20px; }
+    .seal-box { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 16px; border-top: 2px dashed #cbd5e1; }
+    .seal-stamp {
+      width: 130px; height: 130px; border-radius: 50%; border: 3px double #1d4ed8; color: #1d4ed8;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; font-size: 9px; font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="passport-border">
+    <div class="header-bar">
+      <div class="header-title">ФЕДЕРАЦИЯ СПОРТИВНОГО ПРОГРАММИРОВАНИЯ РОССИИ</div>
+      <div class="header-sub">ЕДИНЫЙ РЕЕСТР СПОРТСМЕНОВ-РАЗРАБОТЧИКОВ • СЕЗОН 2026</div>
+    </div>
+    <div class="tricolor">
+      <div class="tricolor-white"></div>
+      <div class="tricolor-blue"></div>
+      <div class="tricolor-red"></div>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <h2 style="margin: 0; font-size: 20px; font-weight: 900;">ПАСПОРТ СПОРТСМЕНА-РАЗРАБОТЧИКА</h2>
+      <span style="background: #ecfdf5; color: #047857; border: 1px solid #10b981; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold;">✓ ВЕРИФИЦИРОВАНО В РЕЕСТРЕ ФСП РФ</span>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="label">ФИО Спортсмена:</div>
+        <div class="value">${candidate.fullName}</div>
+        <div class="label" style="margin-top: 8px;">Специализация и грейд:</div>
+        <div class="value" style="color: #2563eb;">${candidate.title}</div>
+        <div class="label" style="margin-top: 8px;">Локация:</div>
+        <div class="value">${candidate.city} (РФ)</div>
+        <div class="label" style="margin-top: 8px;">Регистрационный ID:</div>
+        <div class="value" style="font-family: monospace;">${candidate.fspId}</div>
+      </div>
+
+      <div class="info-card">
+        <div class="label">Текущий рейтинг ELO ФСП:</div>
+        <div class="elo-badge">${candidate.fspRating} pts</div>
+        <div class="label" style="margin-top: 6px;">Спортивное звание / разряд (Минспорт РФ):</div>
+        <div class="rank-badge">★ ${candidate.fspRank}</div>
+        <div class="label" style="margin-top: 6px;">Статус в реестре:</div>
+        <div style="color: #059669; font-weight: bold; font-size: 11px;">Топ 1% спортивных программистов РФ</div>
+      </div>
+    </div>
+
+    <div class="label" style="margin-bottom: 6px;">Результаты квалификации в Code Arena:</div>
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="label">Точность тестов</div>
+        <div class="metric-val" style="color: #059669;">${candidate.testScorePercent}%</div>
+      </div>
+      <div class="metric-card">
+        <div class="label">Ср. время выполнения</div>
+        <div class="metric-val" style="color: #2563eb;">${candidate.avgExecutionTimeMs} ms</div>
+      </div>
+      <div class="metric-card">
+        <div class="label">Эффективность памяти</div>
+        <div class="metric-val" style="color: #7c3aed;">${candidate.memoryEfficiencyScore}%</div>
+      </div>
+    </div>
+
+    <div class="stack-box">
+      <div class="label">Подтвержденный стек технологий:</div>
+      <div style="font-size: 13px; font-weight: bold; margin-top: 4px; color: #0f172a;">${candidate.skills.join(' • ')}</div>
+      <div style="font-size: 10px; color: #64748b; margin-top: 6px;">Верифицировано компилятором Judge0 в изолированной песочнице (--net=none).</div>
+    </div>
+
+    <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 10px 14px; font-size: 11px; color: #1e40af;">
+      <strong>Защита персональных данных:</strong> Соответствует 152-ФЗ РФ. Профиль доступен по модели Обратного рекрутинга (Reverse Recruiting). Все просмотры логируются в журнале security_audit_logs.
+    </div>
+
+    <div class="seal-box">
+      <div class="seal-stamp">
+        <div>ФСП РОССИЯ</div>
+        <div style="font-size: 14px; margin: 4px 0;">★ ЭЦП ★</div>
+        <div>ВЕРИФИЦИРОВАНО</div>
+        <div style="font-size: 7px; margin-top: 2px;">СЕРТИФИКАТ 2026</div>
+      </div>
+
+      <div style="text-align: right; font-size: 11px; color: #475569;">
+        <div>Официальный портал верификации:</div>
+        <div style="font-family: monospace; font-weight: bold; color: #2563eb;">https://linskay-demo-2026.hf.space/#leaderboard</div>
+        <div style="margin-top: 6px; font-size: 10px;">Дата формирования: ${new Date().toLocaleDateString('ru-RU')} ${new Date().toLocaleTimeString('ru-RU')}</div>
+        <div style="font-size: 9px; color: #94a3b8; font-family: monospace;">HASH: SHA256:7f83b165${candidate.fspId.replace(/[^0-9]/g, '') || '2026'}</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+    `;
+    printWindow.document.open();
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+      printWindow.print();
+    }, 400);
   };
 
   return (
@@ -285,13 +434,24 @@ export const ResumeParserModal: React.FC<ResumeParserModalProps> = ({
               </div>
 
               {/* Actions */}
-              <div className="flex items-center justify-end gap-3 pt-2">
+              <div className="flex flex-wrap items-center justify-end gap-3 pt-4 border-t border-slate-800">
+                <button
+                  onClick={handleDownloadPdf}
+                  disabled={isDownloadingPdf}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white text-xs font-bold transition-all shadow-lg shadow-cyan-500/20 disabled:opacity-60"
+                  title="Скачать официальный A4 PDF-паспорт с символикой ФСП и подтвержденным ELO"
+                >
+                  <Download className={`w-4 h-4 text-white ${isDownloadingPdf ? 'animate-bounce' : ''}`} />
+                  <span>{isDownloadingPdf ? 'Генерация PDF...' : 'Скачать официальный PDF'}</span>
+                </button>
+
                 <button
                   onClick={handlePrint}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-lg shadow-blue-600/20"
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 hover:border-slate-600 transition-all"
+                  title="Открыть официальный белый бланк ФСП в диалоге печати браузера"
                 >
-                  <Printer className="w-4 h-4" />
-                  <span>Печать / Сохранить в PDF</span>
+                  <Printer className="w-4 h-4 text-cyan-400" />
+                  <span>Печать бланка ФСП</span>
                 </button>
               </div>
 
