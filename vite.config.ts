@@ -12,6 +12,7 @@ export default defineConfig(() => {
       },
     },
     build: {
+      assetsDir: 'fsp-assets',
       chunkSizeWarningLimit: 1200,
       rollupOptions: {
         output: {
