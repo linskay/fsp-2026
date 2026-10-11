@@ -52,11 +52,10 @@ class TelegramBotServiceTest {
     @Test
     @DisplayName("Успешная отправка мгновенного push-уведомления об оффере соискателю")
     void testSendOfferNotification() {
-        User user = User.builder().id(UUID.randomUUID()).email("candidate@fsp.ru").build();
+        User user = User.builder().id(UUID.randomUUID()).email("candidate@fsp.ru").fullName("Иван Пестерев").build();
         CandidateProfile candidate = CandidateProfile.builder()
                 .id(UUID.randomUUID())
                 .user(user)
-                .fullName("Иван Пестерев")
                 .build();
 
         EmployerProfile employer = EmployerProfile.builder()

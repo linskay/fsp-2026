@@ -8,7 +8,7 @@ WORKDIR /build
 
 COPY pom.xml .
 COPY src ./src
-RUN mvn clean package -DskipTests -B
+RUN mvn clean package -Dmaven.test.skip=true -B
 
 # Stage 2: Production JRE 21 Alpine Runtime
 FROM eclipse-temurin:21-jre-alpine

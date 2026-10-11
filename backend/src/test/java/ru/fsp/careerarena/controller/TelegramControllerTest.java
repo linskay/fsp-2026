@@ -61,7 +61,8 @@ class TelegramControllerTest {
     @DisplayName("Отправка тестового push-уведомления соискателю")
     void testSendTestPush() {
         UUID candidateId = UUID.randomUUID();
-        CandidateProfile candidate = CandidateProfile.builder().id(candidateId).fullName("Иван").build();
+        User user = User.builder().id(UUID.randomUUID()).fullName("Иван").build();
+        CandidateProfile candidate = CandidateProfile.builder().id(candidateId).user(user).build();
         EmployerProfile employer = EmployerProfile.builder().id(UUID.randomUUID()).companyName("СберТех").build();
 
         when(candidateRepository.findById(candidateId)).thenReturn(Optional.of(candidate));
