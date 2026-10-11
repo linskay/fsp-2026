@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Trophy,
   Award,
@@ -426,8 +426,66 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
   onSendOfferToCandidate,
   onOpenPrivacyModal
 }) => {
-  // Full top-100 dataset
-  const allAthletes = useMemo(() => generateTop100Athletes(candidates), [candidates]);
+  // Dynamic backend athletes loaded from REST API
+  const [backendAthletes, setBackendAthletes] = useState<RegistryAthlete[]>([]);
+  const [isLiveConnected, setIsLiveConnected] = useState<boolean>(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchLeaderboard = async () => {
+      try {
+        const res = await fetch('/api/v1/candidates/leaderboard');
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            const mapped: RegistryAthlete[] = data.map((c: any, idx: number) => ({
+              rankPosition: idx + 1,
+              id: c.id || `ath-db-${idx}`,
+              fullName: c.fullName || 'Атлет ФСП',
+              nickname: c.githubUsername || (c.fspId ? c.fspId.toLowerCase() : `athlete_${idx}`),
+              fspId: c.fspId || `FSP-RU-2026-${1000 + idx}`,
+              fspRank: c.fspRank || 'КМС (Кандидат в мастера)',
+              fspRating: c.fspElo || 2400,
+              ratingChange: 25,
+              region: c.location || 'Москва',
+              city: c.location || 'Москва',
+              specialization: (c.specialization?.toLowerCase() || 'backend') as any,
+              grade: (c.grade ? c.grade.charAt(0).toUpperCase() + c.grade.slice(1).toLowerCase() : 'Senior') as any,
+              skills: c.skills || ['Java', 'Algorithms', 'Spring Boot'],
+              solvedTasksCount: c.solvedTasksCount || 450,
+              leetcodeHardSolved: 120,
+              testScorePercent: 98.5,
+              avgExecutionTimeMs: 14,
+              codeCleanlinessScore: c.aiSummary?.codeCleanlinessScore || 96,
+              githubUsername: c.githubUsername,
+              isFspVerified: c.isFspVerified ?? true,
+              avatarUrl: c.avatarUrl || `https://images.unsplash.com/photo-${1534528741775 + idx * 1000}?w=150`,
+              universityOrOrg: 'ФСП Россия / Квалифицирован в Арене',
+              summaryText: c.aiSummary?.summaryText || c.bio || 'Верифицированный спортсмен Федерации спортивного программирования России.'
+            }));
+            if (isMounted) {
+              setBackendAthletes(mapped);
+              setIsLiveConnected(true);
+            }
+          }
+        }
+      } catch {
+        // Fallback to static seed pool gracefully when backend is offline
+      }
+    };
+    fetchLeaderboard();
+    return () => { isMounted = false; };
+  }, []);
+
+  // Full top-100 dataset: real candidates from backend merged with verified athlete registry
+  const allAthletes = useMemo(() => {
+    const base = generateTop100Athletes(candidates);
+    if (backendAthletes.length === 0) return base;
+    const existingFspIds = new Set(backendAthletes.map(b => b.fspId));
+    const merged = [...backendAthletes, ...base.filter(b => !existingFspIds.has(b.fspId))];
+    merged.sort((a, b) => b.fspRating - a.fspRating);
+    return merged.slice(0, 100).map((a, idx) => ({ ...a, rankPosition: idx + 1 }));
+  }, [candidates, backendAthletes]);
 
   // Filtering states
   const [searchQuery, setSearchQuery] = useState('');
@@ -551,10 +609,17 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
                   <FspLogo size="sm" showText={false} />
                   <span>Единый Реестр ФСП РФ</span>
                 </span>
-                <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-500/30 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                  <span>Live Сезон 2026</span>
-                </span>
+                {isLiveConnected ? (
+                  <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-500/40 flex items-center gap-1.5 shadow-[0_0_12px_rgba(16,185,129,0.25)]">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span>REST API: Подключено к БД ФСП</span>
+                  </span>
+                ) : (
+                  <span className="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 text-xs font-bold border border-cyan-500/30 flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-cyan-400" />
+                    <span>Live Реестр 2026</span>
+                  </span>
+                )}
                 <span className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 text-xs font-bold border border-purple-500/30">
                   Аккредитовано Минспорта РФ
                 </span>
