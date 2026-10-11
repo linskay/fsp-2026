@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import ru.fsp.careerarena.entity.CandidateProfile;
 import ru.fsp.careerarena.entity.EmployerProfile;
+import ru.fsp.careerarena.entity.User;
 import ru.fsp.careerarena.repository.CandidateProfileRepository;
 import ru.fsp.careerarena.repository.EmployerProfileRepository;
 import ru.fsp.careerarena.repository.InvitationRepository;
