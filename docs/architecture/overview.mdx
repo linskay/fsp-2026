@@ -69,3 +69,82 @@ flowchart TD
 ### 4. Интеллектуальный анализатор (AI Engine)
 - Мультипровайдерная интеграция с поддержкой **Google Gemini**, **OpenRouter**, локальной **Ollama** и **YandexGPT**.
 - Автоматический расчет соответствия кандидата техническим требованиям вакансии на основе структурированного JSON-промпта.
+
+---
+
+## 🔄 Ключевые диаграммы последовательности (Mermaid Sequence Diagrams)
+
+### 1. Обратный найм, идемпотентные офферы и безопасное раскрытие контактов по 152-ФЗ
+
+Диаграмма иллюстрирует сквозной жизненный цикл обратного найма: отправку оффера работодателем с контролем идемпотентности (RFC 7231), мгновенный push кандидату через официального Telegram-бота `@fsp_career_bot` и фиксацию согласия на демаскирование персональных данных в журнале аудита безопасности (`Security Audit Log`):
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor HR as Работодатель (HR / ATS)
+    participant UI as React 19 Frontend
+    participant API as Spring Boot 3 Gateway
+    participant IDEM as Idempotency Engine (RFC 7231)
+    participant TG as Telegram Bot (@fsp_career_bot)
+    actor Dev as Кандидат (Соискатель)
+    participant DB as PostgreSQL (Audit Log & Data)
+
+    Note over HR,UI: Режим «Слепого» найма: контакты соискателя замаскированы по 152-ФЗ
+    HR->>UI: Заполнение оффера (вилка от 450 000 до 550 000 ₽)
+    UI->>API: POST /api/v1/offers [Header: Idempotency-Key]
+    API->>IDEM: Проверка уникальности ключа в api_idempotency_records
+    alt Запрос повторный (Network Retry / Double-click)
+        IDEM-->>API: Восстановление существующего оффера
+        API-->>UI: 200 OK (Idempotent-Replayed: true)
+    else Новый запрос
+        IDEM->>DB: INSERT INTO invitations (status: PENDING)
+        API->>TG: Отправка мгновенного push-оповещения
+        TG-->>Dev: «⚡️ СберТех отправил вам оффер на 520 000 ₽. Посмотреть детали и принять?»
+        API-->>UI: 201 Created (Оффер успешно зафиксирован)
+    end
+
+    alt Кандидат принимает оффер (в Telegram-боте или Веб-кабинете)
+        Dev->>API: POST /api/v1/offers/{id}/accept
+        API->>DB: UPDATE invitations SET status = 'ACCEPTED', contacts_revealed = true
+        API->>DB: INSERT INTO security_audit_logs (action: USER_CONTACTS_REVEALED, 152-ФЗ consent)
+        API-->>Dev: 200 OK (Контакты безопасно открыты)
+        API-->>HR: Push / Webhook OFFER_ACCEPTED (Телефон, Telegram и Email демаскированы)
+    end
+```
+
+### 2. Соревновательная Code Arena, изолированная песочница и мультимодельный AI-портрет
+
+Диаграмма иллюстрирует процесс проверки алгоритмического кода в изолированном контейнере Docker (Judge0), пересчет спортивного ELO-рейтинга по правилам ФСП РФ и генерацию мультимодельного AI-портрета через паттерн Strategy:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Dev as Соискатель (Спортсмен)
+    participant IDE as Monaco Code Arena IDE
+    participant Arena as Spring Boot Arena Controller
+    participant Sandbox as Docker Sandbox (Judge0)
+    participant ELO as ELO Engine (ФСП ЕВСК)
+    participant AI as Multi-Model AI Strategy
+    participant DB as PostgreSQL (TOP-100 Leaderboard)
+
+    Dev->>IDE: Написание решения алгоритмической задачи
+    Dev->>IDE: Клик «Отправить решение на проверку»
+    IDE->>Arena: POST /api/v1/sandbox/execute [code, language, taskId]
+    Arena->>Arena: Проверка сессии (лимит 45 мин) и Anti-Cheat телеметрии
+    Arena->>Sandbox: Запуск в изолированном контейнере (--net=none, CPU 1500ms, RAM 256MB)
+    Sandbox->>Sandbox: Выполнение на закрытом наборе стресс-тестов
+    Sandbox-->>Arena: Вердикт: ACCEPTED (100% тестов, 24 мс, 18 МБ)
+    Arena->>ELO: Расчет дельты ELO по соревновательной формуле
+    ELO->>DB: Обновление рейтинга соискателя (+35 ELO, новый ранг: МС)
+    Arena-->>IDE: 200 OK: Решение принято, присвоен статус Мастер спорта!
+
+    opt Мультимодельная генерация AI-портрета
+        Dev->>Arena: POST /api/v1/ai/generate-summary [provider: YANDEX_GPT, focus: HIGH_LOAD_CORE]
+        Arena->>AI: Динамический выбор провайдера (Gemini / YandexGPT / OpenRouter / Ollama)
+        AI-->>Arena: JSON: {summaryText, codeCleanlinessScore: 98, recommendedRoles}
+        Arena-->>IDE: Отображение AI-портрета соискателя
+        Dev->>Arena: POST /api/v1/ai/save-profile
+        Arena->>DB: UPDATE candidate_ai_summaries & bio
+        DB-->>DB: Мгновенное обновление в Едином Реестре атлетов ТОП-100 (#leaderboard)
+    end
+```

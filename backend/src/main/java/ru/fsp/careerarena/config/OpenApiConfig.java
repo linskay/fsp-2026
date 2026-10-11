@@ -21,22 +21,28 @@ public class OpenApiConfig {
         return new OpenAPI()
             .servers(List.of(
                 new Server()
-                    .url("https://api.fsp-arena.ru")
-                    .description("Production Enterprise Gateway"),
+                    .url("/")
+                    .description("Current Host Gateway (Local & Hugging Face: https://linskay-demo-2026.hf.space)"),
                 new Server()
                     .url("http://localhost:8080")
-                    .description("Local Development Environment")
+                    .description("Local Development Environment"),
+                new Server()
+                    .url("https://linskay-demo-2026.hf.space")
+                    .description("Hugging Face Space Live Demo"),
+                new Server()
+                    .url("https://api.fsp-arena.ru")
+                    .description("Production Enterprise Gateway")
             ))
             .info(new Info()
                 .title("FSP Career Arena API")
-                .description("Цифровая платформа-агрегатор ИТ-вакансий с верифицированным профилем достижений ФСП (Федерация спортивного программирования России). Защита персональных данных согласно 152-ФЗ и сквозной аудит доступа.")
+                .description("Цифровая платформа-агрегатор ИТ-вакансий с верифицированным профилем достижений ФСП (Федерация спортивного программирования России). Защита персональных данных согласно 152-ФЗ и сквозной аудит доступа (Security Audit Log).")
                 .version("2.0.0")
                 .contact(new Contact()
                     .name("ФСП РФ / Career Arena Support")
                     .url("https://fsp-russia.ru")
                     .email("support@fsp-russia.ru"))
                 .license(new License()
-                    .name("Соответствие 152-ФЗ: маскирование персональных данных и аудит доступа")
+                    .name("Соответствие 152-ФЗ: маскирование персональных данных и сквозной журнал аудита безопасности")
                     .url("https://fsp-russia.ru/files/%D0%9F%D0%BE%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BE%D0%B1%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B0%20%D0%BF%D0%B4%D0%BD%20(1).pdf")))
             .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
             .components(new Components()
@@ -44,6 +50,6 @@ public class OpenApiConfig {
                     .type(SecurityScheme.Type.HTTP)
                     .scheme("bearer")
                     .bearerFormat("JWT")
-                    .description("Введите JWT токен (полученный через OAuth2 или аутентификацию)")));
+                    .description("Авторизация по Bearer JWT токену. Для тестирования запросов: выполните POST /api/v1/auth/login (тестовые учетные записи: candidate@fsp.ru / candidate2026 или employer@fsp.ru / employer2026), скопируйте полученный accessToken и нажмите кнопку 'Authorize' вверху страницы.")));
     }
 }

@@ -329,7 +329,7 @@ public class Solution {
                           <Lock className="w-3.5 h-3.5 text-purple-400" />
                         </div>
                         <p className="text-[11px] text-slate-400 leading-relaxed">
-                          Компании ищут по стеку и ELO. Ваши персональные данные скрыты до взаимного согласия (152-ФЗ РФ).
+                          Компании ищут по стеку и ELO. Ваши персональные данные защищены 152-ФЗ РФ и журналом аудита безопасности (Security Audit Log) до взаимного согласия.
                         </p>
                       </div>
                     </div>
